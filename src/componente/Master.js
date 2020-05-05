@@ -23,7 +23,7 @@ class Master extends Component {
 	    <Link to="/ayuda">Ayuda</Link>
 	    <Link to="/cargar">Cargar firma electronica</Link>
 */}
-	      <Container>
+	      <Container className="mt-4">
 		  {this.props.children}
 	      </Container>
       </div>

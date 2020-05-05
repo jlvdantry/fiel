@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 
 const links = [
-  { href: '/ayuda', text: 'Ayuda', className: 'text-info'},
+  { href: '/ayuda', text: 'Ayuda', className: 'text-info', cierra:'{this.closeNavbar}' },
   { href: '/carga', text: 'Carga fiel', className: 'text-info'},
   { href: '/validafiel', text: 'Valida fiel',className: 'text-info' },
   { href: '/cargafael', text: 'Carga factura electrónica',className: 'text-info' },
@@ -20,7 +20,7 @@ const links = [
 
 const createNavItem = ({ href, text, className }) => (
  <NavItem>
-    <Link to={href} className={className} >{text}</Link>
+    <Link to={href} className={className} onClick={this.closeNavbar}>{text}</Link>
  </NavItem>
 );
 
@@ -55,7 +55,10 @@ class Menumi extends Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto bg-dark" navbar>
-              {links.map(createNavItem)}
+              {/*{links.map(createNavItem)}  */}
+              <Link to='/ayuda' className='text-info' onClick={this.closeNavbar} >Ayuda</Link>
+              <Link to='/carga' className='text-info' onClick={this.closeNavbar} >Cargar fiel</Link>
+              <Link to='/validar' className='text-info' onClick={this.closeNavbar} >Validar fiel</Link>
             </Nav>
           </Collapse>
         </Navbar>
