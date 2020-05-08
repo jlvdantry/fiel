@@ -6,23 +6,8 @@ import {
   NavbarToggler,
   NavbarBrand,
   Nav,
-  NavItem
 } from 'reactstrap';
 
-const links = [
-  { href: '/ayuda', text: 'Ayuda', className: 'text-info', cierra:'{this.closeNavbar}' },
-  { href: '/carga', text: 'Carga fiel', className: 'text-info'},
-  { href: '/validafiel', text: 'Valida fiel',className: 'text-info' },
-  { href: '/cargafael', text: 'Carga factura electrónica',className: 'text-info' },
-  { href: '/validafael', text: 'Valida factura electrónica',className: 'text-info' },
-  { href: '/firmafiel', text: 'firma electrónica',className: 'text-info' },
-];
-
-const createNavItem = ({ href, text, className }) => (
- <NavItem>
-    <Link to={href} className={className} onClick={this.closeNavbar}>{text}</Link>
- </NavItem>
-);
 
 class Menumi extends Component {
   constructor(props) {
@@ -55,10 +40,12 @@ class Menumi extends Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto bg-dark" navbar>
-              {/*{links.map(createNavItem)}  */}
               <Link to='/ayuda' className='text-info' onClick={this.closeNavbar} >Ayuda</Link>
-              <Link to='/carga' className='text-info' onClick={this.closeNavbar} >Cargar fiel</Link>
+              <Link to='/carga' className='text-info' onClick={this.closeNavbar} >Cargar FIEL</Link>
               <Link to='/validar' className='text-info' onClick={this.closeNavbar} >Validar fiel</Link>
+              <Link to='/cargafael' className='text-info' onClick={this.closeNavbar} >Cargar fael</Link>
+              <Link to='/validarfael' className='text-info' onClick={this.closeNavbar} >Validar fael</Link>
+              <Link to='/firmar' className='text-info' onClick={this.closeNavbar} >Firmar electrónicamente</Link>
             </Nav>
           </Collapse>
         </Navbar>

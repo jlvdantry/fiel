@@ -6,6 +6,8 @@ import Ayuda from './componente/Ayuda';
 import Master from './componente/Master';
 import Carga from './componente/Carga';
 import Valida from './componente/Valida';
+import Cargafael from './componente/Cargafael';
+import Validafael from './componente/Validafael';
 
 class App extends Component {
   render() {
@@ -16,6 +18,8 @@ class App extends Component {
 	  <Route path="/ayuda" component={Ayuda}/>
 	  <Route path="/carga" component={Carga}/>
 	  <Route path="/validar" component={Valida}/>
+	  <Route path="/cargafael" component={Cargafael}/>
+	  <Route path="/validarfael" component={Validafael}/>
         </Route>
         <Redirect from="/" to="/"/>
       </Router>
