@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { browserHistory  } from 'react-router';
-import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter} from 'reactstrap';
+import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter} from 'reactstrap';
+import fiel from '../fiel';
 
 
 class Validafael extends Component {
@@ -19,7 +20,7 @@ class Validafael extends Component {
     //x.cargafiellocal();
   }
   validafael(){
-    var x = new window.fiel;
+    var x = new fiel;
     var res=x.validafael();
     console.log('x='+JSON.stringify(res));
     if (res.ok===true) {
@@ -37,14 +38,8 @@ class Validafael extends Component {
     const { ok, nook, msg, certijson } = this.state;
     return  (
         <div id="ayuda" class="container">
-	      <h2 className="text-center" >Validar firma electrónica</h2>
+	      <h2 className="text-center" >Validar factura electrónica</h2>
               <Container className="border p-2 mb-3">
-{/*
-		      <FormGroup class="container">
-			<Label for="pwdfiel">Password de la llave privada</Label>
-			<Input type="password" name="password" id="pwdfiel" placeholder="contraseña" />
-		      </FormGroup>
-*/}
                       <div class="flex-col d-flex justify-content-center">
 		           <Button color="primary" onClick={this.validafael}>Validar</Button>
                       </div>

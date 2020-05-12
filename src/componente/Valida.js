@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { browserHistory  } from 'react-router';
 import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter} from 'reactstrap';
+import fiel from '../fiel';
 
 
 class Valida extends Component {
@@ -19,7 +20,7 @@ class Valida extends Component {
     //x.cargafiellocal();
   }
   validafirma(){
-    var x = new window.fiel;
+    var x = new fiel;
     var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
     console.log('x='+JSON.stringify(res));
     if (res.ok===true) {
@@ -38,7 +39,7 @@ class Valida extends Component {
 	      <h2 className="text-center" >Validar firma electrónica</h2>
               <Container className="border p-2 mb-3">
 		      <FormGroup class="container">
-			<Label for="pwdfiel">Password de la llave privada</Label>
+			<Label for="pwdfiel">Contraseña de la llave privada</Label>
 			<Input type="password" name="password" id="pwdfiel" placeholder="contraseña" />
 		      </FormGroup>
                       <div class="flex-col d-flex justify-content-center">

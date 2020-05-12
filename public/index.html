@@ -5,10 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#000000">
-<!-- Tell the browser it's a PWA -->
-<meta name="mobile-web-app-capable" content="yes">
-<!-- Tell iOS it's a PWA -->
-<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/manifest.json">
     <title>FIEL</title>
@@ -26,6 +24,7 @@
       </p>
     </div>
     <script>
+/*
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('worker.js').then(function(registration) {
@@ -39,10 +38,14 @@
       } else {
         console.log('Service Worker is not supported by browser.');
       }
+*/
+    console.log('user agent'+navigator.userAgent);
     </script>
       <script src="%PUBLIC_URL%/forge.min.js"></script>
-      <script src="%PUBLIC_URL%/fiel.js"></script>
       <script src="%PUBLIC_URL%/utils.js"></script>
-      <script src="%PUBLIC_URL%/xslt/cadenaoriginal_3_3.js"></script>
+      <script src="%PUBLIC_URL%/cadenaoriginal_3_3.js"></script>
+<!--      <script src="%PUBLIC_URL%/fiel.js"></script>
+      <script src="%PUBLIC_URL%/utils.js"></script>
+-->
   </body>
 </html>

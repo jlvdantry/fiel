@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {FormGroup, Alert, Button} from 'reactstrap';
 import { browserHistory  } from 'react-router';
+import fiel from '../fiel';
 
 
 let timer = null;
@@ -36,7 +37,7 @@ class Cargafael extends Component {
   }
 
   cargar() {
-    var x = new window.fiel;
+    var x = new fiel;
     x.cargafael();
   }
 

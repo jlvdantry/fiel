@@ -28,4 +28,4 @@ String.prototype.chunkString = function(len) {
         } while (n < l);
     }
     return _ret;
-};
+}

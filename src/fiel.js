@@ -1,4 +1,4 @@
-var fiel = function()
+const fiel = function()
 {
 
   this.wlrfc = ""; // rfc
@@ -25,7 +25,7 @@ var fiel = function()
      var reader = new FileReader();
      reader.onload = (function(theFile) {
           return function(e) {
-          if (theFile.name.toLowerCase().indexOf(".xml")!=-1) {
+          if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
              localStorage.setItem("xml",e.target.result);
              localStorage.setItem("xml_name",theFile.name);
           }  else {
@@ -46,7 +46,7 @@ var fiel = function()
      var reader = new FileReader();
      reader.onload = (function(theFile) {
           return function(e) {
-          if (theFile.name.toLowerCase().indexOf(".xslt")!=-1) {
+          if (theFile.name.toLowerCase().indexOf(".xslt")!==-1) {
              localStorage.setItem("xslt",e.target.result);
           }  else {
              alert('El Xslt de la factura electronica debe de contar con extension xslt');
@@ -63,11 +63,11 @@ var fiel = function()
      reader.onload = (function(theFile) {
           return function(e) {
                   console.log('empezo onload'+theFile.name);
-		  if (theFile.name.indexOf(".cer")!=-1) {
+		  if (theFile.name.indexOf(".cer")!==-1) {
 		     localStorage.setItem("cer",e.target.result);
 		     localStorage.setItem("cer_name",theFile.name);
 		  } else {
-		  if (theFile.name.indexOf(".key")!=-1) {
+		  if (theFile.name.indexOf(".key")!==-1) {
 		     localStorage.setItem("key",e.target.result);
 		     localStorage.setItem("key_name",theFile.name);
 		  } else {
@@ -98,14 +98,14 @@ var fiel = function()
 
   this.validaprivada = function(pwd,cadena='prueba')
   {
-       if(pwd=="")
+       if(pwd==="")
        { alert('El password es obligatorio'); return false; }
        if(localStorage.getItem('key')==null)
        { alert('La llave privada no esta definida'); return false; }
        if(localStorage.getItem('cer')==null)
        { alert('El certificado no esta definido'); return false; }
-       var pki = forge.pki;
-       pk=localStorage.getItem('key').substring(localStorage.getItem('key').indexOf('base64,')+7);
+       var pki = window.forge.pki;
+       var pk=localStorage.getItem('key').substring(localStorage.getItem('key').indexOf('base64,')+7);
        pk="-----BEGIN ENCRYPTED PRIVATE KEY-----\r\n"+pk.chunkString(64)+"-----END ENCRYPTED PRIVATE KEY-----";
        try {
             this.rk=pki.decryptRsaPrivateKey(pk,pwd);
@@ -116,14 +116,15 @@ var fiel = function()
   }
 
   this.damecertiJson = function(certi) {
-     var nombre=certi.subject.attributes.filter(d => d.type=="2.5.4.3" );
-     var rfc=certi.subject.attributes.filter(d => d.type=="2.5.4.45");
-     var curp=certi.subject.attributes.filter(d => d.type=="2.5.4.5");
+     var nombre=certi.subject.attributes.filter(d => d.type==="2.5.4.3" );
+     var rfc=certi.subject.attributes.filter(d => d.type==="2.5.4.45");
+     var curp=certi.subject.attributes.filter(d => d.type==="2.5.4.5");
+     var email=certi.subject.attributes.filter(d => d.type==="1.2.840.113549.1.9.1");
      return { 
-                 nombre: nombre.length==1 ? nombre[0].value : ''
-        	 , rfc   : rfc.length==1 ? rfc[0].value : ''
-		 , curp   : curp.length==1 ? curp[0].value : ''
-		 , email   : certi.subject.attributes[4].value
+                 nombre: nombre.length===1 ? nombre[0].value : ''
+        	 , rfc   : rfc.length===1 ? rfc[0].value : ''
+		 , curp   : curp.length===1 ? curp[0].value : ''
+		 , email   : email.length===1 ? email[0].value : ''
 		 , emisor   : certi.issuer.attributes[0].value
 		 , desde   : certi.validity.notBefore.toJSON()
 		 , hasta   : certi.validity.notAfter.toJSON()
@@ -134,17 +135,17 @@ var fiel = function()
   this.validafiellocal = function(pwd,cadena='prueba')
   {
        if (this.validaprivada(pwd,cadena)) {
-          var md = forge.md.sha256.create();
+          var md = window.forge.md.sha256.create();
           md.update(cadena);
           try {var firmado=btoa(this.rk.sign(md));} catch(err) { alert(err); return false; }
           console.log('Firmado='+firmado);
           var certificado=this.damecertificadofiel();
-          actual=new Date().toISOString();
+          var actual=new Date().toISOString();
           if (actual>certificado.validity.notAfter.toJSON() || actual<certificado.validity.notBefore.toJSON()) {
             return { 'ok'  : false, "msg" : "La firma electrónica no esta vigente" }
           }
           if (typeof(certificado)=='object') {
-             var md = forge.md.sha256.create();
+             md = window.forge.md.sha256.create();
              md.update(cadena);
              var esValido = certificado.publicKey.verify(md.digest().bytes(),atob(firmado));
              if (esValido) {
@@ -172,23 +173,23 @@ var fiel = function()
 
   this.firmafael = function ()
   {
-       fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
+       var fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
-       faelxml=this.StringToXMLDom(fael);
+       var faelxml=this.StringToXMLDom(fael);
        //faelxsd=this.loadXMLDoc("xslt/cadenaoriginal_3_3.xslt");
-       faelxsd=cadenaoriginal_3_3;
+       var faelxsd=window.cadenaoriginal_3_3;
        var cadena=this.damecadena(faelxml,faelxsd); 
        this.validaprivada('888aDantryR',cadena);
-       var md = forge.md.sha256.create();
+       var md = window.forge.md.sha256.create();
        md.update(cadena);
        try {var firmado=btoa(this.rk.sign(md));} catch(err) { alert(err); return false; }
        alert('Firmado='+firmado);
   }
 
   this.damefaelxml = function () {
-       fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
+       var fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
-       faelxml=this.StringToXMLDom(fael);
+       var faelxml=this.StringToXMLDom(fael);
        return faelxml;
   }
 
@@ -196,12 +197,12 @@ var fiel = function()
   {
     try {
        //faelxsd=this.loadXMLDoc("xslt/cadenaoriginal_3_3.xslt");
-       faelxsd=cadenaoriginal_3_3;
-       faelxml=this.damefaelxml();
+       var faelxsd=window.cadenaoriginal_3_3;
+       var faelxml=this.damefaelxml();
        var cadena=this.damecadena(faelxml,faelxsd);
        var certificado=this.damecertificadofael();
        if (typeof(certificado)=='object') {
-          var md = forge.md.sha256.create();
+          var md = window.forge.md.sha256.create();
           md.update(cadena); 
           var sello=this.damesello(faelxml);
           var esValido = certificado.publicKey.verify(md.digest().bytes(),atob(sello));
@@ -222,13 +223,13 @@ var fiel = function()
 
   this.damecertificadofael = function ()
   {
-       fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
+       var fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
-       xml=this.StringToXMLDom(fael);
+       var xml=this.StringToXMLDom(fael);
        var certi=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("Certificado");
        var cert="-----BEGIN CERTIFICATE-----"+certi.chunkString(64)+"-----END CERTIFICATE-----";
-       var pki = forge.pki;
-       try {rce=pki.certificateFromPem(cert);} catch (err) { alert ('Error al leer el certificado de la factura electronica'+err); return false;}
+       var pki = window.forge.pki;
+       try {var rce=pki.certificateFromPem(cert);} catch (err) { alert ('Error al leer el certificado de la factura electronica'+err); return false;}
        return rce;
   }
 
@@ -237,8 +238,8 @@ var fiel = function()
        this.cer=localStorage.getItem('cer').substring(localStorage.getItem('cer').indexOf('base64,')+7);
        this.cer1=this.cer;
        this.cer="-----BEGIN CERTIFICATE-----"+this.cer.chunkString(64)+"-----END CERTIFICATE-----";
-       var pki = forge.pki;
-       try {rce=pki.certificateFromPem(this.cer);} catch (err) { alert ('Error al leer el certificado de la firma electronica'+err); return false;}
+       var pki = window.forge.pki;
+       try {var rce=pki.certificateFromPem(this.cer);} catch (err) { alert ('Error al leer el certificado de la firma electronica'+err); return false;}
        return rce;
   }
 
@@ -250,10 +251,10 @@ var fiel = function()
         this.ie();
      } else {
        if (document.implementation && document.implementation.createDocument) {
-         xsltProcessor = new XSLTProcessor();
+         var xsltProcessor = new XSLTProcessor();
          xsltProcessor.importStylesheet(xsd);
-         resultDocument = xsltProcessor.transformToDocument(xml, document);
-         var serializer = new XMLSerializer();
+         var resultDocument = xsltProcessor.transformToDocument(xml, document);
+         //var serializer = new XMLSerializer();
          //var transformed = serializer.serializeToString(resultDocument.documentElement);
          //alert(transformed);
          return resultDocument.documentElement.innerText.trim();
@@ -275,7 +276,7 @@ var fiel = function()
         /* funcion para cargar los XSLT del SAT */
         this.loadXMLDoc = function(filename) {
                 if (window.ActiveXObject) {
-                     xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                     var xhttp = new window.ActiveXObject("Msxml2.XMLHTTP");
                 } else {
                      xhttp = new XMLHttpRequest();
                 }
@@ -288,12 +289,12 @@ var fiel = function()
              var xmlDoc=null;
              if (window.DOMParser)
              {
-                parser=new DOMParser();
+                var parser=new DOMParser();
                 xmlDoc=parser.parseFromString(string,"text/xml");
              }
              else // Internet Explorer
              {
-                xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+                xmlDoc=new window.ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async="false";
                 xmlDoc.loadXML(string);
              }
@@ -334,7 +335,7 @@ this.xmlToJson= function(xml) {
 	// Create the return object
 	var obj = {};
 
-	if (xml.nodeType == 1) { // element
+	if (xml.nodeType === 1) { // element
 		// do attributes
 		if (xml.attributes.length > 0) {
 		obj["@attributes"] = {};
@@ -343,7 +344,7 @@ this.xmlToJson= function(xml) {
 				obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
 			}
 		}
-	} else if (xml.nodeType == 3) { // text
+	} else if (xml.nodeType === 3) { // text
 		obj = xml.nodeValue;
 	}
 
@@ -369,3 +370,4 @@ this.xmlToJson= function(xml) {
 
 
 }
+export default fiel;

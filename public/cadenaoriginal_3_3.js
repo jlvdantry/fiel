@@ -364,4 +364,4 @@ var tmp=`<?xml version="1.0" encoding="UTF-8"?>
   </xsl:template>
 </xsl:stylesheet>`;
 var parser = new DOMParser();
-var cadenaoriginal_3_3 = parser.parseFromString(tmp, "text/xml"); 
+window.cadenaoriginal_3_3 = parser.parseFromString(tmp, "text/xml"); 

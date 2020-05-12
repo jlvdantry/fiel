@@ -33,6 +33,7 @@ class Menumi extends Component {
   }
   
   render() {
+    console.log('va a renderear Menu.js');
     return (
       <div>
         <Navbar color="blue" light expand="md">

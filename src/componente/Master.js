@@ -15,14 +15,10 @@ class Master extends Component {
   }
 
   render() {
-    console.log('va a renderiar');
+    console.log('va a renderiar Master.js');
     return  (
       <div>
 	      <Menumi />
-{/*
-	    <Link to="/ayuda">Ayuda</Link>
-	    <Link to="/cargar">Cargar firma electronica</Link>
-*/}
 	      <Container className="mt-4">
 		  {this.props.children}
 	      </Container>
