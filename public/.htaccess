@@ -1,3 +1,4 @@
+Test.
 Options +SymLinksIfOwnerMatch 
 RewriteEngine On 
 RewriteCond %{REQUEST_FILENAME} !-f 

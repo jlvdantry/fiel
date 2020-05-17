@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FormGroup, Alert, Button} from 'reactstrap';
+import {FormGroup, Alert, Button, ButtonGroup} from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import fiel from '../fiel';
 
@@ -11,7 +11,8 @@ class Carga extends Component {
     super(props);
     this.nextPath = this.nextPath.bind(this);
     this.state = { cer_name : '', key_name:'' };
-    this.cargar = this.cargar.bind(this);
+    this.cargarpub = this.cargarpub.bind(this);
+    this.cargarkey = this.cargarkey.bind(this);
     this.cambio = this.cambio.bind(this);
   }
 
@@ -30,7 +31,6 @@ class Carga extends Component {
   }
 
   cambio() {
-       console.log('entro en cambio');
        if (localStorage.getItem('cer_name')!=null) {
           this.setState({cer_name : localStorage.getItem('cer_name')})
        } else {  this.setState({cer_name : null })  }
@@ -39,12 +39,14 @@ class Carga extends Component {
        } else { this.setState({key_name : null }) }
   }
 
-  cargar() {
+  cargarpub() {
     var x = new fiel;
-    console.log('cargar');
-    x.cargafiellocal();
-  //  archivos.cer.addEventListener('change', this.cambio());
-  //  archivos.cer.onchange = this.cambiokey();
+    x.cargafiellocal('cer');
+  }
+
+  cargarkey() {
+    var x = new fiel;
+    x.cargafiellocal('key');
   }
 
   render() {
@@ -57,7 +59,10 @@ class Carga extends Component {
                         { key_name && <Alert >Ubicación de la llave privada {key_name}</Alert> }
                         { !cer_name && <Alert color="danger">Aún no esta ubicada la llave pública</Alert> }
                         { !key_name && <Alert color="danger">Aún no esta ubicada la llave privada</Alert> }
-                        <Button color="primary" onClick={this.cargar}>Cargar</Button>
+                        <ButtonGroup className="d-flex justify-content-center">
+				<Button className="text-dark bg-info" onClick={this.cargarpub}>Cargar llave pública</Button>
+				<Button className="text-dark bg-info" onClick={this.cargarkey}>Cargar llave privada</Button>
+                        </ButtonGroup>
                       </FormGroup>
         </div>
     )

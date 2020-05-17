@@ -7,17 +7,21 @@ const fiel = function()
   this.cer = "";
   this.cer1 = "";
   this.creainputfile = function (ext) {
+    try {
+        console.log('creainputfile input'+ext);
         var doc = document;
         var _desc = doc.createElement( "input" );
         _desc.className = "foco";
         _desc.setAttribute("type", "file");
         _desc.setAttribute("title", "hola");
-        _desc.setAttribute("name", "ficheroin");
-        _desc.setAttribute("id", "ficheroin");
+        _desc.setAttribute("name", "ficheroin"+ext);
+        _desc.setAttribute("id", "ficheroin"+ext);
         _desc.setAttribute("value", null);
         _desc.setAttribute("accept", ext);
-        _desc.setAttribute("size", "30");
+        _desc.setAttribute("size", "255");
+        console.log('creainputfile va a regresar'+ext);
         return _desc;
+    } catch (err) { console.error('hubo errror en creainputfile'+err.message); }
   }
 
   this.leefael = function (evt)
@@ -59,6 +63,7 @@ const fiel = function()
 
   this.leefiel = function (evt)
   {
+     console.log('leefiel empezo'+JSON.stringify(evt.target.files[0]));
      var reader = new FileReader();
      reader.onload = (function(theFile) {
           return function(e) {
@@ -74,7 +79,7 @@ const fiel = function()
 		     alert('La firma digital debe de contar con extension cer y key');
 		     return false;
 		  }};
-                  console.log('termino onload'+theFile.name);
+                  console.log('termino onload '+theFile.name);
         };
       })(evt.target.files[0]);
 
@@ -83,7 +88,39 @@ const fiel = function()
           /* cargofiel();        * cahce si se cargo la file */
       }
       reader.readAsDataURL(evt.target.files[0]);
+     console.log('leefiel paso'+evt.target.files[0]);
   }
+
+  this.leefielkey = function (evt)
+  {
+     console.log('leefielkey empezo'+JSON.stringify(evt.target.files[0]));
+     var reader = new FileReader();
+     reader.onload = (function(theFile) {
+          return function(e) {
+                  console.log('empezo onload'+theFile.name);
+                  if (theFile.name.indexOf(".cer")!==-1) {
+                     localStorage.setItem("cer",e.target.result);
+                     localStorage.setItem("cer_name",theFile.name);
+                  } else {
+                  if (theFile.name.indexOf(".key")!==-1) {
+                     localStorage.setItem("key",e.target.result);
+                     localStorage.setItem("key_name",theFile.name);
+                  } else {
+                     alert('La firma digital debe de contar con extension cer y key');
+                     return false;
+                  }};
+                  console.log('termino onload '+theFile.name);
+        };
+      })(evt.target.files[0]);
+
+      reader.onloadend = function () {
+          console.log('leefielkey termino de cargar');
+          /* cargofiel();        * cahce si se cargo la file */
+      }
+      reader.readAsDataURL(evt.target.files[0]);
+     console.log('leefielkey paso'+evt.target.files[0]);
+  }
+
 
   this.firmacadena = function(cadena)
   {
@@ -262,16 +299,14 @@ const fiel = function()
     }
   }
 
-  this.cargafiellocal = function ()
+  this.cargafiellocal = async function (ext)
   {
-     var x = this.creainputfile(".cer");
+     console.log('cargafiellocal empezo cambio  akey');
+     var x = this.creainputfile("."+ext);
      x.addEventListener('change',this.leefiel,false);
-     x.click();
-     var y = this.creainputfile(".key");
-     y.addEventListener('change',this.leefiel,false);
-     y.click();
-     console.log('cargafiellocal va a regresar');
-     return {cer:x,key:y};
+     await x.click();
+     console.log('cargafiellocal termino');
+     return {file:x};
   }
         /* funcion para cargar los XSLT del SAT */
         this.loadXMLDoc = function(filename) {
