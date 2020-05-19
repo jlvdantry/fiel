@@ -15,7 +15,6 @@ class Master extends Component {
   }
 
   render() {
-    console.log('va a renderiar Master.js');
     return  (
       <div>
 	      <Menumi />

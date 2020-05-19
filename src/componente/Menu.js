@@ -6,6 +6,7 @@ import {
   NavbarToggler,
   NavbarBrand,
   Nav,
+  Alert
 } from 'reactstrap';
 
 
@@ -14,11 +15,13 @@ class Menumi extends Component {
     super(props);
 
     this.state = {
-      isOpen: false
+      isOpen: false,
+      online: true
     };
 
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
+    this.setOnlineStatus = this.setOnlineStatus.bind(this);
   }
 
   toggle() {
@@ -31,9 +34,25 @@ class Menumi extends Component {
             isOpen: false
         });
   }
-  
+
+  componentDidMount() {
+    console.log('Monto el componente');
+    if (!navigator.onLine)
+       {  this.setOnlineStatus(false)  }
+    else { this.setOnlineStatus(true) }
+    window.addEventListener('online', () => this.setOnlineStatus(true));
+    window.addEventListener('offline', () => this.setOnlineStatus(false));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('online');
+    window.removeEventListener('offline');
+  }
+
+  setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; console.log('cambio estado'); }
+
   render() {
-    console.log('va a renderear Menu.js');
+    console.log('rendereo el menu');
     return (
       <div>
         <Navbar color="blue" light expand="md">
@@ -50,6 +69,7 @@ class Menumi extends Component {
             </Nav>
           </Collapse>
         </Navbar>
+        { !this.state.online && <Alert color="danger">Aplicativo sin internet</Alert> }
       </div>
     );
   }
