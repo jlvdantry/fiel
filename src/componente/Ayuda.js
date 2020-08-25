@@ -48,7 +48,7 @@ class Ayuda extends Component {
                   </div>
 
                  <div class="mb-2">
-                  <button className="link-button text-info text-left" id="toggler2" onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}><h5>Requisitos:</h5></button>
+                  <button className="link-button text-info text-left" id="toggler2" onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}><h5>¿Cuales son los requisitos?</h5></button>
                       <UncontrolledCollapse toggler="#toggler2" isOpen={collapseID==='toggler2' ? true : false}>
                         <Card>
                           <CardBody>

@@ -67,13 +67,13 @@ class Menumi extends Component {
           <NavbarBrand to="/">FIEL</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto bg-dark" navbar>
-              <Link to='/ayuda' id='ayuda' className='text-info' onClick={this.closeNavbar} active>Ayuda</Link>
-              <Link to='/carga' className='text-info' onClick={this.closeNavbar} >Cargar FIEL</Link>
-              <Link to='/validar' className='text-info' onClick={this.closeNavbar} >Validar fiel</Link>
-              <Link to='/cargafael' className='text-info' onClick={this.closeNavbar} >Cargar fael</Link>
-              <Link to='/validarfael' className='text-info' onClick={this.closeNavbar} >Validar fael</Link>
-              <Link to='/firmar' className='text-info' onClick={this.closeNavbar} >Firmar electrónicamente</Link>
+            <Nav className="ml-auto " navbar>
+              <Link to='/ayuda' id='ayuda' className='rounded mr-1' onClick={this.closeNavbar} activeClassName="active" onlyActiveOnIndex>AYUDA</Link>
+              <Link to='/carga' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Cargar FIEL</Link>
+              <Link to='/validar' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Validar fiel</Link>
+              <Link to='/cargafael' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Cargar fael</Link>
+              <Link to='/validarfael' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Validar fael</Link>
+              <Link to='/firmar' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Firmar electrónicamente</Link>
             </Nav>
           </Collapse>
         </Navbar>

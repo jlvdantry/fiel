@@ -3,12 +3,27 @@
   background-color: #01C8E5;
   text-align: center;
 }
+
 .navbar a {
   display: inline-block;
   padding: 10px;
-  color: #fff;
+  color: black;
   text-decoration: none;
+  font-size: 1.1rem;
 }
+
+.navbar a:hover {
+  text-decoration: underline!important;
+  background-color: black!important;
+  color: white;
+}
+
+.active {
+  text-decoration: underline!important; 
+  background-color: black!important;
+  color: white!important;
+}
+
 .page-info {
   text-align: center;
   font-weight: bold;
