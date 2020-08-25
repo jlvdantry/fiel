@@ -18,10 +18,15 @@ class Menumi extends Component {
       isOpen: false,
       online: true
     };
-
+   
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
     this.setOnlineStatus = this.setOnlineStatus.bind(this);
+    this.defaultlink = React.createRef();
+  }
+ 
+  defaultlink(e)  {
+      e.click();
   }
 
   toggle() {
@@ -29,6 +34,7 @@ class Menumi extends Component {
       isOpen: !this.state.isOpen
     });
   }
+
   closeNavbar() {
         this.setState({
             isOpen: false
@@ -42,6 +48,8 @@ class Menumi extends Component {
     else { this.setOnlineStatus(true) }
     window.addEventListener('online', () => this.setOnlineStatus(true));
     window.addEventListener('offline', () => this.setOnlineStatus(false));
+    //this.defaultlink.current.click(); 
+    document.querySelector('#ayuda').click();
   }
 
   componentWillUnmount() {
@@ -55,12 +63,12 @@ class Menumi extends Component {
     console.log('rendereo el menu');
     return (
       <div>
-        <Navbar color="blue" light expand="md">
+        <Navbar color="blue" className='fixed-top' light expand="md">
           <NavbarBrand to="/">FIEL</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto bg-dark" navbar>
-              <Link to='/ayuda' className='text-info' onClick={this.closeNavbar} >Ayuda</Link>
+              <Link to='/ayuda' id='ayuda' className='text-info' onClick={this.closeNavbar} active>Ayuda</Link>
               <Link to='/carga' className='text-info' onClick={this.closeNavbar} >Cargar FIEL</Link>
               <Link to='/validar' className='text-info' onClick={this.closeNavbar} >Validar fiel</Link>
               <Link to='/cargafael' className='text-info' onClick={this.closeNavbar} >Cargar fael</Link>

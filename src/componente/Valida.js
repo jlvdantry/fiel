@@ -20,7 +20,7 @@ class Valida extends Component {
     //x.cargafiellocal();
   }
   validafirma(){
-    var x = new fiel;
+    var x = new fiel();
     var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
     console.log('x='+JSON.stringify(res));
     if (res.ok===true) {

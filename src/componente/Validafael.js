@@ -20,7 +20,7 @@ class Validafael extends Component {
     //x.cargafiellocal();
   }
   validafael(){
-    var x = new fiel;
+    var x = new fiel();
     var res=x.validafael();
     console.log('x='+JSON.stringify(res));
     if (res.ok===true) {

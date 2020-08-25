@@ -18,13 +18,17 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
-  text-decoration: underline;
+/*  text-decoration: underline; */
   display: inline;
   margin: 0;
   padding: 0;
 }
 
-.link-button:hover,
-.link-button:focus {
-text-decoration: none;
+.link-button:hover, .link-button:focus {
+     text-decoration: underline;
+}
+ 
+.card {
+     border: 2px solid rgba(0,0,0,.125);
+     border-color: #17a2b8!important;
 }

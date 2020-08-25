@@ -37,7 +37,7 @@ class Cargafael extends Component {
   }
 
   cargar() {
-    var x = new fiel;
+    var x = new fiel();
     x.cargafael();
   }
 

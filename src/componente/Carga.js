@@ -40,12 +40,12 @@ class Carga extends Component {
   }
 
   cargarpub() {
-    var x = new fiel;
+    var x = new fiel();
     x.cargafiellocal('cer');
   }
 
   cargarkey() {
-    var x = new fiel;
+    var x = new fiel();
     x.cargafiellocal('key');
   }
 
