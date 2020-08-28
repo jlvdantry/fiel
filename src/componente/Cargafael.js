@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FormGroup, Alert, Button} from 'reactstrap';
+import {FormGroup, Alert, Button, Card} from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import fiel from '../fiel';
 
@@ -30,7 +30,6 @@ class Cargafael extends Component {
   }
 
   cambio() {
-       console.log('entro en cambio');
        if (localStorage.getItem('xml_name')!=null) {
           this.setState({xml_name : localStorage.getItem('xml_name')})
        } else {  this.setState({xml_name : null })  }
@@ -44,14 +43,16 @@ class Cargafael extends Component {
   render() {
     const { xml_name } = this.state;
     return  (
-        <div id="ayuda" >
+        <Card id="cargafael" className="p-2 m-2">
                   <h2 class="text-center">Cargar factura electrónica</h2>
                       <FormGroup class="container">
                         { xml_name && <Alert >Ubicacion de la factura electrónica {xml_name}</Alert> }
                         { !xml_name && <Alert color="danger">Aún no esta ubicada la factura</Alert> }
-                        <Button color="primary" onClick={this.cargar}>Cargar</Button>
+			      <div class="flex-col d-flex justify-content-center">
+				<Button color="primary" onClick={this.cargar}>Cargar</Button>
+			      </div>
                       </FormGroup>
-        </div>
+        </Card>
     )
   }
 };

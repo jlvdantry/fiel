@@ -37,7 +37,7 @@ class Validafael extends Component {
     console.log('render carga');
     const { ok, nook, msg, certijson } = this.state;
     return  (
-        <div id="ayuda" class="container">
+        <Card id="ayuda" className="p-2 m-2">
 	      <h2 className="text-center" >Validar factura electrónica</h2>
               <Container className="border p-2 mb-3">
                       <div class="flex-col d-flex justify-content-center">
@@ -61,7 +61,7 @@ class Validafael extends Component {
               { nook && <Container id="nook" className="border p-2 mb-3">
                      <Alert color="danger"> {msg} </Alert>
               </Container> }
-        </div>
+        </Card>
     )
   }
 };

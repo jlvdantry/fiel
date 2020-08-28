@@ -5,6 +5,8 @@ import './App.css';
 import Ayuda from './componente/Ayuda';
 import Master from './componente/Master';
 import Carga from './componente/Carga';
+import Mifiel from './componente/Mifiel';
+import Misfacturas from './componente/Misfacturas';
 import Valida from './componente/Valida';
 import Cargafael from './componente/Cargafael';
 import Validafael from './componente/Validafael';
@@ -18,6 +20,8 @@ class App extends Component {
 	  <Route path="/ayuda" component={Ayuda}/>
 	  <Route path="/carga" component={Carga}/>
 	  <Route path="/validar" component={Valida}/>
+	  <Route path="/mifiel" component={Mifiel}/>
+	  <Route path="/misfacturas" component={Misfacturas}/>
 	  <Route path="/cargafael" component={Cargafael}/>
 	  <Route path="/validarfael" component={Validafael}/>
         </Route>

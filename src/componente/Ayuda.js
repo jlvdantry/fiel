@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+import React, {Component}  from 'react';
+import ReactDOM from 'react-dom';
 import { Card,CardBody,UncontrolledCollapse } from 'reactstrap';
 
 
@@ -11,10 +12,18 @@ class Ayuda extends Component {
 
 
    state={ collapseID: "toggler" }
-   toggle = collapseID => () => 
+   toggle = collapseID => () => {
+          console.log('si dio click');
 	  this.setState(prevState => ({
 	    collapseID: prevState.collapseID !== collapseID ? collapseID : ""
 	  }));
+         }
+	componentDidMount(){
+		ReactDOM.findDOMNode(this).addEventListener('touchstart', (e)=>{ 
+		    //e.preventDefault(); 
+		    console.log("touchstart triggered");
+		});
+        }
   render() {
      const { collapseID } = this.state;
      console.log('rendereo '+collapseID);
@@ -25,7 +34,7 @@ class Ayuda extends Component {
           </div>
           <div data-role="content">
                  <div class="mb-2" >
-                      <button className="link-button text-info text-left" id="toggler" href="#" onClick={this.toggle('toggler')} style={{ marginBottom: '1rem' }}><h5>¿Qué es la FIEL?</h5></button>
+                      <button className="link-button text-info text-left" id="toggler" href="#" onTouchEnd={this.toggle('toggler')} onClick={this.toggle('toggler')} style={{ marginBottom: '1rem' }}><h5>¿Qué es la FIEL?</h5></button>
 		      <UncontrolledCollapse toggler="#toggler" isOpen={collapseID==='toggler' ? true : false}>
 			<Card >
 			  <CardBody>
@@ -35,7 +44,7 @@ class Ayuda extends Component {
 		      </UncontrolledCollapse>
                   </div>
                  <div class="mb-2">
-                  <button className="link-button text-info text-left" id="toggler1" onClick={this.toggle('toggler1')} style={{ marginBottom: '1rem' }}><h5>¿En que le ayuda este aplicativo?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler1" onTouchEnd={this.toggle('toggler1')} onClick={this.toggle('toggler1')} style={{ marginBottom: '1rem' }}><h5>¿En que le ayuda este aplicativo?</h5></button>
 		      <UncontrolledCollapse toggler="#toggler1"  isOpen={collapseID==='toggler1' ? true : false}>
                         <Card>
                           <CardBody>
@@ -48,7 +57,7 @@ class Ayuda extends Component {
                   </div>
 
                  <div class="mb-2">
-                  <button className="link-button text-info text-left" id="toggler2" onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}><h5>¿Cuales son los requisitos?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler2" onTouchEnd={this.toggle('toggler2')}  onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}><h5>¿Cuales son los requisitos?</h5></button>
                       <UncontrolledCollapse toggler="#toggler2" isOpen={collapseID==='toggler2' ? true : false}>
                         <Card>
                           <CardBody>
@@ -60,7 +69,7 @@ class Ayuda extends Component {
                   </div>
 
                  <div class="mb-2">
-                   <button className="link-button text-info text-left" id="toggler3" onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar la FIEL?</h5></button>
+                   <button className="link-button text-info text-left" id="toggler3" onTouchEnd={this.toggle('toggler3')} onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar la FIEL?</h5></button>
                       <UncontrolledCollapse toggler="#toggler3" isOpen={collapseID==='toggler3' ? true : false}>
                         <Card>
                           <CardBody>
@@ -73,7 +82,7 @@ class Ayuda extends Component {
                   </div>
 
                  <div class="mb-2">
-                  <button className="link-button text-info text-left" id="toggler4" onClick={this.toggle('toggler4')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar una factura electrónica firmada con la FIEL?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler4" onTouchEnd={this.toggle('toggler4')}  onClick={this.toggle('toggler4')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar una factura electrónica firmada con la FIEL?</h5></button>
                       <UncontrolledCollapse toggler="#toggler4" isOpen={collapseID==='toggler4' ? true : false}>
                         <Card>
                           <CardBody>
@@ -86,7 +95,7 @@ class Ayuda extends Component {
                   </div>
 
                  <div class="mb-2">
-                  <button className="link-button text-info text-left" id="toggler5" onClick={this.toggle('toggler5')} style={{ marginBottom: '1rem' }}><h5>¿Cómo firmar un conjunto de datos con la <b>FIEL</b>?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler5" onTouchEnd={this.toggle('toggler5')}  onClick={this.toggle('toggler5')} style={{ marginBottom: '1rem' }}><h5>¿Cómo firmar un conjunto de datos con la <b>FIEL</b>?</h5></button>
                       <UncontrolledCollapse toggler="#toggler5" isOpen={collapseID==='toggler5' ? true : false}>
                         <Card>
                           <CardBody>

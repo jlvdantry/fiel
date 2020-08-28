@@ -13,13 +13,11 @@
 }
 
 .navbar a:hover {
-  text-decoration: underline!important;
   background-color: black!important;
   color: white;
 }
 
 .active {
-  text-decoration: underline!important; 
   background-color: black!important;
   color: white!important;
 }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FormGroup, Alert, Button, ButtonGroup} from 'reactstrap';
+import {FormGroup, Alert, Button, ButtonGroup, Card} from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import fiel from '../fiel';
 
@@ -52,7 +52,7 @@ class Carga extends Component {
   render() {
     const { cer_name, key_name } = this.state;
     return  (
-        <div id="ayuda" >
+        <Card id="cargafiel" className="m-2 p-2">
                   <h2 class="text-center">Cargar firma electrónica</h2>
                       <FormGroup class="container">
                         { cer_name && <Alert >Ubicacion de la llave pública {cer_name}</Alert> }
@@ -64,7 +64,7 @@ class Carga extends Component {
 				<Button className="text-dark bg-info" onClick={this.cargarkey}>Cargar llave privada</Button>
                         </ButtonGroup>
                       </FormGroup>
-        </div>
+        </Card>
     )
   }
 };

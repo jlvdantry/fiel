@@ -35,7 +35,7 @@ class Valida extends Component {
     console.log('render carga');
     const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta } = this.state;
     return  (
-        <div id="ayuda" class="container">
+        <Card id="validafiel" className="p-2 m-2">
 	      <h2 className="text-center" >Validar firma electrónica</h2>
               <Container className="border p-2 mb-3">
 		      <FormGroup class="container">
@@ -62,7 +62,7 @@ class Valida extends Component {
               { nook && <Container id="nook" className="border p-2 mb-3">
                      <Alert color="danger"> {msg} </Alert>
               </Container> }
-        </div>
+        </Card>
     )
   }
 };

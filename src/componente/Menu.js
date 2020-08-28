@@ -11,14 +11,10 @@ import {
 
 
 class Menumi extends Component {
+
   constructor(props) {
     super(props);
-
-    this.state = {
-      isOpen: false,
-      online: true
-    };
-   
+    this.state = { isOpen: false, online: true };
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
     this.setOnlineStatus = this.setOnlineStatus.bind(this);
@@ -63,17 +59,15 @@ class Menumi extends Component {
     console.log('rendereo el menu');
     return (
       <div>
-        <Navbar color="blue" className='fixed-top' light expand="md">
+        <Navbar color="blue" light expand="md">
           <NavbarBrand to="/">FIEL</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto " navbar>
               <Link to='/ayuda' id='ayuda' className='rounded mr-1' onClick={this.closeNavbar} activeClassName="active" onlyActiveOnIndex>AYUDA</Link>
-              <Link to='/carga' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Cargar FIEL</Link>
-              <Link to='/validar' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Validar fiel</Link>
-              <Link to='/cargafael' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Cargar fael</Link>
-              <Link to='/validarfael' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Validar fael</Link>
-              <Link to='/firmar' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>Firmar electrónicamente</Link>
+              <Link to='/mifiel' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>MI FIEL</Link>
+              <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>MIS FACTURAS</Link>
+              <Link to='/firmar' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>FIRMAR</Link>
             </Nav>
           </Collapse>
         </Navbar>
