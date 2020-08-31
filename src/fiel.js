@@ -1,3 +1,4 @@
+const {Base64} = require('js-base64');
 const fiel = function()
 {
 
@@ -27,9 +28,11 @@ const fiel = function()
   this.leefael = function (evt)
   {
      var reader = new FileReader();
+     var readertxt = new FileReader();
      reader.onload = (function(theFile) {
           return function(e) {
           if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
+             console.log('result='+e.target.result);
              localStorage.setItem("xml",e.target.result);
              localStorage.setItem("xml_name",theFile.name);
           }  else {
@@ -39,10 +42,23 @@ const fiel = function()
          })(evt.target.files[0]);
 
       reader.onloadend = function () {
-          /* cargofael(); checa si ya esta cargada la factura electronica */
       }
 
+     var readertxt = new FileReader();
+     readertxt.onload = (function(theFile) {
+          return function(e) {
+          if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
+             console.log('result='+e.target.result);
+             localStorage.setItem("xmltxt",e.target.result);
+          }  else {
+             alert('La factura electronica debe de contar con extension xml');
+             return false;
+          }};
+         })(evt.target.files[0]);
+
+
      reader.readAsDataURL(evt.target.files[0]);
+     readertxt.readAsText(evt.target.files[0]);
   }
 
   this.leefael_xslt = function (evt)
@@ -229,6 +245,13 @@ const fiel = function()
        var faelxml=this.StringToXMLDom(fael);
        return faelxml;
   }
+  this.damefaelxmltxt = function () {
+       var fael=localStorage.getItem('xmltxt');
+       fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
+       var faelxml=this.StringToXMLDom(fael);
+       return faelxml;
+  }
+
 
   this.validafael = function ()
   {
@@ -236,18 +259,25 @@ const fiel = function()
        //faelxsd=this.loadXMLDoc("xslt/cadenaoriginal_3_3.xslt");
        var faelxsd=window.cadenaoriginal_3_3;
        var faelxml=this.damefaelxml();
+       var faelxmltxt=this.damefaelxmltxt();
        var cadena=this.damecadena(faelxml,faelxsd);
        var certificado=this.damecertificadofael();
        if (typeof(certificado)=='object') {
+          if ('ok' in certificado && certificado.ok==false) {
+             return certificado;
+          }
           var md = window.forge.md.sha256.create();
           md.update(cadena); 
           var sello=this.damesello(faelxml);
+          if (!sello) {
+               return { 'ok' : false, 'msg' : 'No se localizo el sello en la factura' }
+          }
           var esValido = certificado.publicKey.verify(md.digest().bytes(),atob(sello));
           if (esValido) {
-               var jsonText = this.xmlToJson(faelxml);
+               var jsonText = this.xmlToJson(faelxmltxt);
                var certijson=this.damecertiJson(certificado);
-               return { 'ok' : true, 'msg' : "factura Electronica Valida" ,'certijson' : certijson,'faeljson':jsonText}; 
-           } return { 'ok' : false, 'msg' : "factura Electronica No Valida" };
+               return { 'ok' : true, 'msg' : "Factura electrónica valida" ,'certijson' : certijson,'faeljson':jsonText}; 
+           } return { 'ok' : false, 'msg' : "Factura electrónica no valida" };
        } else { return { 'ok' : false, 'msg' : "No puede leer el certificado" };  }
     } catch (err) { return { 'ok' : false, 'msg' : err.message };}
   }
@@ -264,6 +294,23 @@ const fiel = function()
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
        var xml=this.StringToXMLDom(fael);
        var certi=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("Certificado");
+       var fecha=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("fecha");
+       var version=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("version");
+       if (!version) {
+          var version=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("Version");
+          if (!version) {
+              return { 'ok' : false , 'msg' : 'No se encontro la version de la factura electrónica' }
+          }
+       }
+       if (version!=='3.3') {
+          return { 'ok' : false , 'msg' : 'Solo se valida factura electrónica con version 3.3' }
+       }
+       if (!certi) {
+           certi=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("certificado");
+           if (!certi) {
+               return { 'ok' : false , 'msg' : 'No se encontro un certificado en la factura' }
+           }
+       }
        var cert="-----BEGIN CERTIFICATE-----"+certi.chunkString(64)+"-----END CERTIFICATE-----";
        var pki = window.forge.pki;
        try {var rce=pki.certificateFromPem(cert);} catch (err) { alert ('Error al leer el certificado de la factura electronica'+err); return false;}

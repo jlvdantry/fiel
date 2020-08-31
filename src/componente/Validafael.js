@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { browserHistory  } from 'react-router';
-import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter} from 'reactstrap';
+import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter, CardDeck} from 'reactstrap';
 import fiel from '../fiel';
 
 
@@ -8,7 +8,7 @@ class Validafael extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { ok : false , nook:false , msg:'', certijson:{}}
+    this.state = { ok : false , nook:false , msg:'', certijson:{}, faeljson:{}}
     this.validafael = this.validafael.bind(this)
   }
   nextPath(path) {
@@ -22,10 +22,9 @@ class Validafael extends Component {
   validafael(){
     var x = new fiel();
     var res=x.validafael();
-    console.log('x='+JSON.stringify(res));
     if (res.ok===true) {
-       this.setState({ ok: true, nook:false, certijson : res.certijson 
-                    //  ,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta 
+       console.log('res.jsonText='+JSON.stringify(res.faeljson));
+       this.setState({ ok: true, nook:false, certijson : res.certijson , faeljson : res.faeljson
                     });
     }
     if (res.ok===false) {
@@ -34,8 +33,8 @@ class Validafael extends Component {
 
   }
   render() {
-    console.log('render carga');
-    const { ok, nook, msg, certijson } = this.state;
+    const { ok, nook, msg, certijson, faeljson } = this.state;
+    console.log('render carga'+JSON.stringify(faeljson));
     return  (
         <Card id="ayuda" className="p-2 m-2">
 	      <h2 className="text-center" >Validar factura electrónica</h2>
@@ -45,18 +44,33 @@ class Validafael extends Component {
                       </div>
               </Container>
               { ok && <Container id="ok" className="border p-2 mb-3">
-                     <Alert color="success" className="text-center" >Felicidades la factura electrónica checa el sello contra el certificado</Alert>
+                     <Alert color="success" className="text-center" >Felicidades el sello de la factura electrónica checa contra el certificado del emisor</Alert>
+                 <CardDeck>
                      <Card>
-			<CardHeader color="success" className="text-center" >Certificado</CardHeader>
+			<CardHeader color="success" className="text-center" >Factura electrónica</CardHeader>
 			<CardBody>
-			  <CardSubtitle className="text-center">{certijson.rfc}</CardSubtitle>
-			  <CardText color="success" className="text-center" >{certijson.nombre}</CardText>
-			  <CardText className="text-center">{certijson.curp}</CardText>
-			  <CardText className="text-center">{certijson.email}</CardText>
-			  <CardText className="text-center">Vigencia del <b>{certijson.desde}</b> al <b>{certijson.hasta}</b></CardText>
+			  <CardSubtitle className="text-center">Fecha: {faeljson["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
+			  <CardSubtitle className="text-center">SubTotal: {faeljson["cfdi:Comprobante"]["@attributes"].SubTotal}</CardSubtitle>
+			  <CardSubtitle className="text-center">Total: {faeljson["cfdi:Comprobante"]["@attributes"].Total}</CardSubtitle>
 			</CardBody>
-			<CardFooter  className="text-center">{certijson.emisor}</CardFooter>
                      </Card>
+
+                     <Card>
+                        <CardHeader color="success" className="text-center" >Emisor</CardHeader>
+                        <CardBody>
+                          <CardText color="success" className="text-center" >{ faeljson["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc} </CardText>
+                          <CardText color="success" className="text-center" >{ faeljson["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre}</CardText>
+                        </CardBody>
+                     </Card>
+                     <Card>
+                        <CardHeader color="success" className="text-center" >Receptor</CardHeader>
+                        <CardBody>
+                          <CardText color="success" className="text-center" >{ faeljson["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc} </CardText>
+                          <CardText color="success" className="text-center" >{ faeljson["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Nombre}</CardText>
+                        </CardBody>
+                     </Card>
+                 </CardDeck>
+
               </Container> }
               { nook && <Container id="nook" className="border p-2 mb-3">
                      <Alert color="danger"> {msg} </Alert>
