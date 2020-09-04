@@ -11,6 +11,7 @@ import Valida from './componente/Valida';
 import Cargafael from './componente/Cargafael';
 import Validafael from './componente/Validafael';
 
+
 class App extends Component {
   render() {
     console.log('renderieo app');

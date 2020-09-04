@@ -20,9 +20,13 @@ class Ayuda extends Component {
          }
 	componentDidMount(){
 		ReactDOM.findDOMNode(this).addEventListener('touchstart', (e)=>{ 
-		    //e.preventDefault(); 
 		    console.log("touchstart triggered");
-		});
+		},{passive: true});
+        }
+        ponpasivo = () => {
+		ReactDOM.findDOMNode(this).addEventListener('touchstart', (e)=>{ 
+		    console.log("touchstart triggered");
+		},{passive: true});
         }
   render() {
      const { collapseID } = this.state;
@@ -35,7 +39,7 @@ class Ayuda extends Component {
           <div data-role="content">
                  <div class="mb-2" >
                       <button className="link-button text-info text-left" id="toggler" href="#" onTouchEnd={this.toggle('toggler')} onClick={this.toggle('toggler')} style={{ marginBottom: '1rem' }}><h5>¿Qué es la FIEL?</h5></button>
-		      <UncontrolledCollapse toggler="#toggler" isOpen={collapseID==='toggler' ? true : false}>
+		      <UncontrolledCollapse toggler="#toggler" isOpen={collapseID==='toggler' ? true : false} toggleEvents={['touchstart']} >
 			<Card >
 			  <CardBody>
 				  <p>La <b>FIEL</b> también es conocida como la e.firma o firma electrónica y consta de dos archivos y una contraseña, uno de los archivos viene en formato .cer (certificado) llamada llave pública y el otro archivo en formato .key llamada llave privada. La <b>FIEL</b> permite generar sellos electrónicos de las facturas que se emitan. Este sello electrónico tiene la misma validez que la firma autógrafa. </p>

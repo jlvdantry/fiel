@@ -1,40 +1,55 @@
 import React, {Component} from 'react';
 import { browserHistory  } from 'react-router';
-import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter, CardDeck} from 'reactstrap';
+import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
 import fiel from '../fiel';
+import {openDatabasex,DBNAME,DBVERSION,inserta_factura} from '../db';
 
 
 class Validafael extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { ok : false , nook:false , msg:'', certijson:{}, faeljson:{}}
+    this.state = { ok : false , nook:false , msg:'', certijson:{}, faeljson:{}, seintegro:0}
     this.validafael = this.validafael.bind(this)
+    this.insertafael = this.insertafael.bind(this)
   }
+
   nextPath(path) {
       browserHistory.push(path);
   }
+
   componentDidMount(){
-    //var x = new window.fiel;
-    //console.log('monto el componente');
-    //x.cargafiellocal();
   }
+
+  insertafael(){
+        const faeljson=this.state.faeljson;
+        var that=this;
+        openDatabasex(DBNAME,DBVERSION).then(function() {
+                             inserta_factura(faeljson).then(function() {
+                                                            console.log('agrego la factura al historia');
+                                                            that.setState({seintegro:1});
+                                                    }).catch(function(err)  {
+                                                            console.log('No pudo agregar la factura al historial');
+                                                            that.setState({seintegro:2});
+                                                    });
+                  });
+  }
+
   validafael(){
     var x = new fiel();
     var res=x.validafael();
     if (res.ok===true) {
-       console.log('res.jsonText='+JSON.stringify(res.faeljson));
-       this.setState({ ok: true, nook:false, certijson : res.certijson , faeljson : res.faeljson
-                    });
+       //console.log('res.jsonText='+JSON.stringify(res.faeljson));
+       this.setState({ ok: true, nook:false, certijson : res.certijson , faeljson : res.faeljson,seintegro:0  });
     }
     if (res.ok===false) {
-       this.setState({ ok: false, nook:true,msg:res.msg  });
+       this.setState({ ok: false, nook:true,msg:res.msg , seintegro:0 });
     }
 
   }
   render() {
-    const { ok, nook, msg, certijson, faeljson } = this.state;
-    console.log('render carga'+JSON.stringify(faeljson));
+    const { ok, nook, msg, certijson, faeljson ,seintegro} = this.state;
+    //console.log('render carga'+JSON.stringify(faeljson));
     return  (
         <Card id="ayuda" className="p-2 m-2">
 	      <h2 className="text-center" >Validar factura electrónica</h2>
@@ -70,6 +85,13 @@ class Validafael extends Component {
                         </CardBody>
                      </Card>
                  </CardDeck>
+                 <div class="flex-col d-flex justify-content-center mt-3">
+                           <Button color="primary" onClick={this.insertafael}>¿Desea agregar al historial de facturas?</Button>
+                 </div>
+                 <div class="flex-col d-flex justify-content-center mt-3">
+			 <Alert color="success" className={ seintegro!==1 ? 'd-none' : '' }>Se integro la factura al historico</Alert> 
+			 <Alert color="danger"  className={ seintegro!==2 ? 'd-none' : ''  }>La factura ya esta integrada al historico</Alert> 
+                 </div>
 
               </Container> }
               { nook && <Container id="nook" className="border p-2 mb-3">

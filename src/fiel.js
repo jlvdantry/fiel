@@ -1,4 +1,3 @@
-const {Base64} = require('js-base64');
 const fiel = function()
 {
 
@@ -44,7 +43,6 @@ const fiel = function()
       reader.onloadend = function () {
       }
 
-     var readertxt = new FileReader();
      readertxt.onload = (function(theFile) {
           return function(e) {
           if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
@@ -262,8 +260,8 @@ const fiel = function()
        var faelxmltxt=this.damefaelxmltxt();
        var cadena=this.damecadena(faelxml,faelxsd);
        var certificado=this.damecertificadofael();
-       if (typeof(certificado)=='object') {
-          if ('ok' in certificado && certificado.ok==false) {
+       if (typeof(certificado)==='object') {
+          if ('ok' in certificado && certificado.ok===false) {
              return certificado;
           }
           var md = window.forge.md.sha256.create();
@@ -294,10 +292,9 @@ const fiel = function()
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
        var xml=this.StringToXMLDom(fael);
        var certi=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("Certificado");
-       var fecha=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("fecha");
        var version=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("version");
        if (!version) {
-          var version=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("Version");
+          version=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("Version");
           if (!version) {
               return { 'ok' : false , 'msg' : 'No se encontro la version de la factura electrónica' }
           }
