@@ -149,7 +149,6 @@ var addObject = function(objectStore, object) {
    objectStore=objeto
    idmenu=identificador del menu o forma
    estado= estado del objeto */
-/*
 var selObject = function(objectStore, idmenu, estado) {
         return new Promise(function (resolve, reject) {
         var index = objectStore.index("estado");
@@ -160,7 +159,6 @@ var selObject = function(objectStore, idmenu, estado) {
         request.onerror = reject;
         });
 };
-*/
 
 /* obtiene un arreglo de objetos 
    de acuerdo al indice y su valor 
@@ -169,7 +167,6 @@ var selObject = function(objectStore, idmenu, estado) {
    indexvalue   valor del indice a buscar
    si llegan valida indexname e indexvalue se regresan todos los valores del objeto
    */ 
-/*
 var selObjects = function(objectStore, indexname, indexvalue, direction='next') {
         return new Promise(function (resolve, reject) {
         var objects = [];
@@ -199,7 +196,6 @@ var selObjects = function(objectStore, indexname, indexvalue, direction='next') 
         };
     });
 };
-*/
 
 /* obtiene el primer registro en el cursor 
    de acuerdo al indice y su valor
@@ -402,5 +398,22 @@ function inserta_factura(faeljson)
         })
 }
 
+function leefacturas()
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[inserta_factura] menu a requesitar=');
+                                selObjects(objectStore).then(function(requests) {
+                                                               resolve(requests) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[inserta_request] Database error: "+err.message);
+                });
+        })
+}
 
-export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject,inserta_request } ;
+
+
+export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject,inserta_request,selObject,leefacturas } ;
