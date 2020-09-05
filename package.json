@@ -24,7 +24,8 @@
     "eject": "react-scripts eject",
     "build-sw": "node ./src/sw-build.js",
     "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
-    "build": "react-scripts build && npm run build-sw && npm run clean-cra-sw"
+    "build": "react-scripts build && npm run build-sw && npm run clean-cra-sw",
+    "dev": "react-scripts dev && npm run build-sw && npm run clean-cra-sw"
   },
   "eslintConfig": {
     "extends": "react-app"
