@@ -53,16 +53,16 @@ class Carga extends Component {
     const { cer_name, key_name } = this.state;
     return  (
         <Card id="cargafiel" className="m-2 p-2">
-                  <h2 class="text-center">Cargar firma electrónica</h2>
+                  <h2 class="text-center">Ubicar firma electrónica</h2>
                       <FormGroup class="container">
-                        { cer_name && <Alert >Ubicacion de la llave pública {cer_name}</Alert> }
-                        { key_name && <Alert >Ubicación de la llave privada {key_name}</Alert> }
-                        { !cer_name && <Alert color="danger">Aún no esta ubicada la llave pública</Alert> }
-                        { !key_name && <Alert color="danger">Aún no esta ubicada la llave privada</Alert> }
-                        <ButtonGroup className="d-flex justify-content-center">
-				<Button className="text-dark bg-info" onClick={this.cargarpub}>Cargar llave pública</Button>
-				<Button className="text-dark bg-info" onClick={this.cargarkey}>Cargar llave privada</Button>
-                        </ButtonGroup>
+                        { cer_name && <Alert className="text-center">Ubicacion de la llave pública {cer_name}</Alert> }
+                        { key_name && <Alert className="text-center">Ubicación de la llave privada {key_name}</Alert> }
+                        { !cer_name && <Alert color="danger" className="text-center">Aún no esta ubicada la llave pública</Alert> }
+                        { !key_name && <Alert color="danger" className="text-center">Aún no esta ubicada la llave privada</Alert> }
+                      <div class="flex-col d-flex justify-content-around">
+				<Button color="primary"  onClick={this.cargarpub}>Ubicar llave pública</Button>
+				<Button color="primary"  onClick={this.cargarkey}>Ubicar llave privada</Button>
+                      </div>
                       </FormGroup>
         </Card>
     )

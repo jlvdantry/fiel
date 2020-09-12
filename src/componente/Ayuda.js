@@ -38,7 +38,7 @@ class Ayuda extends Component {
           </div>
           <div data-role="content">
                  <div class="mb-2" >
-                      <button className="link-button text-info text-left" id="toggler" href="#" onTouchEnd={this.toggle('toggler')} onClick={this.toggle('toggler')} style={{ marginBottom: '1rem' }}><h5>¿Qué es la FIEL?</h5></button>
+                      <button className="link-button text-info text-left" id="toggler" href="#" onTouchEnd={this.toggle('toggler')} onClick={this.toggle('toggler')} style={{ marginBottom: '1rem' }}><h5>¿Qué es la <b>FIEL</b>?</h5></button>
 		      <UncontrolledCollapse toggler="#toggler" isOpen={collapseID==='toggler' ? true : false} toggleEvents={['touchstart']} >
 			<Card >
 			  <CardBody>
@@ -73,26 +73,29 @@ class Ayuda extends Component {
                   </div>
 
                  <div class="mb-2">
-                   <button className="link-button text-info text-left" id="toggler3" onTouchEnd={this.toggle('toggler3')} onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar la FIEL?</h5></button>
+                   <button className="link-button text-info text-left" id="toggler3" onTouchEnd={this.toggle('toggler3')} onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar la <b>FIEL</b>?</h5></button>
                       <UncontrolledCollapse toggler="#toggler3" isOpen={collapseID==='toggler3' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p><b className="text-info">1.</b> Cargar la fiel dando un clic en la opción del menú  <b class="text-info">"Cargar FIEL"</b>. Aquí el aplicativo le solicitará la ubicación de los dos archivos, uno con extension KEY llave privada y el otro con extensión CER llave pública.</p>
-                  <p>En el caso de los móviles una de las formas de poder tener las llaves en su equipo es auto enviarse un correo electrónico que contenga las llaves y descargarlas a su equipo.</p>
-                  <p><b className="text-info">2.</b> Una vez que ya cargo la FIEL, hay que validarla dando un clic en la opción del menú  <b class="text-info">"Validar Fiel"</b>, aquí se solicitara la contraseña y se debera dar clic en el boton Validar. Aquí espere un momento ya que se tarda alrededor de 1 minuto. Si esta correcto le envia un saludo con el nombre del propietario de la FIEL.</p>
+                  <p><b className="text-info">1.</b> Dar un clic en la opción <b class="text-info">"MI <b>FIEL</b>"</b>. Aquí el aplicativo le mostrará tres botones dos de ellos son para ubicar la <b>FIEL</b> y el tercero para validar la llave privada contra su contraseña.</p>
+                  <p><b className="text-info">2.</b> Dar clic en el boton <b class="text-info">"Ubicar llave pública"</b>. Aquí el aplicativo le solicitará la ubicación del certificado que es un archivo con extensión cer .</p>
+                  <p><b className="text-info">3.</b> Dar clic en el boton <b class="text-info">"Ubicar llave privada"</b>. Aquí el aplicativo le solicitará la ubicación de la llave privada que es un archivo con extensión key .</p>
+                  <p><b className="text-info">4.</b> Una vez que ya cargo la <b>FIEL</b>, se debe de teclear la contraseña de la llave privada y posteriormente dar clic en el botón <b class="text-info">"Validar"</b>. Si todo esta correcto el aplicativo le indicara que la <b>FIEL</b> y la contraseña checan entre si, caso contrario indicara que no checa la <b>FIEL</b>.</p>
+                  <p><b className="text-info">Nota</b> Si la <b>FIEL</b> es correcta, se esta en la posibilidad de generar sellos electrónicos no solo de factura electrónicas si no de cualquier conjunto  de datos como por ejemplo contratos.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
                   </div>
 
                  <div class="mb-2">
-                  <button className="link-button text-info text-left" id="toggler4" onTouchEnd={this.toggle('toggler4')}  onClick={this.toggle('toggler4')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar una factura electrónica firmada con la FIEL?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler4" onTouchEnd={this.toggle('toggler4')}  onClick={this.toggle('toggler4')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar una factura electrónica firmada con la <b>FIEL</b>?</h5></button>
                       <UncontrolledCollapse toggler="#toggler4" isOpen={collapseID==='toggler4' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p><b className="text-info">1.</b> Cargar la factura electrónica dando un clic en la opción del menú <b class="text-info">"Cargar FAEL"</b>.</p>
-                  <p><b className="text-info">2.</b> Dar clic en la opción del menú <b class="text-info">"Valida FAEL"</b>y dar clic en el botón <b class="text-info">Validar</b>, si la factura electrónica es válida desplegara el contenido de este caso contrario enviara el mensaje de que la factura electrónica no es valida.</p>
-                  <p>Es importante mencionar que el formato de la factura debe estar en XML</p>
+                  <p><b className="text-info">1.</b> Dar un clic en la opción <b class="text-info">"MIS FACTURAS"</b>. Aquí el aplicativo le mostrará tres botones que son <b class="text-info">"Ubicar factura"</b> , <b class="text-info">"Validar factura"</b> y pór último  <b class="text-info">"Consultar factura"</b></p>
+                  <p><b className="text-info">2.</b> Ubicar la factura electrónica dando un clic en el botón <b class="text-info">"Ubicar factura"</b> este tipo de archivo deben de tener extensión xml.</p>
+                  <p><b className="text-info">3.</b> Dar clic en el botón <b class="text-info">"Validar factura"</b> , si la factura electrónica es válida desplegara el contenido de este caso y teniendo la opción de poder agregarla a un historico de facturas para posteriormente consultarla o consolidar la información en caso contrario enviara el mensaje de que la factura electrónica no es valida.</p>
+                  <p><b className="text-info">4.</b> Para consultar el historial solo hay que dar un clic en el botón <b class="text-info">"Consultar historial"</b> El cual le mostrara todas las factura que fueron agregadas al historial.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>

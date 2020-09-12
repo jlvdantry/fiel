@@ -44,12 +44,12 @@ class Cargafael extends Component {
     const { xml_name } = this.state;
     return  (
         <Card id="cargafael" className="p-2 m-2">
-                  <h2 class="text-center">Cargar factura electrónica</h2>
+                  <h2 class="text-center">Ubicar factura electrónica</h2>
                       <FormGroup class="container">
                         { xml_name && <Alert >Ubicacion de la factura electrónica {xml_name}</Alert> }
                         { !xml_name && <Alert color="danger">Aún no esta ubicada la factura</Alert> }
 			      <div class="flex-col d-flex justify-content-center">
-				<Button color="primary" onClick={this.cargar}>Cargar</Button>
+				<Button color="primary" onClick={this.cargar}>Ubicar factura</Button>
 			      </div>
                       </FormGroup>
         </Card>

@@ -251,12 +251,18 @@ const fiel = function()
   }
 
 
+  this.dameesquema = function (faelxml,variable) {
+       var esquema=faelxml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute(variable);
+       return esquema; 
+  }
+
   this.validafael = function ()
   {
     try {
-       //faelxsd=this.loadXMLDoc("xslt/cadenaoriginal_3_3.xslt");
-       var faelxsd=window.cadenaoriginal_3_3;
        var faelxml=this.damefaelxml();
+       var esquema       =this.dameesquema(faelxml,'xsi:schemaLocation').split(' ');;
+       console.log('esquema='+esquema);
+       var faelxsd=window.cadenaoriginal_3_3;
        var faelxmltxt=this.damefaelxmltxt();
        var cadena=this.damecadena(faelxml,faelxsd);
        var certificado=this.damecertificadofael();

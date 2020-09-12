@@ -55,7 +55,7 @@ class Validafael extends Component {
 	      <h2 className="text-center" >Validar factura electrónica</h2>
               <Container className="border p-2 mb-3">
                       <div class="flex-col d-flex justify-content-center">
-		           <Button color="primary" onClick={this.validafael}>Validar</Button>
+		           <Button color="primary" onClick={this.validafael}>Validar factura</Button>
                       </div>
               </Container>
               { ok && <Container id="ok" className="border p-2 mb-3">

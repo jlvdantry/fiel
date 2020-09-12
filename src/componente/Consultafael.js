@@ -33,7 +33,7 @@ class Consultafael extends Component {
 	      <h2 className="text-center" >Historial de factura electrónica</h2>
               <Container className="p-2">
                       <div class="flex-col d-flex justify-content-center">
-		           <Button color="primary" onClick={this.consulta}>Consultar</Button>
+		           <Button color="primary" onClick={this.consulta}>Consultar historial</Button>
                       </div>
               </Container>
               <Container id="ok" className="p-2 mb-3">
