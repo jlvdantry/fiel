@@ -1,17 +1,23 @@
 import React, {Component} from 'react';
-import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
-import { leefacturas } from '../db';
+import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck, Badge} from 'reactstrap';
+import { leefacturas, cuantasfacturas } from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 class Consultafael extends Component {
   constructor(props){
     super(props);
-    this.state = { facturas:[]}
+    this.state = { facturas:[],totalfacturas:0}
     this.consulta = this.consulta.bind(this)
   }
 
-  componentDidMount(){
+  componentWillMount(){
+        var that=this;
+        cuantasfacturas().then(function(cuantas) {
+                                                            that.setState({totalfacturas:cuantas});
+                                                    }).catch(function(err)  {
+                                                            that.setState({totalfacturas:0});
+                                                    });
   }
 
   consulta(){
@@ -24,10 +30,10 @@ class Consultafael extends Component {
   }
 
   render() {
-    const { facturas } = this.state;
+    const { facturas,totalfacturas } = this.state;
     return  (
         <Card id="ayuda" className="p-2 m-2">
-	      <h2 className="text-center" >Historial de factura electrónica</h2>
+	      <h2 className="text-center" >Historial de factura electrónica <Badge>{totalfacturas}</Badge>/h2>
               <Container className="p-2">
                       <div class="flex-col d-flex justify-content-center">
 		           <Button color="primary" onClick={this.consulta}> <FontAwesomeIcon icon={['fas' , 'search']} className='mr-2' /> Consultar historial</Button>

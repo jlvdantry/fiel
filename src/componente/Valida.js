@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import { browserHistory  } from 'react-router';
-import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter} from 'reactstrap';
+import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter,InputGroup,InputGroupAddon,InputGroupText} from 'reactstrap';
 import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -8,18 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class Valida extends Component {
   constructor(props){
     super(props);
-    this.nextPath = this.nextPath.bind(this);
-    this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null}
+    this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye'}
     this.validafirma = this.validafirma.bind(this)
+    this.showHide = this.showHide.bind(this)
   }
-  nextPath(path) {
-      browserHistory.push(path);
-  }
-  componentDidMount(){
-    //var x = new window.fiel;
-    //console.log('monto el componente');
-    //x.cargafiellocal();
-  }
+
   validafirma(){
     var x = new fiel();
     var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
@@ -30,18 +22,30 @@ class Valida extends Component {
     if (res.ok===false) {
        this.setState({ ok: false, nook:true,msg:res.msg  });
     }
-
   }
+
+  showHide(e){
+    this.setState({
+      type: this.state.type === 'input' ? 'password' : 'input',
+      ojos: this.state.ojos === 'eye' ? 'eye-slash' : 'eye'
+    })  
+  }
+
   render() {
     console.log('render carga');
-    const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta } = this.state;
+    const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta,type,ojos } = this.state;
     return  (
         <Card id="validafiel" className="p-2 m-2">
 	      <h2 className="text-center" >Validar firma electrónica</h2>
               <Container className="border p-2 mb-3">
 		      <FormGroup class="container">
 			<Label for="pwdfiel">Contraseña de la llave privada</Label>
-			<Input type="password" name="password" id="pwdfiel" placeholder="contraseña" />
+                        <InputGroup>
+				<Input type={type} name="password" id="pwdfiel" placeholder="contraseña" />
+                                <InputGroupAddon addonType="append">
+					<Button onClick={this.showHide} ><FontAwesomeIcon icon={['fas' , ojos]} /></Button>
+                                </InputGroupAddon>
+                        </InputGroup>
 		      </FormGroup>
                       <div class="flex-col d-flex justify-content-center">
 		           <Button color="primary" onClick={this.validafirma}>Validar</Button>

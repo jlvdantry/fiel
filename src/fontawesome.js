@@ -1,6 +1,6 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 
-import { faInfo,faQuestion,faPenFancy,faReceipt,faSignature,faThumbsUp,faThumbsDown, faPlusCircle,faSearch,faKey,faCertificate } from '@fortawesome/free-solid-svg-icons';
+import { faInfo,faQuestion,faPenFancy,faReceipt,faSignature,faThumbsUp,faThumbsDown, faPlusCircle,faSearch,faKey,faCertificate,faEye,faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
    faInfo,
@@ -13,5 +13,7 @@ library.add(
    faPlusCircle,
    faSearch,
    faKey,
-   faCertificate
+   faCertificate,
+   faEye,
+   faEyeSlash
 )

@@ -414,6 +414,24 @@ function leefacturas()
         })
 }
 
+function cuantasfacturas()
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                var count = objectStore.count();
+                                count.onsuccess = function () {
+                                           console.log('conto facturas '+count.result);
+                                           resolve(count.result);
+                                }
+                        }).catch(function(err) {
+                                console.log("[inserta_request] Database error: "+err.message);
+                });
+        })
+}
 
 
-export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject,inserta_request,selObject,leefacturas } ;
+
+
+export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject,inserta_request,selObject,leefacturas,cuantasfacturas } ;
