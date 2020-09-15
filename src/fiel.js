@@ -238,6 +238,9 @@ const fiel = function()
   }
 
   this.damefaelxml = function () {
+       if (localStorage.getItem('xml')==null) {
+             throw new Error('Falta ubicar la factura electrónica');
+       }
        var fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
        var faelxml=this.StringToXMLDom(fael);

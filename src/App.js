@@ -10,11 +10,11 @@ import Misfacturas from './componente/Misfacturas';
 import Valida from './componente/Valida';
 import Cargafael from './componente/Cargafael';
 import Validafael from './componente/Validafael';
+import './fontawesome';;
 
 
 class App extends Component {
   render() {
-    console.log('renderieo app');
     return (
       <Router history={browserHistory}>
         <Route path="/" component={Master}>

@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {FormGroup, Alert, Button, ButtonGroup, Card} from 'reactstrap';
+import {FormGroup, Alert, Button, Card} from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import fiel from '../fiel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 let timer = null;
@@ -55,13 +56,19 @@ class Carga extends Component {
         <Card id="cargafiel" className="m-2 p-2">
                   <h2 class="text-center">Ubicar firma electrónica</h2>
                       <FormGroup class="container">
-                        { cer_name && <Alert className="text-center">Ubicacion de la llave pública {cer_name}</Alert> }
-                        { key_name && <Alert className="text-center">Ubicación de la llave privada {key_name}</Alert> }
-                        { !cer_name && <Alert color="danger" className="text-center">Aún no esta ubicada la llave pública</Alert> }
-                        { !key_name && <Alert color="danger" className="text-center">Aún no esta ubicada la llave privada</Alert> }
+                        { cer_name && <Alert className="text-center d-flex justify-content-between align-items-center"> 
+                                     <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Ubicacion de la llave pública {cer_name}</Alert> }
+                        { key_name && <Alert className="text-center d-flex justify-content-between align-items-center">
+                                     <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Ubicación de la llave privada {key_name}</Alert> }
+                        { !cer_name && <Alert color="danger" className="text-center d-flex justify-content-between align-items-center">
+                                     <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Aún no esta ubicada la llave pública</Alert> }
+                        { !key_name && <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                     <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Aún no esta ubicada la llave privada</Alert> }
                       <div class="flex-col d-flex justify-content-around">
-				<Button color="primary"  onClick={this.cargarpub}>Ubicar llave pública</Button>
-				<Button color="primary"  onClick={this.cargarkey}>Ubicar llave privada</Button>
+				<Button color="primary"  onClick={this.cargarpub}>
+                                     <FontAwesomeIcon icon={['fas' , 'certificate']} className="mr-2"/> Ubicar llave pública</Button>
+				<Button color="primary"  className="ml-2" onClick={this.cargarkey}>
+                                     <FontAwesomeIcon icon={['fas' , 'key']} className="mr-2"/> Ubicar llave privada</Button>
                       </div>
                       </FormGroup>
         </Card>

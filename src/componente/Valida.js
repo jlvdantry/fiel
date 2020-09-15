@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { browserHistory  } from 'react-router';
 import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter} from 'reactstrap';
 import fiel from '../fiel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 class Valida extends Component {
@@ -47,7 +48,7 @@ class Valida extends Component {
                       </div>
               </Container>
               { ok && <Container id="ok" className="border p-2 mb-3">
-                     <Alert color="success" className="text-center" >Felicidades tu llave pública y privada corresponden entre si y tu password corresponde a tu llave privada</Alert>
+                     <Alert color="success" className="text-center d-flex justify-content-between align-items-center" ><FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Felicidades tu llave pública y privada corresponden entre si y tu password corresponde a tu llave privada</Alert>
                      <Card>
 			<CardHeader color="success" className="text-center" >{nombre}</CardHeader>
 			<CardBody>
@@ -60,7 +61,7 @@ class Valida extends Component {
                      </Card>
               </Container> }
               { nook && <Container id="nook" className="border p-2 mb-3">
-                     <Alert color="danger"> {msg} </Alert>
+                     <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center"><FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {msg} </Alert>
               </Container> }
         </Card>
     )

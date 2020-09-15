@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {FormGroup, Alert, Button, Card} from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import fiel from '../fiel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 let timer = null;
@@ -46,8 +47,9 @@ class Cargafael extends Component {
         <Card id="cargafael" className="p-2 m-2">
                   <h2 class="text-center">Ubicar factura electrónica</h2>
                       <FormGroup class="container">
-                        { xml_name && <Alert >Ubicacion de la factura electrónica {xml_name}</Alert> }
-                        { !xml_name && <Alert color="danger">Aún no esta ubicada la factura</Alert> }
+                        { xml_name && <Alert className="text-center d-flex justify-content-between align-items-center"><FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Ubicación de la factura electrónica {xml_name}</Alert> }
+                        { !xml_name && <Alert color="danger" className="text-center d-flex justify-content-between align-items-center">
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Aún no esta ubicada la factura</Alert> }
 			      <div class="flex-col d-flex justify-content-center">
 				<Button color="primary" onClick={this.cargar}>Ubicar factura</Button>
 			      </div>

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import { browserHistory  } from 'react-router';
-import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
-import {openDatabasex,DBNAME,DBVERSION,leefacturas} from '../db';
+import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
+import { leefacturas } from '../db';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 class Consultafael extends Component {
@@ -15,13 +15,10 @@ class Consultafael extends Component {
   }
 
   consulta(){
-        const faeljson=this.state.faeljson;
         var that=this;
         leefacturas().then(function(facturas) {
-                                                            console.log('agrego la factura al historia');
                                                             that.setState({facturas:facturas});
                                                     }).catch(function(err)  {
-                                                            console.log('No pudo agregar la factura al historial');
                                                             that.setState({facturas:[]});
                                                     });
   }
@@ -33,7 +30,7 @@ class Consultafael extends Component {
 	      <h2 className="text-center" >Historial de factura electrónica</h2>
               <Container className="p-2">
                       <div class="flex-col d-flex justify-content-center">
-		           <Button color="primary" onClick={this.consulta}>Consultar historial</Button>
+		           <Button color="primary" onClick={this.consulta}> <FontAwesomeIcon icon={['fas' , 'search']} className='mr-2' /> Consultar historial</Button>
                       </div>
               </Container>
               <Container id="ok" className="p-2 mb-3">

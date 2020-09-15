@@ -3,6 +3,7 @@ import { browserHistory  } from 'react-router';
 import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
 import fiel from '../fiel';
 import {openDatabasex,DBNAME,DBVERSION,inserta_factura} from '../db';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 class Validafael extends Component {
@@ -26,10 +27,8 @@ class Validafael extends Component {
         var that=this;
         openDatabasex(DBNAME,DBVERSION).then(function() {
                              inserta_factura(faeljson).then(function() {
-                                                            console.log('agrego la factura al historia');
                                                             that.setState({seintegro:1});
                                                     }).catch(function(err)  {
-                                                            console.log('No pudo agregar la factura al historial');
                                                             that.setState({seintegro:2});
                                                     });
                   });
@@ -59,7 +58,8 @@ class Validafael extends Component {
                       </div>
               </Container>
               { ok && <Container id="ok" className="border p-2 mb-3">
-                     <Alert color="success" className="text-center" >Felicidades el sello de la factura electrónica checa contra el certificado del emisor</Alert>
+                     <Alert color="success" className="text-center d-flex justify-content-between align-items-center" >
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Felicidades el sello de la factura electrónica checa contra el certificado del emisor</Alert>
                  <CardDeck>
                      <Card>
 			<CardHeader color="success" className="text-center" >Factura electrónica</CardHeader>
@@ -86,16 +86,18 @@ class Validafael extends Component {
                      </Card>
                  </CardDeck>
                  <div class="flex-col d-flex justify-content-center mt-3">
-                           <Button color="primary" onClick={this.insertafael}>¿Desea agregar al historial de facturas?</Button>
+                           <Button color="primary" onClick={this.insertafael}> <FontAwesomeIcon icon={['fas' , 'plus-circle']} /> ¿Desea agregar al historial de facturas?</Button>
                  </div>
                  <div class="flex-col d-flex justify-content-center mt-3">
-			 <Alert color="success" className={ seintegro!==1 ? 'd-none' : '' }>Se integro la factura al historico</Alert> 
-			 <Alert color="danger"  className={ seintegro!==2 ? 'd-none' : ''  }>La factura ya esta integrada al historico</Alert> 
+			 <Alert color="success" className={ seintegro!==1 ? 'd-none' : '' }>
+                                      <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Se integro la factura al historico</Alert> 
+			 <Alert color="danger"  className={ seintegro!==2 ? 'd-none d-flex align-items-center' : ''  } >
+                                      <FontAwesomeIcon icon={['fas' , 'thumbs-down']} className='mr-2' /> La factura ya esta integrada al historico</Alert> 
                  </div>
 
               </Container> }
               { nook && <Container id="nook" className="border p-2 mb-3">
-                     <Alert color="danger"> {msg} </Alert>
+                     <Alert color="danger" className="text-center d-flex justify-content-between align-items-center" > <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {msg} </Alert>
               </Container> }
         </Card>
     )

@@ -2,12 +2,6 @@ import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
 import { Card,CardBody,UncontrolledCollapse } from 'reactstrap';
 
-
-/*
-const	state={
-	  collapseID: "toggler"
-	}
-*/
 class Ayuda extends Component {
 
 
