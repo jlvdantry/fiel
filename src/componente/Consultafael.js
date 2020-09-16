@@ -33,7 +33,7 @@ class Consultafael extends Component {
     const { facturas,totalfacturas } = this.state;
     return  (
         <Card id="ayuda" className="p-2 m-2">
-	      <h2 className="text-center" >Historial de factura electrónica <Badge>{totalfacturas}</Badge>/h2>
+	      <h2 className="text-center" >Historial de factura electrónica <Badge>{totalfacturas}</Badge></h2>
               <Container className="p-2">
                       <div class="flex-col d-flex justify-content-center">
 		           <Button color="primary" onClick={this.consulta}> <FontAwesomeIcon icon={['fas' , 'search']} className='mr-2' /> Consultar historial</Button>
