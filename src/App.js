@@ -10,6 +10,7 @@ import Misfacturas from './componente/Misfacturas';
 import Valida from './componente/Valida';
 import Cargafael from './componente/Cargafael';
 import Validafael from './componente/Validafael';
+import Graficafael from './componente/Graficafael';
 import './fontawesome';;
 
 
@@ -25,6 +26,7 @@ class App extends Component {
 	  <Route path="/misfacturas" component={Misfacturas}/>
 	  <Route path="/cargafael" component={Cargafael}/>
 	  <Route path="/validarfael" component={Validafael}/>
+	  <Route path="/Graficafael" component={Graficafael}/>
         </Route>
         <Redirect from="/" to="/"/>
       </Router>
