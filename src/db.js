@@ -338,7 +338,6 @@ function datos_comunes(json) {
 
 var wl_fecha = function () {
       var fecha = new Date();
-      var ano=fecha.getFullYear();
       var mes=fecha.getMonth()+1;
       mes=mes < 10 ? '0' + mes : '' + mes;
       var dia=fecha.getDate();
@@ -434,4 +433,4 @@ function cuantasfacturas()
 
 
 
-export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject,inserta_request,selObject,leefacturas,cuantasfacturas } ;
+export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha } ;

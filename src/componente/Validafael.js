@@ -47,8 +47,11 @@ class Validafael extends Component {
 
   }
   render() {
-    const { ok, nook, msg, certijson, faeljson ,seintegro} = this.state;
-    //console.log('render carga'+JSON.stringify(faeljson));
+    const ok = this.state.ok;
+    const nook = this.state.nook;
+    const msg = this.state.msg;
+    const faeljson = this.state.faeljson;
+    const seintegro = this.state.seintegro;
     return  (
         <Card id="ayuda" className="p-2 m-2">
 	      <h2 className="text-center" >Validar factura electrónica</h2>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter,InputGroup,InputGroupAddon,InputGroupText} from 'reactstrap';
+import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter,InputGroup,InputGroupAddon} from 'reactstrap';
 import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
