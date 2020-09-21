@@ -92,10 +92,10 @@ class Validafael extends Component {
                            <Button color="primary" onClick={this.insertafael}> <FontAwesomeIcon icon={['fas' , 'plus-circle']} /> ¿Desea agregar al historial de facturas?</Button>
                  </div>
                  <div class="flex-col d-flex justify-content-center mt-3">
-			 <Alert color="success" className={ seintegro!==1 ? 'd-none' : '' }>
-                                      <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Se integro la factura al historico</Alert> 
-			 <Alert color="danger"  className={ seintegro!==2 ? 'd-none d-flex align-items-center' : ''  } >
-                                      <FontAwesomeIcon icon={['fas' , 'thumbs-down']} className='mr-2' /> La factura ya esta integrada al historico</Alert> 
+			 { seintegro==1 && <Alert color="success" >
+                                      <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Se integro la factura al historico</Alert> }
+			 { seintegro==2 && <Alert color="danger"  className={ seintegro==2 ? 'd-none d-flex align-items-center' : ''  } >
+                                      <FontAwesomeIcon icon={['fas' , 'thumbs-down']} className='mr-2' /> La factura ya esta integrada al historico</Alert>  }
                  </div>
 
               </Container> }
