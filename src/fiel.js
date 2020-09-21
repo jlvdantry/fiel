@@ -263,8 +263,6 @@ const fiel = function()
   {
     try {
        var faelxml=this.damefaelxml();
-       var esquema       =this.dameesquema(faelxml,'xsi:schemaLocation').split(' ');;
-       console.log('esquema='+esquema);
        var faelxsd=window.cadenaoriginal_3_3;
        var faelxmltxt=this.damefaelxmltxt();
        var cadena=this.damecadena(faelxml,faelxsd);
