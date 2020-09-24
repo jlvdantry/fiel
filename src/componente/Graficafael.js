@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import { Card,CardBody,CardHeader,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { leefacturas } from '../db';
 import {Doughnut,HorizontalBar,Bar,Pie} from 'react-chartjs-2';
@@ -7,9 +8,10 @@ import {Doughnut,HorizontalBar,Bar,Pie} from 'react-chartjs-2';
 class Graficafael extends Component {
   constructor(props){
     super(props);
-    this.state = { datai:{},datae:{},datan:{},dropdownOpen:false,dropdownValue:'Pie'}
+    this.state = { datai:{},datae:{},datan:{},dropdownOpen:false,dropdownValue:'Pie', refresca:true}
     this.toggle =  this.toggle.bind(this)
     this.changeValue = this.changeValue.bind(this);
+    this.actuaFacturas = this.actuaFacturas.bind(this);
   }
 
     toggle(event) {
@@ -24,7 +26,12 @@ class Graficafael extends Component {
     }
 
   componentWillMount(){
+       this.actuaFacturas();
+  }
+
+  actuaFacturas(){
         var that=this;
+        that.setState({datai:{},datae:{},datan:{}});
         leefacturas().then(function(cuantas) {
                        var labels = [];
                        var colors = [];
@@ -77,19 +84,19 @@ class Graficafael extends Component {
                        console.log('labels='+labels);
                                                             that.setState({
                                                                              datai:{labels : labels ,datasets: [
-                                                                                        {data:datase,backgroundColor:colors,label:''}
+                                                                                        {data:datase,backgroundColor:colors}
                                                                                          ],
                                                                                     options: { legend: { display: false }}
                                                                                    },
                                                                              datae:{labels : labels ,datasets: [
-                                                                                        {data:datasr,backgroundColor:colors,label:''}
+                                                                                        {data:datasr,backgroundColor:colors}
                                                                                          ]},
                                                                              datan:{labels : labels ,datasets: [
-                                                                                        {data:datasn,backgroundColor:colors,label:false}
-                                                                                         ]}
+                                                                                        {data:datasn,backgroundColor:colors}
+                                                                                         ]},
                                                                            });
                                                     }).catch(function(err)  {
-                                                            that.setState({data:{}});
+                                                            that.setState({datai:{},datae:{},datan:{}});
                                                     });
   }
 
@@ -98,13 +105,13 @@ class Graficafael extends Component {
     const datae = this.state.datae
     const datan = this.state.datan
     const dropdownValue = this.state.dropdownValue
-    console.log('dropdownValue='+dropdownValue)
+    console.log('datai='+datai.datasets)
     return  (
       <>
         <Card className="p-2 m-2">
-			<h2 className="text-center mb-3">Grafica de Ingresos y Egreso por el total de la factura </h2>
+			<h2 className="text-center mb-3">Grafica de Ingresos y Egresos por el total de la factura </h2>
 			<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
-			      <DropdownToggle caret>
+			      <DropdownToggle caret color="primary">
 		                           Grafica {dropdownValue}
 			      </DropdownToggle>
 			      <DropdownMenu>
@@ -114,6 +121,7 @@ class Graficafael extends Component {
 				<DropdownItem onClick={this.changeValue} >Dona</DropdownItem>
 			      </DropdownMenu>
 			</Dropdown>
+                        { datai.datasets && 
 				<Card className="m-1">
 					<CardHeader color="success" className="text-center" >Ingreso</CardHeader>
 					<CardBody>
@@ -127,6 +135,8 @@ class Graficafael extends Component {
 						</Pie> }
 					</CardBody>
 				</Card>
+                         }
+                         { datae.datasets &&
 				<Card className="m-1">
 					<CardHeader color="success" className="text-center" >Egreso</CardHeader>
 					<CardBody>
@@ -140,6 +150,8 @@ class Graficafael extends Component {
                                                 </Bar> }
 					</CardBody>
 				</Card>
+                          }
+                          { datan.datasets &&
                                 <Card className="m-1">
                                         <CardHeader color="success" className="text-center" >Neto</CardHeader>
                                         <CardBody>
@@ -153,9 +165,20 @@ class Graficafael extends Component {
                                                 </Bar> }
                                         </CardBody>
                                 </Card>
+                          }
         </Card>
       </>
     )
   }
 };
+
+Graficafael.propTypes = {
+  refresca: PropTypes.bool
+}
+
+Graficafael.defaultProps = {
+  refresca: true
+}
+
+
 export default Graficafael;

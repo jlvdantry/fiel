@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import { browserHistory  } from 'react-router';
 import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
 import fiel from '../fiel';
@@ -28,6 +29,7 @@ class Validafael extends Component {
         openDatabasex(DBNAME,DBVERSION).then(function() {
                              inserta_factura(faeljson).then(function() {
                                                             that.setState({seintegro:1});
+                                                            that.props.onRefresca();
                                                     }).catch(function(err)  {
                                                             that.setState({seintegro:2});
                                                     });
@@ -56,11 +58,12 @@ class Validafael extends Component {
         <Card id="ayuda" className="p-2 m-2">
 	      <h2 className="text-center" >Validar factura electrónica</h2>
               <Container className="border p-2 mb-3">
-                      <div class="flex-col d-flex justify-content-center">
+                      <div className="flex-col d-flex justify-content-center">
 		           <Button color="primary" onClick={this.validafael}>Validar factura</Button>
                       </div>
               </Container>
-              { ok && <Container id="ok" className="border p-2 mb-3">
+              <Container id="ok" className="border p-2 mb-3">
+              { ok && (seintegro===0 || seintegro===2) && <>
                      <Alert color="success" className="text-center d-flex justify-content-between align-items-center" >
                                           <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Felicidades el sello de la factura electrónica checa contra el certificado del emisor</Alert>
                  <CardDeck>
@@ -88,17 +91,18 @@ class Validafael extends Component {
                         </CardBody>
                      </Card>
                  </CardDeck>
-                 <div class="flex-col d-flex justify-content-center mt-3">
+                 <div className="flex-col d-flex justify-content-center mt-3">
                            <Button color="primary" onClick={this.insertafael}> <FontAwesomeIcon icon={['fas' , 'plus-circle']} /> ¿Desea agregar al historial de facturas?</Button>
-                 </div>
-                 <div class="flex-col d-flex justify-content-center mt-3">
-			 { seintegro==1 && <Alert color="success" >
+                 </div> </>
+              }
+                 <div className="flex-col d-flex justify-content-center mt-3">
+			 { seintegro===1 && <Alert color="success" >
                                       <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Se integro la factura al historico</Alert> }
-			 { seintegro==2 && <Alert color="danger"  className={ seintegro==2 ? 'd-none d-flex align-items-center' : ''  } >
+			 { seintegro===2 && <Alert color="danger"  className={ seintegro==2 ? 'd-none d-flex align-items-center' : ''  } >
                                       <FontAwesomeIcon icon={['fas' , 'thumbs-down']} className='mr-2' /> La factura ya esta integrada al historico</Alert>  }
                  </div>
 
-              </Container> }
+              </Container> 
               { nook && <Container id="nook" className="border p-2 mb-3">
                      <Alert color="danger" className="text-center d-flex justify-content-between align-items-center" > <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {msg} </Alert>
               </Container> }
@@ -106,4 +110,13 @@ class Validafael extends Component {
     )
   }
 };
+
+Validafael.propTypes = {
+  onRefresca: PropTypes.func.isRequired
+};
+
+Validafael.defaultProps = {
+  onRefresca: () => null
+}
+
 export default Validafael;

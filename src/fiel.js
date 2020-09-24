@@ -377,6 +377,9 @@ const fiel = function()
              {
                 var parser=new DOMParser();
                 xmlDoc=parser.parseFromString(string,"text/xml");
+		    if(this.isParseError(xmlDoc)) {
+			throw new Error('La factura electrónica no tiene un formato XML');
+		    }
              }
              else // Internet Explorer
              {
@@ -387,72 +390,86 @@ const fiel = function()
              return xmlDoc;
         }
 
-	this.xml2json = function(xml) {
-	  try {
-	    var obj = {};
-	    if (xml.children.length > 0) {
-	      for (var i = 0; i < xml.children.length; i++) {
-		var item = xml.children.item(i);
-		var nodeName = item.nodeName;
+	this.isParseError = function(parsedDocument) {
+	    // parser and parsererrorNS could be cached on startup for efficiency
+	    var parser = new DOMParser(),
+		errorneousParse = parser.parseFromString('<', 'application/xml'),
+		parsererrorNS = errorneousParse.getElementsByTagName("parsererror")[0].namespaceURI;
 
-		if (typeof (obj[nodeName]) == "undefined") {
-		  obj[nodeName] = this.xml2json(item);
-		} else {
-		  if (typeof (obj[nodeName].push) == "undefined") {
-		    var old = obj[nodeName];
-
-		    obj[nodeName] = [];
-		    obj[nodeName].push(old);
-		  }
-		  obj[nodeName].push(this.xml2json(item));
-		}
-	      }
-	    } else {
-	      obj = xml.textContent;
+	    if (parsererrorNS === 'http://www.w3.org/1999/xhtml') {
+		// In PhantomJS the parseerror element doesn't seem to have a special namespace, so we are just guessing here :(
+		return parsedDocument.getElementsByTagName("parsererror").length > 0;
 	    }
-	    return obj;
-	  } catch (e) {
-	      console.log(e.message);
-	  }
-	}
-// Changes XML to JSON
-this.xmlToJson= function(xml) {
-	
-	// Create the return object
-	var obj = {};
 
-	if (xml.nodeType === 1) { // element
-		// do attributes
-		if (xml.attributes.length > 0) {
-		obj["@attributes"] = {};
-			for (var j = 0; j < xml.attributes.length; j++) {
-				var attribute = xml.attributes.item(j);
-				obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
-			}
-		}
-	} else if (xml.nodeType === 3) { // text
-		obj = xml.nodeValue;
-	}
+	    return parsedDocument.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
+	};
 
-	// do children
-	if (xml.hasChildNodes()) {
-		for(var i = 0; i < xml.childNodes.length; i++) {
-			var item = xml.childNodes.item(i);
+	this.xml2json = function(xml) {
+		  try {
+		    var obj = {};
+		    if (xml.children.length > 0) {
+		      for (var i = 0; i < xml.children.length; i++) {
+			var item = xml.children.item(i);
 			var nodeName = item.nodeName;
-			if (typeof(obj[nodeName]) == "undefined") {
-				obj[nodeName] = this.xmlToJson(item);
+
+			if (typeof (obj[nodeName]) == "undefined") {
+			  obj[nodeName] = this.xml2json(item);
 			} else {
-				if (typeof(obj[nodeName].push) == "undefined") {
-					var old = obj[nodeName];
-					obj[nodeName] = [];
-					obj[nodeName].push(old);
+			  if (typeof (obj[nodeName].push) == "undefined") {
+			    var old = obj[nodeName];
+
+			    obj[nodeName] = [];
+			    obj[nodeName].push(old);
+			  }
+			  obj[nodeName].push(this.xml2json(item));
+			}
+		      }
+		    } else {
+		      obj = xml.textContent;
+		    }
+		    return obj;
+		  } catch (e) {
+		      console.log(e.message);
+		  }
+	}
+	// Changes XML to JSON
+	this.xmlToJson= function(xml) {
+		
+		// Create the return object
+		var obj = {};
+
+		if (xml.nodeType === 1) { // element
+			// do attributes
+			if (xml.attributes.length > 0) {
+			obj["@attributes"] = {};
+				for (var j = 0; j < xml.attributes.length; j++) {
+					var attribute = xml.attributes.item(j);
+					obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
 				}
-				obj[nodeName].push(this.xmlToJson(item));
+			}
+		} else if (xml.nodeType === 3) { // text
+			obj = xml.nodeValue;
+		}
+
+		// do children
+		if (xml.hasChildNodes()) {
+			for(var i = 0; i < xml.childNodes.length; i++) {
+				var item = xml.childNodes.item(i);
+				var nodeName = item.nodeName;
+				if (typeof(obj[nodeName]) == "undefined") {
+					obj[nodeName] = this.xmlToJson(item);
+				} else {
+					if (typeof(obj[nodeName].push) == "undefined") {
+						var old = obj[nodeName];
+						obj[nodeName] = [];
+						obj[nodeName].push(old);
+					}
+					obj[nodeName].push(this.xmlToJson(item));
+				}
 			}
 		}
-	}
-	return obj;
-};
+		return obj;
+        };
 
 
 }

@@ -246,6 +246,9 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
 };
 
 
+var delObjectbyKey = function(objectStore, idmenu, estado) {
+};
+
 var delObject = function(objectStore, idmenu, estado) {
         return new Promise(function (resolve, reject) {
         var index = objectStore.index("estado");
@@ -399,16 +402,17 @@ function inserta_factura(faeljson)
 
 function leefacturas()
 {
+        console.log('[db.js leefacturas] entro');
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[inserta_factura] menu a requesitar=');
+                                console.log('[db.js leefacturas] va a seleccionar ');
                                 selObjects(objectStore).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {
-                                console.log("[inserta_request] Database error: "+err.message);
+                                console.log("[db.js leefacturas] Database error: "+err.message);
                 });
         })
 }
@@ -425,7 +429,30 @@ function cuantasfacturas()
                                            resolve(count.result);
                                 }
                         }).catch(function(err) {
-                                console.log("[inserta_request] Database error: "+err.message);
+                                console.log("error en cuantas facturas: "+err.message);
+                });
+        })
+}
+
+function bajafacturas(key)
+{
+        console.log('[db.js]bajafacturas key='+key);
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                var request = objectStore.delete(Number(key));
+                                console.log('dio de baja key='+key);
+                                request.onsuccess = function(e) {
+                                          console.log("element deleted"); //sadly this always run :-(
+                                          resolve();
+                                }
+                                request.onerror = function(e) {
+                                          console.log("error element deleted"); //sadly this always run :-(
+                                          reject(e);
+                                }
+                        }).catch(function(err) {
+                                reject(err.message);
                 });
         })
 }
@@ -433,4 +460,6 @@ function cuantasfacturas()
 
 
 
-export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha } ;
+
+export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject
+                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas } ;
