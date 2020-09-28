@@ -64,6 +64,7 @@ class Consultafael extends Component {
               <Container className="p-2 mb-3">
               { facturas.map((data) => { 
                   return (
+                 <>
                  <CardDeck key={data.key} className="border p-2 m-2 rounded">
                      <Card>
 			<CardHeader color="success" className="text-center" >Comprobante</CardHeader>
@@ -89,8 +90,9 @@ class Consultafael extends Component {
                                   </CardText>
                         </CardBody>
                      </Card>
-                     <Button data-id={data.key} color="primary" onClick={this.bajaFactura}> <FontAwesomeIcon icon={['fas' , 'trash-alt']} className='mr-2' /></Button> 
+                     <div data-id={data.key} className="text-primary btn p-0"  onClick={this.bajaFactura}> <FontAwesomeIcon icon={['fas' , 'trash-alt']} className='mr-2' /></div> 
                  </CardDeck>
+                 </>
                          )}) }
               </Container> 
         </Card>
