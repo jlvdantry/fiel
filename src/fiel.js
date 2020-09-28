@@ -33,7 +33,8 @@ const fiel = function()
           if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
              //console.log('result='+e.target.result);
              localStorage.setItem("xml",e.target.result);
-             localStorage.setItem("xml_name",theFile.name);
+             var namelen=theFile.name.length;
+             localStorage.setItem("xml_name",(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name) );
           }  else {
              alert('La factura electronica debe de contar con extension xml');
              return false;
