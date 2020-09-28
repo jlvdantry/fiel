@@ -8,7 +8,7 @@ import {Doughnut,HorizontalBar,Bar,Pie} from 'react-chartjs-2';
 class Graficafael extends Component {
   constructor(props){
     super(props);
-    this.state = { datai:{},datae:{},datan:{},dropdownOpen:false,dropdownValue:'Pie', refresca:true}
+    this.state = { datai:{},datae:{},datan:{},dropdownOpen:false,dropdownValue:'Barras Horizontales', refresca:true}
     this.toggle =  this.toggle.bind(this)
     this.changeValue = this.changeValue.bind(this);
     this.actuaFacturas = this.actuaFacturas.bind(this);

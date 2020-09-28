@@ -63,7 +63,6 @@ class Consultafael extends Component {
               </Container>
               <Container className="p-2 mb-3">
               { facturas.map((data) => { 
-                  console.log('map='+data.key);
                   return (
                  <CardDeck key={data.key} className="border p-2 m-2 rounded">
                      <Card>

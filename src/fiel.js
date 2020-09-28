@@ -31,7 +31,7 @@ const fiel = function()
      reader.onload = (function(theFile) {
           return function(e) {
           if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
-             console.log('result='+e.target.result);
+             //console.log('result='+e.target.result);
              localStorage.setItem("xml",e.target.result);
              localStorage.setItem("xml_name",theFile.name);
           }  else {
@@ -46,7 +46,7 @@ const fiel = function()
      readertxt.onload = (function(theFile) {
           return function(e) {
           if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
-             console.log('result='+e.target.result);
+             //console.log('result='+e.target.result);
              localStorage.setItem("xmltxt",e.target.result);
           }  else {
              alert('La factura electronica debe de contar con extension xml');
