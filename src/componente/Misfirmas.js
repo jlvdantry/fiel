@@ -3,13 +3,15 @@ import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import RichTextEditor from 'react-rte';
 import {getTextAlignBlockMetadata, getTextAlignClassName, getTextAlignStyles} from 'react-rte/lib/lib/blockStyleFunctions';
+import { Card,CardBody,CardHeader,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
+import Firmar from './Firmar';
 
 
-class Firmar extends Component {
+class Misfirmas extends Component {
   constructor(props){
     super(props);
     console.log('antes de state');
-    this.state = {  value: RichTextEditor.createEmptyValue() } 
+    this.state = {  value: RichTextEditor.createEmptyValue(),dropdownOpen:false,dropdownValue:'Texto libre' } 
     console.log('depues de state');
     this.onChange = this.onChange.bind(this)
   }
@@ -24,10 +26,14 @@ class Firmar extends Component {
     }
   };
 
+    changeValue(e) {
+        this.setState({dropdownValue: e.currentTarget.textContent});
+    }
+
+
   render() {
-   console.log('rendereo');
    const placeHolder='Teclee aqui lo que desea firmar'
-  const toolbarConfig = {
+   const toolbarConfig = {
     // Optionally specify the groups to display (displayed in the order listed).
     display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
     INLINE_STYLE_BUTTONS: [
@@ -46,9 +52,21 @@ class Firmar extends Component {
       {label: 'OL', style: 'ordered-list-item'}
     ]
   };
+    const dropdownValue = this.state.dropdownValue
 
     return  (
          <>
+                        <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
+                              <DropdownToggle caret color="primary">
+                                           Firma un {dropdownValue}
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                <DropdownItem onClick={this.changeValue} >Texto libre</DropdownItem>
+                                <DropdownItem onClick={this.changeValue} >Texto estructurado</DropdownItem>
+                                <DropdownItem onClick={this.changeValue} >Pdf</DropdownItem>
+                              </DropdownMenu>
+                        </Dropdown>
+
 	      <RichTextEditor
 		value={this.state.value}
 		onChange={this.onChange}
@@ -56,8 +74,9 @@ class Firmar extends Component {
                 blockStyleFn={getTextAlignClassName}
                 toolbarConfig={toolbarConfig}
 	      />
+              <Firmar value={this.state.value.toString('markdown')}/>
          </>
     )
   }
 };
-export default Firmar;
+export default Misfirmas;

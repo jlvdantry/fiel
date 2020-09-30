@@ -190,7 +190,7 @@ const fiel = function()
           var md = window.forge.md.sha256.create();
           md.update(cadena);
           try {var firmado=btoa(this.rk.sign(md));} catch(err) { alert(err); return false; }
-          console.log('Firmado='+firmado);
+          console.log('Firmado='+firmado+' cadena='+cadena);
           var certificado=this.damecertificadofiel();
           var actual=new Date().toISOString();
           if (actual>certificado.validity.notAfter.toJSON() || actual<certificado.validity.notBefore.toJSON()) {
@@ -208,7 +208,9 @@ const fiel = function()
                                                                                  , emisor   : certificado.issuer.attributes[0].value
                                                                                  , desde   : certificado.validity.notBefore.toJSON()
                                                                                  , hasta   : certificado.validity.notAfter.toJSON()
-                                                                                 , cer: certificado};
+                                                                                 , cer: certificado.certificado
+                                                                                 , sellogen : firmado
+                       };
              } return { 'ok'  : false, "msg" : "La Firma electronica es incorrecta" };
           } else { return { 'ok'  : false, "msg" : "El certificado es erroneo" }; }
       } else { return  { 'ok'  : false, "msg" : "El password de la llave privada es erronea "}; }
@@ -329,6 +331,7 @@ const fiel = function()
        this.cer="-----BEGIN CERTIFICATE-----"+this.cer.chunkString(64)+"-----END CERTIFICATE-----";
        var pki = window.forge.pki;
        try {var rce=pki.certificateFromPem(this.cer);} catch (err) { alert ('Error al leer el certificado de la firma electronica'+err); return false;}
+       rce.certificado=this.cer1;
        return rce;
   }
 

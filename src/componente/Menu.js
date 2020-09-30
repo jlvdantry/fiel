@@ -62,8 +62,8 @@ class Menumi extends Component {
               <Link to='/mifiel' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex><FontAwesomeIcon icon={['fas' , 'pen-fancy']} /> MI FIEL</Link>
               <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
                            <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
-              <Link to='/firmar' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'signature']} /> FIRMAR</Link>
+              <Link to='/misfirmas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+                           <FontAwesomeIcon icon={['fas' , 'signature']} /> MIS FIRMAS</Link>
             </Nav>
           </Collapse>
         </Navbar>
