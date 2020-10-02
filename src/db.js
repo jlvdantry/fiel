@@ -190,8 +190,7 @@ var selObjects = function(objectStore, indexname, indexvalue, direction='next') 
                objects.push( json );
                cursor1.continue();
             } else {
-            if (objects.length > 0) {
-               resolve(objects); }
+               resolve(objects); 
             };
         };
     });
@@ -245,9 +244,6 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
   });
 };
 
-
-var delObjectbyKey = function(objectStore, idmenu, estado) {
-};
 
 var delObject = function(objectStore, idmenu, estado) {
         return new Promise(function (resolve, reject) {
@@ -381,7 +377,7 @@ function inserta_factura(faeljson)
         return new Promise(function (resolve, reject) {
                 var json= { };
                 json.estado=0;
-                json.url='validafactura';
+                json.url='factura';
                 json.passdata=faeljson;
                 json.forma=0;
                 json.idmenu=0;
@@ -400,6 +396,34 @@ function inserta_factura(faeljson)
         })
 }
 
+/* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
+ *  *    cuando se hacer un requermiento */
+function inserta_firma(faeljson)
+{
+        return new Promise(function (resolve, reject) {
+                var json= { };
+                json.estado=0;
+                json.url='firma';
+                json.passdata=faeljson;
+                json.forma=0;
+                json.idmenu=0;
+                json=datos_comunes(json);
+                json.sello=faeljson.sellogen;
+                json.passdata.sellogen='';
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[inserta_firma] menu a requesitar=');
+                                addObject(objectStore, json).then(function(key) {
+                                                               resolve(key) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[inserta_firma] Database error: "+err.message);
+                });
+        })
+}
+
+
 function leefacturas()
 {
         console.log('[db.js leefacturas] entro');
@@ -408,7 +432,7 @@ function leefacturas()
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
                                 console.log('[db.js leefacturas] va a seleccionar ');
-                                selObjects(objectStore).then(function(requests) {
+                                selObjects(objectStore,'url','factura').then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {
@@ -417,17 +441,52 @@ function leefacturas()
         })
 }
 
+function leefirmas()
+{
+        console.log('[db.js leefirmas] entro');
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[db.js leefirmas] va a seleccionar ');
+                                selObjects(objectStore,'url','firma').then(function(requests) {
+                                                               resolve(requests) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[db.js leefirmas] Database error: "+err.message);
+                });
+        })
+}
+
+
 function cuantasfacturas()
 {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                var count = objectStore.count();
-                                count.onsuccess = function () {
-                                           console.log('conto facturas '+count.result);
-                                           resolve(count.result);
-                                }
+                                selObjects(objectStore,'url','factura').then(function(requests) {
+                                                               resolve(requests.length) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("error en cuantas facturas: "+err.message);
+                });
+        })
+}
+
+function cuantasfirmas()
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('cuantasfirmas, leyo');
+                                selObjects(objectStore,'url','firma').then(function(requests) {
+                                                               console.log('cuantasfirmas, leyo');
+                                                               resolve(requests.length) ;
+                                                            }).catch(function(err) {  
+                                                               console.log('cuantasfirmas, error');
+                                                                           reject(err) });
                         }).catch(function(err) {
                                 console.log("error en cuantas facturas: "+err.message);
                 });
@@ -436,7 +495,28 @@ function cuantasfacturas()
 
 function bajafacturas(key)
 {
-        console.log('[db.js]bajafacturas key='+key);
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                var request = objectStore.delete(Number(key));
+                                console.log('dio de baja key='+key);
+                                request.onsuccess = function(e) {
+                                          console.log("element deleted"); //sadly this always run :-(
+                                          resolve();
+                                }
+                                request.onerror = function(e) {
+                                          console.log("error element deleted"); //sadly this always run :-(
+                                          reject(e);
+                                }
+                        }).catch(function(err) {
+                                reject(err.message);
+                });
+        })
+}
+
+function bajafirmas(key)
+{
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
@@ -461,5 +541,6 @@ function bajafacturas(key)
 
 
 
+
 export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject
-                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas } ;
+                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas } ;

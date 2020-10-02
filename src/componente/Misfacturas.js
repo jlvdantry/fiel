@@ -3,7 +3,6 @@ import Cargafael from './Cargafael';
 import Validafael from './Validafael';
 import Consultafael from './Consultafael';
 import Graficafael from './Graficafael';
-import {  cuantasfacturas } from '../db';
 class Misfacturas extends Component {
   constructor(props){
      super(props);
