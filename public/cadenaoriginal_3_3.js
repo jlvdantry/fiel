@@ -54,6 +54,20 @@ var tmp=`<?xml version="1.0" encoding="UTF-8"?>
   <xsl:include href="Pagos10.xslt"/>
 -->
 	
+
+  <xsl:template match="registrofiscal:CFDIRegistroFiscal">
+
+    <!--Iniciamos el tratamiento de los atributos de RegistroFiscal -->
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Version"/>
+    </xsl:call-template>
+
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Folio"/>
+    </xsl:call-template>
+
+  </xsl:template>
+
   <xsl:template match="nomina12:Nomina">
     <!--Manejador de nodos tipo Nomina-->
     <xsl:call-template name="Requerido">
