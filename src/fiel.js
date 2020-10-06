@@ -85,11 +85,13 @@ const fiel = function()
                   console.log('empezo onload'+theFile.name);
 		  if (theFile.name.indexOf(".cer")!==-1) {
 		     localStorage.setItem("cer",e.target.result);
-		     localStorage.setItem("cer_name",theFile.name);
+                     var namelen=theFile.name.length;
+		     localStorage.setItem("cer_name",(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name));
 		  } else {
 		  if (theFile.name.indexOf(".key")!==-1) {
 		     localStorage.setItem("key",e.target.result);
-		     localStorage.setItem("key_name",theFile.name);
+                     var namelen=theFile.name.length;
+		     localStorage.setItem("key_name",(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name));
 		  } else {
 		     alert('La firma digital debe de contar con extension cer y key');
 		     return false;
