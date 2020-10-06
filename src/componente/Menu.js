@@ -38,7 +38,6 @@ class Menumi extends Component {
     else { this.setOnlineStatus(true) }
     window.addEventListener('online', () => this.setOnlineStatus(true));
     window.addEventListener('offline', () => this.setOnlineStatus(false));
-    //this.defaultlink.current.click(); 
     document.querySelector('#ayuda').click();
   }
 
@@ -50,7 +49,6 @@ class Menumi extends Component {
   setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; console.log('cambio estado'); }
 
   render() {
-    console.log('rendereo el menu');
     return (
       <div>
         <Navbar color="blue" light expand="md">

@@ -4,13 +4,8 @@
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "256x256",
+      "sizes": "48x48",
       "type": "image/x-icon"
-    },
-    {
-      "src": "pluma192x192.png",
-      "type": "image/png",
-      "sizes": "192x192"
     },
     {
       "src": "pluma144x144.png",
@@ -26,6 +21,11 @@
       "src": "pluma_48x48.png",
       "type": "image/png",
       "sizes": "48x48"
+    },
+    {
+      "src": "pluma192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
     },
     {
       "src": "pluma512x512.png",

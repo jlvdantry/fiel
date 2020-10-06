@@ -17,6 +17,7 @@ import './fontawesome';;
 
 class App extends Component {
   render() {
+    console.log('va a renderear un componente');
     return (
       <Router history={browserHistory}>
         <Route path="/" component={Master}>
@@ -29,8 +30,8 @@ class App extends Component {
 	  <Route path="/validarfael" component={Validafael}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>
+          <Redirect to="/"/>
         </Route>
-        <Redirect from="/" to="/"/>
       </Router>
     );
   }

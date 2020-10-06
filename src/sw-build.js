@@ -14,11 +14,11 @@ const buildSW = () => {
 
       globPatterns: ["**/*.{js,css,html,png,svg,ico,json}"],
 
-      maximumFileSizeToCacheInBytes: 5 * 1024 * 102,
+      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
     })
     .then(({ count, size, warnings }) => {
       warnings.forEach(console.warn);
-      console.info(`${count} files will be precached,
+      console.info(`${count} files will be precached_,
                   totaling ${size / (1024 * 1024)} MBs.`);
     });
 };
