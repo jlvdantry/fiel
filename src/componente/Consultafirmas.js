@@ -4,6 +4,7 @@ import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, Card
 import { leefirmas, cuantasfirmas,bajafirmas } from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ShowMoreText from 'react-show-more-text';
+import { jsPDF } from "jspdf";
 
 
 class Consultafirmas extends Component {
@@ -13,10 +14,17 @@ class Consultafirmas extends Component {
     this.consulta = this.consulta.bind(this)
     this.totalFirmas = this.totalFirmas.bind(this)
     this.bajaFirma = this.bajaFirma.bind(this)
+    this.pdfFirma = this.pdfFirma.bind(this)
   }
 
   componentWillMount(){
        this.totalFirmas();
+  }
+
+  pdfFirma() {
+	const doc = new jsPDF();
+	doc.text("FIRMA:", 10, 10);
+	doc.save("a4.pdf");
   }
 
   totalFirmas() {
@@ -103,7 +111,12 @@ class Consultafirmas extends Component {
                                     >{ data.valor.passdata.cer } </ShowMoreText>
                           </CardText>
                         </CardBody>
-                        <div data-id={data.key} className="text-primary btn p-0"  onClick={this.bajaFirma}> <FontAwesomeIcon icon={['fas' , 'trash-alt']} className='mr-2' /></div> 
+                        <div className="d-flex">
+				<div data-id={data.key} className="text-primary btn p-0"  onClick={this.bajaFirma}> 
+					      <FontAwesomeIcon icon={['fas' , 'trash-alt']} className='mr-2' />Eliminar</div> 
+				<div data-id={data.key} className="text-primary btn p-0"  onClick={this.pdfFirma}> 
+					      <FontAwesomeIcon icon={['fas' , 'file-pdf']} className='mr-2' />PDF</div> 
+                        </div>
                  </Card>
                  </>
                          )}) }
