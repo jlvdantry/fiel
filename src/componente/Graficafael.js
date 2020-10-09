@@ -105,7 +105,7 @@ class Graficafael extends Component {
     const datae = this.state.datae
     const datan = this.state.datan
     const dropdownValue = this.state.dropdownValue
-    console.log('datai='+datai.datasets)
+    //console.log('datai='+datai.datasets.data.length)
     return  (
       <>
         <Card className="p-2 m-2">
@@ -121,7 +121,7 @@ class Graficafael extends Component {
 				<DropdownItem onClick={this.changeValue} >Dona</DropdownItem>
 			      </DropdownMenu>
 			</Dropdown>
-                        { datai.datasets && 
+                        { datai.labels && datai.labels.length>0 &&
 				<Card className="m-1">
 					<CardHeader color="success" className="text-center" >Ingreso</CardHeader>
 					<CardBody>
@@ -136,7 +136,7 @@ class Graficafael extends Component {
 					</CardBody>
 				</Card>
                          }
-                         { datae.datasets &&
+                         { datae.labels && datai.labels.length>0 &&
 				<Card className="m-1">
 					<CardHeader color="success" className="text-center" >Egreso</CardHeader>
 					<CardBody>
@@ -151,7 +151,7 @@ class Graficafael extends Component {
 					</CardBody>
 				</Card>
                           }
-                          { datan.datasets &&
+                          { datan.labels && datai.labels.length>0 &&
                                 <Card className="m-1">
                                         <CardHeader color="success" className="text-center" >Neto</CardHeader>
                                         <CardBody>

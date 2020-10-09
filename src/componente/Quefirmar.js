@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import RichTextEditor from 'react-rte';
-import { getTextAlignClassName} from 'react-rte/lib/lib/blockStyleFunctions';
+import { getTextAlignClassName } from 'react-rte/lib/lib/blockStyleFunctions';
 import { Dropdown,DropdownToggle,DropdownMenu,DropdownItem,Card } from 'reactstrap';
 import PropTypes from 'prop-types';
 
@@ -12,6 +12,7 @@ class Quefirmar extends Component {
     this.onChange = this.onChange.bind(this)
     this.toggle =  this.toggle.bind(this)
     this.changeValue =  this.changeValue.bind(this)
+          this.DomEditor = React.createRef() 
   }
 
     toggle(event) {
@@ -40,12 +41,15 @@ class Quefirmar extends Component {
         this.setState({dropdownValue: e.currentTarget.textContent});
     }
 
+    componentDidMount(){
+    //      this.DomEditor._focus()
+    }
 
   render() {
    const placeHolder='Teclee aqui lo que desea firmar'
    const toolbarConfig = {
     // Optionally specify the groups to display (displayed in the order listed).
-    display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
+    display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS','BLOCK_ALIGNMENT_BUTTONS'],
     INLINE_STYLE_BUTTONS: [
       {label: 'Negrillas', style: 'BOLD', className: 'custom-css-class'},
       {label: 'Italica', style: 'ITALIC'},
@@ -60,8 +64,10 @@ class Quefirmar extends Component {
     BLOCK_TYPE_BUTTONS: [
       {label: 'UL', style: 'unordered-list-item'},
       {label: 'OL', style: 'ordered-list-item'}
-    ]
+    ],
+    BLOCK_ALIGNMENT_BUTTONS : [{ label: 'Align Left', style: 'ALIGN_LEFT' }, { label: 'Align Center', style: 'ALIGN_CENTER' }, { label: 'Align Right', style: 'ALIGN_RIGHT' }, { label: 'Align Justify', style: 'ALIGN_JUSTIFY' }]
   };
+
     const dropdownValue = this.state.dropdownValue
 
     return  (
@@ -84,6 +90,8 @@ class Quefirmar extends Component {
                 placeholder={placeHolder}
                 blockStyleFn={getTextAlignClassName}
                 toolbarConfig={toolbarConfig}
+                ref={this.DomEditor}
+                autoFocus={true}
 	      />
             </Card >
          </>

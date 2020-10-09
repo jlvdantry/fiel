@@ -153,7 +153,7 @@ const fiel = function()
   this.validaprivada = function(pwd,cadena='prueba')
   {
        if(pwd==="")
-       { alert('El password es obligatorio'); return false; }
+       { alert('La contraseña es obligatorio'); return false; }
        if(localStorage.getItem('key')==null)
        { alert('La llave privada no esta definida'); return false; }
        if(localStorage.getItem('cer')==null)
@@ -215,7 +215,7 @@ const fiel = function()
                        };
              } return { 'ok'  : false, "msg" : "La Firma electronica es incorrecta" };
           } else { return { 'ok'  : false, "msg" : "El certificado es erroneo" }; }
-      } else { return  { 'ok'  : false, "msg" : "El password de la llave privada es erronea "}; }
+      } else { return  { 'ok'  : false, "msg" : "La contraseña de la llave privada es erronea "}; }
   }
 
   /* carga la factura electoronica */

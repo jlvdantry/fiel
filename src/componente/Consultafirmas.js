@@ -111,11 +111,11 @@ class Consultafirmas extends Component {
                                     >{ data.valor.passdata.cer } </ShowMoreText>
                           </CardText>
                         </CardBody>
-                        <div className="d-flex">
-				<div data-id={data.key} className="text-primary btn p-0"  onClick={this.bajaFirma}> 
-					      <FontAwesomeIcon icon={['fas' , 'trash-alt']} className='mr-2' />Eliminar</div> 
-				<div data-id={data.key} className="text-primary btn p-0"  onClick={this.pdfFirma}> 
-					      <FontAwesomeIcon icon={['fas' , 'file-pdf']} className='mr-2' />PDF</div> 
+                        <div className="d-flex justify-content-around">
+				<Button data-id={data.key} color="primary"  onClick={this.bajaFirma}> 
+					      <FontAwesomeIcon icon={['fas' , 'trash-alt']} className='mr-2' />Eliminar</Button> 
+				<Button data-id={data.key} color="primary"  onClick={this.pdfFirma}> 
+					      <FontAwesomeIcon icon={['fas' , 'file-pdf']} className='mr-2' />PDF</Button> 
                         </div>
                  </Card>
                  </>

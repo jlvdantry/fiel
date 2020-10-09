@@ -52,7 +52,7 @@ class Valida extends Component {
                       </div>
               </Container>
               { ok && <Container id="ok" className="border p-2 mb-3">
-                     <Alert color="success" className="text-center d-flex justify-content-between align-items-center" ><FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Felicidades tu llave pública y privada corresponden entre si y tu password corresponde a tu llave privada</Alert>
+                     <Alert color="success" className="text-center d-flex justify-content-between align-items-center" ><FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Felicidades tu llave pública y privada corresponden entre si y tu contraseña corresponde a tu llave privada</Alert>
                      <Card>
 			<CardHeader color="success" className="text-center" >{nombre}</CardHeader>
 			<CardBody>

@@ -66,7 +66,7 @@ class Firmar extends Component {
                         </InputGroup>
 		      </FormGroup>
                       <div class="flex-col d-flex justify-content-center">
-		           <Button color="primary" onClick={this.validafirma}>Firmar</Button>
+		           <Button color="primary" onClick={this.validafirma}><FontAwesomeIcon icon={['fas' , 'signature']} /> Firmar</Button>
                       </div>
               </Container>
               { ok && <Container id="ok" className="border p-2 mb-3">
