@@ -458,6 +458,24 @@ function leefirmas()
         })
 }
 
+function leefirma(key)
+{
+        console.log('[db.js leefirmas] entro');
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[db.js leefirmas] va a seleccionar ');
+                                selObjects(objectStore,'sello',key).then(function(requests) {
+                                                               resolve(requests) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[db.js leefirmas] Database error: "+err.message);
+                });
+        })
+}
+
+
 
 function cuantasfacturas()
 {
@@ -543,4 +561,4 @@ function bajafirmas(key)
 
 
 export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject
-                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas } ;
+                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma } ;

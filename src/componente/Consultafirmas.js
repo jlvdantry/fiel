@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck, Badge} from 'reactstrap';
-import { leefirmas, cuantasfirmas,bajafirmas } from '../db';
+import { leefirmas, cuantasfirmas,bajafirmas, leefirma } from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ShowMoreText from 'react-show-more-text';
 import { jsPDF } from "jspdf";
+import  Html2Pdf   from "js-html2pdf";
 
 
 class Consultafirmas extends Component {
@@ -21,10 +22,27 @@ class Consultafirmas extends Component {
        this.totalFirmas();
   }
 
-  pdfFirma() {
-	const doc = new jsPDF();
-	doc.text("FIRMA:", 10, 10);
-	doc.save("a4.pdf");
+  pdfFirma(event) {
+                                        var id=event.currentTarget.dataset.id;
+                                        console.log('id='+id);
+					var element = document.getElementById(id);
+
+					// Define optional configuration
+					var options = {
+					  filename: id+'-my-file.pdf',
+                                          'width'   : 330,
+                                          pagesplit : true
+					};
+                                        console.log('antes de export');
+
+					// Create instance of html2pdf class
+					var exporter = new Html2Pdf(element, options);
+                                        console.log('despues de export');
+
+					// Download the PDF or...
+					exporter.getPdf(true).then((pdf) => {
+					  console.log('pdf file downloaded');
+					});
   }
 
   totalFirmas() {
@@ -79,8 +97,8 @@ class Consultafirmas extends Component {
                   return (
                  <>
                  <Card key={data.key} className="border p-2 m-2 rounded">
-                        <CardBody>
-                          <CardSubtitle className="text-center"><b>FIRMA:</b>
+                        <CardBody id={ 'cb-'+ data.key }>
+                          <CardSubtitle className="text-center text-break"><b>FIRMA:</b>
                                     <ShowMoreText
                                         lines={3}
                                         more='Ver mas'
@@ -100,7 +118,7 @@ class Consultafirmas extends Component {
                                         width={280}
                                     >{ data.valor.passdata.cadena } </ShowMoreText>
                           </CardText>
-                          <CardText className="text-center"><b>CERTIFICADO: </b>
+                          <CardText className="text-center text-break"><b>CERTIFICADO: </b>
                                     <ShowMoreText
                                         lines={3}
                                         more='Ver mas'
@@ -114,7 +132,7 @@ class Consultafirmas extends Component {
                         <div className="d-flex justify-content-around">
 				<Button data-id={data.key} color="primary"  onClick={this.bajaFirma}> 
 					      <FontAwesomeIcon icon={['fas' , 'trash-alt']} className='mr-2' />Eliminar</Button> 
-				<Button data-id={data.key} color="primary"  onClick={this.pdfFirma}> 
+				<Button data-id={'cb-'+data.key} color="primary"  onClick={this.pdfFirma}> 
 					      <FontAwesomeIcon icon={['fas' , 'file-pdf']} className='mr-2' />PDF</Button> 
                         </div>
                  </Card>
