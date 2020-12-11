@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { browserHistory  } from 'react-router';
 import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
 import fiel from '../fiel';
+import { TC } from './Constantes';
 import {openDatabasex,DBNAME,DBVERSION,inserta_factura} from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -71,6 +72,7 @@ class Validafael extends Component {
 			<CardHeader color="success" className="text-center" >Factura electrónica</CardHeader>
 			<CardBody>
 			  <CardSubtitle className="text-center">Fecha: {faeljson["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
+			  <CardSubtitle className="text-center">Tipo de comprobante: {TC[faeljson["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
 			  <CardSubtitle className="text-center">SubTotal: {faeljson["cfdi:Comprobante"]["@attributes"].SubTotal}</CardSubtitle>
 			  <CardSubtitle className="text-center">Total: {faeljson["cfdi:Comprobante"]["@attributes"].Total}</CardSubtitle>
 			</CardBody>

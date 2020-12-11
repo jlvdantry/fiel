@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck, Badge} from 'reactstrap';
 import { leefacturas, cuantasfacturas,bajafacturas } from '../db';
+import { TC } from './Constantes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
@@ -70,6 +71,7 @@ class Consultafael extends Component {
 			<CardHeader color="success" className="text-center" >Comprobante</CardHeader>
 			<CardBody>
 			  <CardSubtitle className="text-center">Fecha: {data.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
+			  <CardSubtitle className="text-center">Tipo de comprobante: {TC.[data.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
 			  <CardSubtitle className="text-center">SubTotal: {data.valor.passdata["cfdi:Comprobante"]["@attributes"].SubTotal}</CardSubtitle>
 			  <CardSubtitle className="text-center">Total: {data.valor.passdata["cfdi:Comprobante"]["@attributes"].Total}</CardSubtitle>
 			</CardBody>

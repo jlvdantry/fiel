@@ -35,9 +35,9 @@ class Graficafael extends Component {
         leefacturas().then(function(cuantas) {
                        var labels = [];
                        var colors = [];
-                       var datase = [];
-                       var datasr = [];
-                       var datasn = [];
+                       var datase = [];   /* emisos */
+                       var datasr = [];   /* receptor */
+                       var datasn = [];   /* neto */
 		    var dynamicColors = function() {
 			var r = Math.floor(Math.random() * 255);
 			var g = Math.floor(Math.random() * 255);
@@ -48,6 +48,16 @@ class Graficafael extends Component {
                                    var rfce=x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
                                    var rfcr=x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
                                    var total=Number(parseFloat(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Total).toFixed(2));
+                                   var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante; //tipo de comprobante
+                                    // I=ingreso para el emisor  egreso  para el receptor
+                                    // E=egresos para el emisor  ingreso para el receptor
+                                    // N=nomina egreso para el emisor  ingreso para el receptor
+                                    // T=Traslado
+                                    // P=Pago
+                                   if (tc==='N' || tc==='E') {
+                                        total=total*-1;
+                                   }
+                                   console.log('rfce='+rfce+'  rfcr='+rfcr+' total='+total+' tc='+tc);
                                    if (labels.indexOf(rfce) ===-1) {
                                           labels.push(rfce);
                                           datase.push(total);
