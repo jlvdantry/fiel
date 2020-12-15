@@ -11,7 +11,7 @@ class Cargafael extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { xml_name : '' };
+    this.state = { xml_name : [] };
     this.cargar = this.cargar.bind(this);
     this.cambio = this.cambio.bind(this);
   }
@@ -31,9 +31,14 @@ class Cargafael extends Component {
   }
 
   cambio() {
-       if (localStorage.getItem('xml_name')!=null) {
-          this.setState({xml_name : localStorage.getItem('xml_name')})
-       } else {  this.setState({xml_name : null })  }
+       var xml_name=[];
+	for (var i = 0; i < localStorage.length; i++) {
+          var key = localStorage.key(i);
+          if (key.indexOf('xml_name_')!==-1) {
+             xml_name.push(localStorage.getItem(key));
+          }
+	}
+        this.setState({xml_name : xml_name });
   }
 
   cargar() {
@@ -43,12 +48,13 @@ class Cargafael extends Component {
 
   render() {
     const { xml_name } = this.state;
+    const mos = xml_name.map((x) => <Alert className="text-center d-flex justify-content-between align-items-center"><FontAwesomeIcon icon={['fas' , 'thumbs-up']} />{"Ubicación de la factura electrónica "  + x }</Alert> );
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Ubicar factura electrónica</h2>
                       <FormGroup className="container">
-                        { xml_name && <Alert className="text-center d-flex justify-content-between align-items-center"><FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> {"Ubicación de la factura electrónica "  + xml_name}</Alert> }
-                        { !xml_name && <Alert color="danger" className="text-center d-flex justify-content-between align-items-center">
+                        { xml_name.length!==0 && mos }
+                        { xml_name.length===0 && <Alert color="danger" className="text-center d-flex justify-content-between align-items-center">
                                           <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Aún no esta ubicada la factura</Alert> }
 			      <div className="flex-col d-flex justify-content-center">
 				<Button color="primary" onClick={this.cargar}>Ubicar factura</Button>

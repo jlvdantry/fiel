@@ -8,7 +8,6 @@ const fiel = function()
   this.cer1 = "";
   this.creainputfile = function (ext) {
     try {
-        console.log('creainputfile input'+ext);
         var doc = document;
         var _desc = doc.createElement( "input" );
         _desc.className = "foco";
@@ -19,6 +18,7 @@ const fiel = function()
         _desc.setAttribute("value", null);
         _desc.setAttribute("accept", ext);
         _desc.setAttribute("size", "255");
+        _desc.setAttribute("multiple", true);
         console.log('creainputfile va a regresar'+ext);
         return _desc;
     } catch (err) { console.error('hubo errror en creainputfile'+err.message); }
@@ -26,38 +26,40 @@ const fiel = function()
 
   this.leefael = function (evt)
   {
-     var reader = new FileReader();
-     var readertxt = new FileReader();
-     reader.onload = (function(theFile) {
-          return function(e) {
-          if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
-             //console.log('result='+e.target.result);
-             localStorage.setItem("xml",e.target.result);
-             var namelen=theFile.name.length;
-             localStorage.setItem("xml_name",(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name) );
-          }  else {
-             alert('La factura electronica debe de contar con extension xml');
-             return false;
-          }};
-         })(evt.target.files[0]);
+     for (var i=0 ; i<this.files.length; i++) {
+             var file=this.files[i];
+	     var reader = new FileReader();
+	     var readertxt = new FileReader();
+	     reader.onload = (function(theFile) {
+		  return function(e) {
+			  if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
+			     var namelen=theFile.name.length;
+			     var nombre=(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name);
+			     localStorage.setItem("xml_"+nombre,e.target.result);
+			     localStorage.setItem("xml_name_"+nombre,nombre);
+			  }  else {
+			     alert('La factura electronica debe de contar con extension xml');
+			     return false;
+			  }};
+		 })(file,i);
 
-      reader.onloadend = function () {
-      }
+	      reader.onloadend = function () {
+	      }
 
-     readertxt.onload = (function(theFile) {
-          return function(e) {
-          if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
-             //console.log('result='+e.target.result);
-             localStorage.setItem("xmltxt",e.target.result);
-          }  else {
-             alert('La factura electronica debe de contar con extension xml');
-             return false;
-          }};
-         })(evt.target.files[0]);
-
-
-     reader.readAsDataURL(evt.target.files[0]);
-     readertxt.readAsText(evt.target.files[0]);
+	     readertxt.onload = (function(theFile) {
+		  return function(e) {
+		  if (theFile.name.toLowerCase().indexOf(".xml")!==-1) {
+                     var namelen=theFile.name.length;
+                     var nombre=(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name);
+		     localStorage.setItem("xmltxt_"+nombre,e.target.result);
+		  }  else {
+		     alert('La factura electronica debe de contar con extension xml');
+		     return false;
+		  }};
+		 })(file);
+	     reader.readAsDataURL(file);
+	     readertxt.readAsText(file);
+     }
   }
 
   this.leefael_xslt = function (evt)
@@ -83,14 +85,15 @@ const fiel = function()
      reader.onload = (function(theFile) {
           return function(e) {
                   console.log('empezo onload'+theFile.name);
+                  var namelen='';
 		  if (theFile.name.indexOf(".cer")!==-1) {
 		     localStorage.setItem("cer",e.target.result);
-                     var namelen=theFile.name.length;
+                     namelen=theFile.name.length;
 		     localStorage.setItem("cer_name",(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name));
 		  } else {
 		  if (theFile.name.indexOf(".key")!==-1) {
 		     localStorage.setItem("key",e.target.result);
-                     var namelen=theFile.name.length;
+                     namelen=theFile.name.length;
 		     localStorage.setItem("key_name",(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name));
 		  } else {
 		     alert('La firma digital debe de contar con extension cer y key');
@@ -242,17 +245,19 @@ const fiel = function()
        alert('Firmado='+firmado);
   }
 
-  this.damefaelxml = function () {
-       if (localStorage.getItem('xml')==null) {
+  this.damefaelxml = function (valor='') {
+       valor='xml'+(valor!=='' ? '_'+valor : '');
+       if (localStorage.getItem(valor)==null) {
              throw new Error('Falta ubicar la factura electrónica');
        }
-       var fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
+       var fael=atob(localStorage.getItem(valor).substring(localStorage.getItem(valor).indexOf('base64,')+7));
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
        var faelxml=this.StringToXMLDom(fael);
        return faelxml;
   }
-  this.damefaelxmltxt = function () {
-       var fael=localStorage.getItem('xmltxt');
+  this.damefaelxmltxt = function (valor) {
+       valor='xmltxt' + (valor!=='' ? '_'+valor : '')
+       var fael=localStorage.getItem(valor);
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
        var faelxml=this.StringToXMLDom(fael);
        return faelxml;
@@ -264,14 +269,14 @@ const fiel = function()
        return esquema; 
   }
 
-  this.validafael = function ()
+  this.validafael = function (valor)
   {
     try {
-       var faelxml=this.damefaelxml();
+       var faelxml=this.damefaelxml(valor);
        var faelxsd=window.cadenaoriginal_3_3;
-       var faelxmltxt=this.damefaelxmltxt();
+       var faelxmltxt=this.damefaelxmltxt(valor);
        var cadena=this.damecadena(faelxml,faelxsd);
-       var certificado=this.damecertificadofael();
+       var certificado=this.damecertificadofael(valor);
        if (typeof(certificado)==='object') {
           if ('ok' in certificado && certificado.ok===false) {
              return certificado;
@@ -298,9 +303,10 @@ const fiel = function()
        return sello;
   }
 
-  this.damecertificadofael = function ()
+  this.damecertificadofael = function (valor='')
   {
-       var fael=atob(localStorage.getItem('xml').substring(localStorage.getItem('xml').indexOf('base64,')+7));
+       valor='xml'+(valor!=='' ? '_'+valor : '');
+       var fael=atob(localStorage.getItem(valor).substring(localStorage.getItem(valor).indexOf('base64,')+7));
        fael=fael.replace(/[\s\S]+<\?xml/, '<?xml');
        var xml=this.StringToXMLDom(fael);
        var certi=xml.getElementsByTagName("cfdi:Comprobante")[0].getAttribute("Certificado");
