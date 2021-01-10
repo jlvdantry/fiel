@@ -16,7 +16,6 @@ class Menumi extends Component {
     this.defaultlink = React.createRef();
   }
 
-  mitiempo = 0;
  
   defaultlink(e)  {
       e.click();
@@ -52,9 +51,9 @@ class Menumi extends Component {
 	// Checks if should display install popup notification:
 	if (isIos() && !isInStandaloneMode()) {
 	  this.setState({ showInstallMessage: true });
+          timer=setInterval(() => this.quitainstala(), 5000)
 	}
 	  //this.setState({ showInstallMessage: true });
-    timer=setInterval(() => this.quitainstala(), 3000)
     document.querySelector('#ayuda').click();
   }
   
