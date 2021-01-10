@@ -45,3 +45,21 @@
      border: 2px solid rgba(0,0,0,.125);
      border-color: #17a2b8!important;
 }
+
+.instalar {
+    position: absolute;
+    top: 90%;
+    z-index: 99;
+    left: 20%;
+}
+
+#pico {
+    width: 14px;
+    height: 14px;
+    -webkit-transform: rotate( -315deg);
+    transform: rotate( -315deg);
+    background-color: #d4edda;
+    position: absolute;
+    top: 76%;
+    left: 49%;
+}

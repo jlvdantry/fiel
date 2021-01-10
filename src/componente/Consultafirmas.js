@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
-import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck, Badge} from 'reactstrap';
-import { leefirmas, cuantasfirmas,bajafirmas, leefirma } from '../db';
+import { Button, Container, Card,CardBody,CardSubtitle,CardText, Badge} from 'reactstrap';
+import { leefirmas, cuantasfirmas,bajafirmas} from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ShowMoreText from 'react-show-more-text';
-import { jsPDF } from "jspdf";
 import  Html2Pdf   from "js-html2pdf";
 
 

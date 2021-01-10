@@ -3,17 +3,20 @@ import {  Link } from 'react-router';
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-
+let timer = null;
 class Menumi extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { isOpen: false, online: true };
+    this.state = { isOpen: false, online: true , showInstallMessage:false };
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
+    this.quitainstala = this.quitainstala.bind(this);
     this.setOnlineStatus = this.setOnlineStatus.bind(this);
     this.defaultlink = React.createRef();
   }
+
+  mitiempo = 0;
  
   defaultlink(e)  {
       e.click();
@@ -38,7 +41,27 @@ class Menumi extends Component {
     else { this.setOnlineStatus(true) }
     window.addEventListener('online', () => this.setOnlineStatus(true));
     window.addEventListener('offline', () => this.setOnlineStatus(false));
+	// Detects if device is on iOS
+	const isIos = () => {
+	  const userAgent = window.navigator.userAgent.toLowerCase();
+	  return /iphone|ipad|ipod/.test( userAgent );
+	}
+	// Detects if device is in standalone mode
+	const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+	// Checks if should display install popup notification:
+	if (isIos() && !isInStandaloneMode()) {
+	  this.setState({ showInstallMessage: true });
+	}
+	  //this.setState({ showInstallMessage: true });
+    timer=setInterval(() => this.quitainstala(), 3000)
     document.querySelector('#ayuda').click();
+  }
+  
+  quitainstala() {
+    document.querySelector('#instalar').classList.remove("d-flex");
+    document.querySelector('#instalar').classList.add("d-none");
+    clearTimeout(timer);
   }
 
   componentWillUnmount() {
@@ -50,7 +73,7 @@ class Menumi extends Component {
 
   render() {
     return (
-      <div>
+      <div id='menu'>
         <Navbar color="blue" light expand="md">
           <NavbarBrand to="/">FIEL</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
@@ -66,6 +89,12 @@ class Menumi extends Component {
           </Collapse>
         </Navbar>
         { !this.state.online && <Alert color="danger">Aplicativo sin internet</Alert> }
+        { this.state.showInstallMessage && <div  className='fixed-bottom d-flex text-justify justify-content-center' id="instalar">
+          <Alert className='d-flex align-items-center justify-content-between' > 
+                 <FontAwesomeIcon className="fa-2x " icon={['fas', 'plus-square']} />
+                 <div className='pl-2'> Instala esta aplicación en tu iphone dando click y despues agregalo al inicio</div>
+          </Alert>
+          <div id='pico'></div></div>}
       </div>
     );
   }

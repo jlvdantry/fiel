@@ -27,7 +27,7 @@ class Validafael extends Component {
   insertafael(){
         console.log('entro en insertafael');
         var archi = this.state.archi;
-        archi = archi.map ( async (x,ind,archi1) => 
+        archi.map ( async (x,ind,archi1) => 
         {
 		var that=this;
                 console.log('x='+x+' ind='+ind);

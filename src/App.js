@@ -17,7 +17,6 @@ import './fontawesome';;
 
 class App extends Component {
   render() {
-    console.log('va a renderear un componente');
     return (
       <Router history={browserHistory}>
         <Route path="/" component={Master}>
