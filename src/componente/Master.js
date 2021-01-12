@@ -6,12 +6,7 @@ import  Menumi  from '../componente/Menu';
 
 class Master extends Component {
   constructor(props){
-    console.log('entro en el constructor');
     super(props);
-    this.nextPath = this.nextPath.bind(this);
-  }
-  nextPath(path) {
-      browserHistory.push(path);
   }
 
   render() {

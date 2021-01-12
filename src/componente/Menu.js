@@ -2,18 +2,20 @@ import React, { Component } from 'react';
 import {  Link } from 'react-router';
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { browserHistory  } from 'react-router';
 
 let timer = null;
 class Menumi extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { isOpen: false, online: true , showInstallMessage:false };
+    this.state = { isOpen: false, online: true , showInstallMessage:false, windowWidth: window.innerWidth, windowHeigth : window.innerHeight };
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
     this.quitainstala = this.quitainstala.bind(this);
     this.setOnlineStatus = this.setOnlineStatus.bind(this);
     this.defaultlink = React.createRef();
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
  
@@ -32,6 +34,12 @@ class Menumi extends Component {
             isOpen: false
         });
   }
+  cierra() {
+       console.log('entro cierra');
+       browserHistory.replace('/');
+       console.log('paso browserHistory');
+       window.close();
+  }
 
   componentDidMount() {
     console.log('Monto el componente');
@@ -40,6 +48,7 @@ class Menumi extends Component {
     else { this.setOnlineStatus(true) }
     window.addEventListener('online', () => this.setOnlineStatus(true));
     window.addEventListener('offline', () => this.setOnlineStatus(false));
+    window.addEventListener('resize', this.updateWindowDimensions)
 	// Detects if device is on iOS
 	const isIos = () => {
 	  const userAgent = window.navigator.userAgent.toLowerCase();
@@ -63,9 +72,14 @@ class Menumi extends Component {
     clearTimeout(timer);
   }
 
+	updateWindowDimensions() {
+	  this.setState({ windowWidth: window.innerWidth, windowHeight: window.innerHeight });
+	}
+
   componentWillUnmount() {
     window.removeEventListener('online');
     window.removeEventListener('offline');
+    window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
   setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; console.log('cambio estado'); }
