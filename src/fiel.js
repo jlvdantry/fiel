@@ -26,6 +26,7 @@ const fiel = function()
 
   this.leefael = function (evt)
   {
+     localStorage.clear();
      for (var i=0 ; i<this.files.length; i++) {
              var file=this.files[i];
 	     var reader = new FileReader();
