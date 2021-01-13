@@ -88,7 +88,7 @@ class Menumi extends Component {
     return (
       <div id='menu'>
         <Navbar color="blue" light expand="md">
-          <NavbarBrand to="/">FIEL</NavbarBrand>
+          <h1>FIEL</h1>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto " navbar>
