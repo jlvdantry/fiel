@@ -54,7 +54,6 @@ class Graficafael extends Component {
                                     // N=nomina egreso para el emisor  ingreso para el receptor
                                     // T=Traslado
                                     // P=Pago
-                                   console.log('rfce='+rfce+'  rfcr='+rfcr+' total='+total+' tc='+tc);
                                    if (labels.indexOf(rfce) ===-1) {
                                           labels.push(rfce);
                                           datase.push(0);
@@ -126,6 +125,20 @@ class Graficafael extends Component {
     const datae = this.state.datae
     const datan = this.state.datan
     const dropdownValue = this.state.dropdownValue
+    const optionsc={ legend: { display:false },
+		    tooltips: {
+		      callbacks: {
+			title: function(tooltipItem, data) {
+                       //   console.log('title='+data['labels'][tooltipItem[0]['index']]);
+			  return data['labels'][tooltipItem[0]['index']];
+			},
+			label: function(tooltipItem, data) {
+                      //    console.log('label='+data['datasets'][0]['data'][tooltipItem['index']]);
+			  return data['datasets'][0]['data'][tooltipItem['index']].toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+			},
+		      }
+                    }
+                   }
     //console.log('datai='+datai.datasets.data.length)
     return  (
       <>
@@ -146,11 +159,10 @@ class Graficafael extends Component {
 				<Card className="m-1">
 					<CardHeader color="success" className="text-center" >Ingreso</CardHeader>
 					<CardBody>
-						{ (dropdownValue==='Dona') && <Doughnut data={datai}> </Doughnut> }
-						{ (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datai} options={{ legend: { display: false }}}>
-						</HorizontalBar> }
-						{ (dropdownValue==='Barras Verticales') && <Bar data={datai} options={{ legend: { display: false }}}> </Bar> }
-						{ (dropdownValue==='Pie') && <Pie data={datai}> </Pie> }
+						{ (dropdownValue==='Dona') && <Doughnut data={datai} options={optionsc}> </Doughnut> }
+						{ (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datai} options={optionsc}> </HorizontalBar> }
+						{ (dropdownValue==='Barras Verticales') && <Bar data={datai} options={optionsc}> </Bar> }
+						{ (dropdownValue==='Pie') && <Pie data={datai} options={optionsc}> </Pie> }
 					</CardBody>
 				</Card>
                          }
@@ -158,14 +170,10 @@ class Graficafael extends Component {
 				<Card className="m-1">
 					<CardHeader color="success" className="text-center" >Egreso</CardHeader>
 					<CardBody>
-						{ (dropdownValue==='Pie') && <Pie data={datae}>
-						</Pie> }
-						{ (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datae} options={{ legend: { display: false }}}>
-						</HorizontalBar> }
-                                                { (dropdownValue==='Dona') && <Doughnut data={datae}>
-                                                </Doughnut> }
-                                                { (dropdownValue==='Barras Verticales') && <Bar data={datae} options={{ legend: { display: false }}}>
-                                                </Bar> }
+						{ (dropdownValue==='Pie') && <Pie data={datae}  options={optionsc}> </Pie> }
+						{ (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datae} options={optionsc}> </HorizontalBar> }
+                                                { (dropdownValue==='Dona') && <Doughnut data={datae} options={optionsc}> </Doughnut> }
+                                                { (dropdownValue==='Barras Verticales') && <Bar data={datae} options={optionsc}> </Bar> }
 					</CardBody>
 				</Card>
                           }
@@ -173,14 +181,10 @@ class Graficafael extends Component {
                                 <Card className="m-1">
                                         <CardHeader color="success" className="text-center" >Neto</CardHeader>
                                         <CardBody>
-                                                { (dropdownValue==='Pie') && <Pie data={datan}>
-                                                </Pie> }
-                                                { (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datan} options={{ legend: { display: false }}}>
-                                                </HorizontalBar> }
-                                                { (dropdownValue==='Dona') && <Doughnut data={datan}>
-                                                </Doughnut> }
-                                                { (dropdownValue==='Barras Verticales') && <Bar data={datan} options={{ legend: { display: false }}}>
-                                                </Bar> }
+                                                { (dropdownValue==='Pie') && <Pie data={datan} options={optionsc}> </Pie> }
+                                                { (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datan} options={optionsc}> </HorizontalBar> }
+                                                { (dropdownValue==='Dona') && <Doughnut data={datan}  options={optionsc}> </Doughnut> }
+                                                { (dropdownValue==='Barras Verticales') && <Bar data={datan} options={optionsc}> </Bar> }
                                         </CardBody>
                                 </Card>
                           }
