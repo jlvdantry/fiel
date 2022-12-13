@@ -3,6 +3,7 @@ import Cargafael from './Cargafael';
 import Validafael from './Validafael';
 import Consultafael from './Consultafael';
 import Graficafael from './Graficafael';
+import CargaMasiva from './CargafaelMasiva';
 class Misfacturas extends Component {
   constructor(props){
      super(props);
@@ -23,6 +24,7 @@ class Misfacturas extends Component {
     console.log('rendereo misfacturas');
     return (
       <div>
+	      <CargaMasiva />
 	      <Cargafael />
 	      <Validafael onRefresca={this.onRefresca}/>
 	      <Graficafael ref={this.changeGrafica}/>

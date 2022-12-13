@@ -14,6 +14,7 @@
     "@version/react-router-v3": "^1.0.0",
     "bootstrap": "^4.5.2",
     "chart.js": "^2.9.3",
+    "jquery.soap": "^1.7.3",
     "js-base64": "^3.5.2",
     "js-html2pdf": "^1.1.4",
     "jspdf": "^2.1.1",
@@ -27,7 +28,8 @@
     "react-scripts": "^3.4.3",
     "react-show-more-text": "^1.4.4",
     "react-tappable": "^1.0.4",
-    "reactstrap": "^8.6.0"
+    "reactstrap": "^8.6.0",
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -54,8 +54,8 @@ class Carga extends Component {
     const { cer_name, key_name } = this.state;
     return  (
         <Card id="cargafiel" className="m-2 p-2">
-                  <h2 class="text-center">Ubicar firma electrónica</h2>
-                      <FormGroup class="container">
+                  <h2 className="text-center">Ubicar firma electrónica</h2>
+                      <FormGroup className="container">
                         { cer_name && <Alert className="text-center d-flex justify-content-between align-items-center"> 
                                      <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Ubicacion de la llave pública {cer_name}</Alert> }
                         { key_name && <Alert className="text-center d-flex justify-content-between align-items-center">
