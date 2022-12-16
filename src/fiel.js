@@ -157,20 +157,20 @@ const fiel = function()
   this.validaprivada = function(pwd,cadena='prueba')
   {
        if(pwd==="")
-       { alert('La contraseña es obligatorio'); return false; }
+       { return { ok: false, msg:'La contraseña es obligatorio' } }
        if(localStorage.getItem('key')==null)
-       { alert('La llave privada no esta definida'); return false; }
+       { return { ok: false, msg:'La llave privada no esta definida'} }
        if(localStorage.getItem('cer')==null)
-       { alert('El certificado no esta definido'); return false; }
+       { return { ok: false, msg:'El certificado no esta definido'} }
        var pki = window.forge.pki;
        var pk=localStorage.getItem('key').substring(localStorage.getItem('key').indexOf('base64,')+7);
        pk="-----BEGIN ENCRYPTED PRIVATE KEY-----\r\n"+pk.chunkString(64)+"-----END ENCRYPTED PRIVATE KEY-----";
        try {
             this.rk=pki.decryptRsaPrivateKey(pk,pwd);
            } catch (err) {
-             return false;} ;
-       if (!this.rk) return false ;
-       return true;
+             return { ok: false, msg:err}} 
+       if (!this.rk) return { ok: false, msg:'No checa la firma' } ;
+       return { ok: true, msg:'La fiel es correcta' };
   }
 
   this.damecertiJson = function(certi) {
@@ -192,7 +192,8 @@ const fiel = function()
 
   this.validafiellocal = function(pwd,cadena='prueba')
   {
-       if (this.validaprivada(pwd,cadena)) {
+       var ret=this.validaprivada(pwd,cadena);
+       if (ret.ok) {
           var md = window.forge.md.sha256.create();
           md.update(cadena);
           try {var firmado=btoa(this.rk.sign(md));} catch(err) { alert(err); return false; }
@@ -239,11 +240,11 @@ const fiel = function()
        //faelxsd=this.loadXMLDoc("xslt/cadenaoriginal_3_3.xslt");
        var faelxsd=window.cadenaoriginal_3_3;
        var cadena=this.damecadena(faelxml,faelxsd); 
-       this.validaprivada('888aDantryR',cadena);
+       this.validaprivada('xxxxxxx',cadena);
        var md = window.forge.md.sha256.create();
        md.update(cadena);
        try {var firmado=btoa(this.rk.sign(md));} catch(err) { alert(err); return false; }
-       //alert('Firmado='+firmado);
+       return firmado;
   }
 
   this.damefaelxml = function (valor='') {

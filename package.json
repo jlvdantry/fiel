@@ -29,6 +29,7 @@
     "react-show-more-text": "^1.4.4",
     "react-tappable": "^1.0.4",
     "reactstrap": "^8.6.0",
+    "reactstrap-date-picker": "^1.0.5",
     "uuid": "^9.0.0"
   },
   "scripts": {

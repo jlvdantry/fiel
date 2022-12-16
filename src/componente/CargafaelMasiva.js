@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {FormGroup, Alert, Button, Card} from 'reactstrap';
+import React, { Component } from 'react';
+import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,InputGroupAddon,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { browserHistory  } from 'react-router';
-import fiel from '../fiel';
 import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {  DatePicker } from "reactstrap-date-picker";
 
 
 let timer = null;
@@ -12,10 +12,39 @@ class CargafaelMasiva extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { xml_name : [] };
+    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/2022"),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,dropdownValueC:'CFDI'};
     this.cargar = this.cargar.bind(this);
     this.cambio = this.cambio.bind(this);
+    this.showHide = this.showHide.bind(this)
+    this.handleChangeini = this.handleChangeini.bind(this)
+    this.handleChangefin = this.handleChangefin.bind(this)
+    this.toggle =  this.toggle.bind(this)
+    this.changeValue = this.changeValue.bind(this);
+    this.toggleC =  this.toggleC.bind(this)
+    this.changeValueC = this.changeValueC.bind(this);
   }
+
+    toggle(event) {
+        this.setState({
+            dropdownOpen: !this.state.dropdownOpen
+        });
+    }
+
+    toggleC(event) {
+        this.setState({
+            dropdownOpenC: !this.state.dropdownOpenC
+        });
+    }
+
+
+    changeValue(e) {
+        this.setState({dropdownValue: e.currentTarget.textContent});
+    }
+
+    changeValueC(e) {
+        this.setState({dropdownValueC: e.currentTarget.textContent});
+    }
+
 
   nextPath(path) {
       browserHistory.push(path);
@@ -43,24 +72,172 @@ class CargafaelMasiva extends Component {
   }
 
   cargar() {
+
+    if (document.querySelector('#pwdfiel').value==='') {
+       this.setState({ ok: false, nook:true,msg:'La contraseña es obligatoria'  });
+       return;
+    } else {
+       this.setState({ ok: true, nook:false });
+    }
+
+    if (this.state.dropdownValue==='por folio') {
+       this.setState({folio:document.querySelector('#folio').value});
+       if (this.state.folio==='') {
+           this.setState({okfolio:false});
+           return;
+       } else {
+           this.setState({okfolio:true});
+       }
+    }
+
+    if (this.state.dropdownValue==='por rango de fechas') {
+
+       this.setState({start:document.querySelector('#fechainicial').value});
+       if (this.state.start===null || this.state.start==='') {
+           this.setState({okfechai:false});
+           return;
+       } else {
+           this.setState({okfechai:true});
+       }
+
+       this.setState({end:document.querySelector('#fechafinal').value});
+       if (this.state.end===null || this.state.end==='') {
+           this.setState({okfechaf:false,msgfecha:'La fecha final es obligatoria' });
+           return;
+       } else {
+           this.setState({okfechaf:true});
+       }
+
+       if (this.state.end<this.state.start) {
+           this.setState({okfechaf:false,msgfecha:'La fecha final no puede ser menor a la inicial'});
+           return;
+       } else {
+           this.setState({okfechaf:true});
+       }
+
+    }
+
     var x = new DMS();
-    x.autenticate();
+    var res=x.autenticate_armasoa(document.querySelector('#pwdfiel').value);
+    if (res.ok===true) {
+       this.setState({ ok: true, nook:false });
+       x.autenticate_enviasoa(res.soap).then((ret) =>  {
+                 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token)}));
+                 x.solicita(this.state);
+       });
+    }
+    if (res.ok===false) {
+       this.setState({ ok: false, nook:true,msg:res.msg  });
+    }
+
   }
 
+  showHide(e){
+    this.setState({
+      type: this.state.type === 'input' ? 'password' : 'input',
+      ojos: this.state.ojos === 'eye' ? 'eye-slash' : 'eye'
+    })
+  }
+
+  handleChangeini(value, formattedValue) {
+    this.setState({
+      start: value, // ISO String, ex: "2016-11-19T12:00:00.000Z"
+      formattedValueIni: formattedValue // Formatted String, ex: "11/19/2016"
+    })
+  }
+
+  handleChangefin(value, formattedValue) {
+    this.setState({
+      end: value, // ISO String, ex: "2016-11-19T12:00:00.000Z"
+      formattedValueFin: formattedValue // Formatted String, ex: "11/19/2016"
+    })
+  }
+
+
+
   render() {
-    const { xml_name } = this.state;
-    const mos = xml_name.map((x) => <Alert className="text-center d-flex justify-content-between align-items-center"><FontAwesomeIcon icon={['fas' , 'thumbs-up']} />{"Descarga Masiva "  + x }</Alert> );
     return  (
         <Card id="cargafael" className="p-2 m-2">
-                  <h2 className="text-center">Ubicar factura electrónica</h2>
-                      <FormGroup className="container">
-                        { xml_name.length!==0 && mos }
-                        { xml_name.length===0 && <Alert color="danger" className="text-center d-flex justify-content-between align-items-center">
-                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Aún no esta ubicada la factura</Alert> }
-			      <div className="flex-col d-flex justify-content-center">
-				<Button color="primary" onClick={this.cargar}>Descarga Masiva</Button>
-			      </div>
+                  <h2 className="text-center">Carga masiva de la factura electrónica</h2>
+
+                        <FormGroup className="container row col-lg-12">
+                          <div className="col-lg-6 d-flex">
+				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
+				      <DropdownToggle caret color="primary" size="lg">
+						   Solicitud {this.state.dropdownValue} 
+				      </DropdownToggle>
+				      <DropdownMenu>
+					<DropdownItem onClick={this.changeValue} >por rango de fechas</DropdownItem>
+					<DropdownItem onClick={this.changeValue} >por folio</DropdownItem>
+				      </DropdownMenu>
+				</Dropdown>
+                          </div>
+
+                          <div className="col-lg-6 d-flex">
+				<Dropdown isOpen={this.state.dropdownOpenC} toggle={this.toggleC}  className="d-flex justify-content-center mb-2" >
+				      <DropdownToggle caret color="primary" size="lg">
+						   Solicitud de {this.state.dropdownValueC}
+				      </DropdownToggle>
+				      <DropdownMenu>
+					<DropdownItem onClick={this.changeValueC} >CFDI</DropdownItem>
+					<DropdownItem onClick={this.changeValueC} >Retenciones</DropdownItem>
+				      </DropdownMenu>
+				</Dropdown>
+                          </div>
                       </FormGroup>
+
+
+                      <FormGroup className="container">
+                        <Label>Contraseña de la llave privada</Label>
+                        <InputGroup>
+                                <Input type={this.state.type} name="password" id="pwdfiel" placeholder="contraseña" />
+                                <InputGroupAddon addonType="append">
+                                        <Button onClick={this.showHide} ><FontAwesomeIcon icon={['fas' , this.state.ojos]} /></Button>
+                                </InputGroupAddon>
+                        </InputGroup> 
+		        { this.state.nook && <div id="nook" className="mt-1">
+			               <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {this.state.msg} </Alert>
+		                </div> }
+                      </FormGroup>
+
+                      { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
+                          <div className="col-lg-6">
+                            <Label>Fecha Inicial</Label>
+                            <DatePicker id="fechainicial" value="{this.state.start}" onChange={(v,f) => this.handleChangeini(v, f)} />
+                            { this.state.okfechai===false &&
+                                <div  className="mt-1">
+                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> La fecha inicial es obligatoria </Alert>
+                                </div> }
+                          </div>
+                          <div className="col-lg-6">
+                            <Label>Fecha Final</Label>
+                            <DatePicker id="fechafinal" maxDate="{new Date()}" value="{this.state.end}" onChange={(v,f) => this.handleChangefin(v, f)} />
+                            { this.state.okfechaf===false &&
+                                <div className="mt-1">
+                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgfecha } </Alert>
+                                </div> }
+                          </div>
+                      </FormGroup> }
+
+                      { this.state.dropdownValue==='por folio' && <FormGroup className="container row col-lg-12">
+				<Label>Folio de la factura</Label>
+				<InputGroup>
+					<Input type="input" name="password" id="folio" placeholder="Folio de la factura" />
+				</InputGroup>
+                                { this.state.okfolio===false && 
+                                <div id="nook" className="mt-1">
+                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El folio es obligatorio </Alert>
+                                </div> }
+
+                      </FormGroup> }
+
+                      <div className="flex-col d-flex justify-content-center">
+                           <Button color="primary" onClick={this.cargar}>Solicitar</Button>
+                      </div>
         </Card>
     )
   }

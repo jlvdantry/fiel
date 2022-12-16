@@ -1,6 +1,8 @@
 import fiel from './fiel';
 var DescargaMasivaSat = function()
 {
+   this.mifiel = '';
+   this.token = '';
 
    this.uuid = function () {
                   const url = URL.createObjectURL(new Blob())
@@ -21,24 +23,16 @@ var DescargaMasivaSat = function()
         var md = window.forge.md.sha1.create();
         var digerido = "";
         md.update(digest,'utf8');
-        var digerido = btoa(md.digest().data);
-        //console.log('digest='+btoa(md.update(digest)));
-        //console.log('digest='+digest);
+        digerido = btoa(md.digest().data);
         console.log('digerido='+digerido);
-        //console.log('sin data to hext='+btoa(md.digest().tohex()));
 
         var signedinfo = '<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI="'+urifirmado+'"><Transforms><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod><DigestValue>'+digerido+'</DigestValue></Reference></SignedInfo>';
         var signedinfox = '<SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI="'+urifirmado+'"><Transforms><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod><DigestValue>'+digerido+'</DigestValue></Reference></SignedInfo>';
-        //var signedinfo = '<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI="#_0"><Transforms><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod><DigestValue>FG221Y03ZZJMIR7GWADUTrhgWuo=</DigestValue></Reference></SignedInfo>';
         var mdsi = window.forge.md.sha1.create();
         mdsi.update(signedinfo,'utf8');
-        var x = new fiel();
-        console.log('signedinfo='+signedinfo);
-        console.log('validaprivada='+x.validaprivada('888aDantryR'));
-        var sello=btoa(x.rk.sign(mdsi));
-        console.log('sello='+sello);
+        var sello=btoa(this.mifiel.rk.sign(mdsi));
         var keyInfo=this.creaLLaveInfoData();
-        return { signedinfo : signedinfox, keyInfo:keyInfo , sello: sello}
+        return { signedinfo : signedinfox, keyInfo:keyInfo , sello: sello, res:true}
    }
 
    this.creaLLaveInfoData = function () {
@@ -55,16 +49,20 @@ var DescargaMasivaSat = function()
        return arma;
    } 
 
-  var x = new fiel();
-  this.cer = x.damecertificadofiel();
-  this.fi=new Date();
-  this.ff=new Date(this.fi);
-  this.ff.setMinutes ( this.fi.getMinutes() + 5 );
-  this.fi=this.fi.toISOString();
-  this.ff=this.ff.toISOString();
-  this.dv='';
-  this.vuuid=this.uuid();
-  this.datofirmado='';
+   this.armaBodySol = function () {
+   }
+
+   this.armaBodyAut = function () {
+	  var x = new fiel();
+	  this.cer = x.damecertificadofiel();
+	  this.fi=new Date();
+	  this.ff=new Date(this.fi);
+	  this.ff.setMinutes ( this.fi.getMinutes() + 5 );
+	  this.fi=this.fi.toISOString();
+	  this.ff=this.ff.toISOString();
+	  this.dv='';
+	  this.vuuid=this.uuid();
+	  this.datofirmado='';
 
         this.keyInfoData =  ''+
             '<KeyInfo>'+
@@ -75,9 +73,6 @@ var DescargaMasivaSat = function()
 
         this.toDigestXml =  '<u:Timestamp xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" u:Id="_0"><u:Created>'+this.fi+'</u:Created><u:Expires>'+this.ff+'</u:Expires></u:Timestamp>';
         this.toDigestXml_ = '<u:Timestamp u:Id="_0"><u:Created>'+this.fi+'</u:Created><u:Expires>'+this.ff+'</u:Expires></u:Timestamp>';
-       //this.toDigestXml =  '<u:Timestamp xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" u:Id="_0"><u:Created>2022-12-12T18:01:42.000Z</u:Created><u:Expires>2022-12-12T18:06:42.000Z</u:Expires></u:Timestamp>';
-
-        console.log('toDigestXml='+this.toDigestXml);
 
         this.datofirmado=this.creafirma(this.toDigestXml,'#_0',this.keyInfoData);
 
@@ -107,11 +102,25 @@ var DescargaMasivaSat = function()
 		'<Autentica xmlns="http://DescargaMasivaTerceros.gob.mx"/>'+
 	'</s:Body>'+
 '</s:Envelope>';
-   this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc';
-   this.urlproxy='/prueba_fiel.php';
-   this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
-   console.log('xmltoken='+this.xmltoken);
-   this.autenticate= function () {
+	   this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc';
+	   this.urlproxy='/prueba_fiel.php';
+	   this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+   }
+
+   this.autenticate_armasoa= function (pwd) {
+                this.mifiel = new fiel();
+                var res=this.mifiel.validaprivada(pwd);
+                if (res.ok) {
+                   this.armaBodyAut();
+                   return { ok:true, msg :'Fiel correcta', soap:this.xmltoken }
+                } else {
+                   return { ok:false , msg : res.msg };
+                }
+   }
+   //console.log('xmltoken='+this.xmltoken);
+   this.autenticate_enviasoa= function (soa,url) {
+        url=this.urlproxy;
+        return new Promise(function (resolve, reject) {
                 let hs1 = new Headers();
                 hs1.append('Content-Type', 'text/xml;charset=UTF-8');
                 hs1.append('Accept', 'text/xml');
@@ -119,19 +128,28 @@ var DescargaMasivaSat = function()
                 hs1.append('Cache-Control', 'no-cache');
                 hs1.append('Access-Control-Allow-Origin', '*');
                 hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica');
-                //var hss1 = {'Content-Type':'text/xml','SOAPAction':'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica'}
 
-                //console.log('hs1='+hs1);
-                var opciones = { method: 'POST', body:this.xmltoken, headers:hs1 };
-                fetch(this.urlproxy, opciones)
+                var opciones = { method: 'POST', body:soa, headers:hs1 };
+                fetch(url, opciones)
                     .then(
                           response => 
                                 response.text()
                          ) 
-                    .then(
-                           result => console.log(result)
+                    .then(function (result) {
+                           resolve ( { ok:true, msg : 'Firma correcta' , token : result })
+                          }
                          )
-                    .catch(err => console.log(err));
+                    .catch(function(err) {
+                             reject( { ok:false , msg : err });
+                          }
+                    );
+      });
+   }
+
+   this.solicita = function (estado) {
+        console.log('llego a solicita'+estado.token.value);
+        var solicitud = { 'RfcSolicitante' : 'a', 'TipoSolicitud' : 'a' };
+        return solicitud;
    }
 
 }

@@ -15,7 +15,6 @@ class Valida extends Component {
   validafirma(){
     var x = new fiel();
     var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
-    console.log('x='+JSON.stringify(res));
     if (res.ok===true) {
        this.setState({ ok: true, nook:false,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta });
     }
@@ -32,7 +31,6 @@ class Valida extends Component {
   }
 
   render() {
-    console.log('render carga');
     const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta,type,ojos } = this.state;
     return  (
         <Card id="validafiel" className="p-2 m-2">

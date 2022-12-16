@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { Container} from 'reactstrap';
-import { browserHistory  } from 'react-router';
 import  Menumi  from '../componente/Menu';
 
 

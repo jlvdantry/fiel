@@ -79,7 +79,6 @@ class Service
     {
         $authenticateTranslator = new AuthenticateTranslator();
         $soapBody = $authenticateTranslator->createSoapRequest($this->requestBuilder);
-         echo __METHOD__.print_r($soapBody,true);
         $responseBody = $this->consume(
             'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica',
             $this->endpoints->getAuthenticate(),
@@ -90,7 +89,7 @@ class Service
 
     public function authenticate_i($soapBody): Token
     {
-        echo __METHOD__.$soapBody;
+        //echo __METHOD__.$soapBody;
         $authenticateTranslator = new AuthenticateTranslator();
         //$soapBody = $authenticateTranslator->createSoapRequest($this->requestBuilder);
         $responseBody = $this->consume(

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {  Link } from 'react-router';
-import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, Alert } from 'reactstrap';
+import { Collapse, Navbar, NavbarToggler, Nav, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { browserHistory  } from 'react-router';
 
@@ -35,14 +35,11 @@ class Menumi extends Component {
         });
   }
   cierra() {
-       console.log('entro cierra');
        browserHistory.replace('/');
-       console.log('paso browserHistory');
        window.close();
   }
 
   componentDidMount() {
-    console.log('Monto el componente');
     if (!navigator.onLine)
        {  this.setOnlineStatus(false)  }
     else { this.setOnlineStatus(true) }
@@ -82,7 +79,7 @@ class Menumi extends Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
-  setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; console.log('cambio estado'); }
+  setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; }
 
   render() {
     return (
@@ -94,6 +91,8 @@ class Menumi extends Component {
             <Nav className="ml-auto " navbar>
               <Link to='/ayuda' id='ayuda' className='rounded mr-1' onClick={this.closeNavbar} activeClassName="active" onlyActiveOnIndex><FontAwesomeIcon icon={['fas', 'question']} /> AYUDA</Link>
               <Link to='/mifiel' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex><FontAwesomeIcon icon={['fas' , 'pen-fancy']} /> MI FIEL</Link>
+              <Link to='/cargafaelMasiva' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+                           <FontAwesomeIcon icon={['fas' , 'receipt']} /> DESCARGA MASIVA</Link>
               <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
                            <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
               <Link to='/misfirmas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>

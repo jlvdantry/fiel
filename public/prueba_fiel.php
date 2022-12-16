@@ -1,5 +1,7 @@
 <?php
-
+if ($_SERVER['REQUEST_METHOD']!='POST') {
+      die('Metodo no permitido');
+}
 require '../vendor/autoload.php';
 use PhpCfdi\SatWsDescargaMasiva\RequestBuilder\FielRequestBuilder\Fiel;
 use PhpCfdi\SatWsDescargaMasiva\RequestBuilder\FielRequestBuilder\FielRequestBuilder;
@@ -7,6 +9,7 @@ use PhpCfdi\SatWsDescargaMasiva\Service;
 use PhpCfdi\SatWsDescargaMasiva\WebClient\GuzzleWebClient;
 
 // Creación de la FIEL, puede leer archivos DER (como los envía el SAT) o PEM (convertidos con openssl)
+/*
 $fiel = Fiel::create(
     file_get_contents('../vabl590324v25.cer'),
     file_get_contents('../Claveprivada_FIEL_VABL590324V25_20191204_104650.key'),
@@ -17,19 +20,23 @@ $fiel = Fiel::create(
 if (! $fiel->isValid()) {
     return;
 }
+*/
 
 // creación del web client basado en Guzzle que implementa WebClientInterface
 // para usarlo necesitas instalar guzzlehttp/guzzle pues no es una dependencia directa
 $webClient = new GuzzleWebClient();
 
 // creación del objeto encargado de crear las solicitudes firmadas usando una FIEL
-$requestBuilder = new FielRequestBuilder($fiel);
+//$requestBuilder = new FielRequestBuilder($fiel);
 
 // Creación del servicio
-$service = new Service($requestBuilder, $webClient);
+$service = new Service(null, $webClient);
  
 //echo print_r($service->authenticate(),true);;
 
 $payload=file_get_contents('php://input');
-//echo "leido=".$payload;
-echo print_r($service->authenticate_i($payload),true);
+##echo print_r($service->authenticate_i($payload),true);
+##echo print_r(json_encode($service->authenticate_i($payload)),true);
+echo json_encode($service->authenticate_i($payload));
+##echo $service->authenticate_i($payload);
+##echo json_encode($service->authenticate_i($payload)->created);

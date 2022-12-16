@@ -64,7 +64,7 @@ class Carga extends Component {
                                      <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Aún no esta ubicada la llave pública</Alert> }
                         { !key_name && <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
                                      <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Aún no esta ubicada la llave privada</Alert> }
-                      <div class="flex-col d-flex justify-content-around">
+                      <div className="flex-col d-flex justify-content-around">
 				<Button color="primary"  onClick={this.cargarpub}>
                                      <FontAwesomeIcon icon={['fas' , 'certificate']} className="mr-2"/> Ubicar llave pública</Button>
 				<Button color="primary"  className="ml-2" onClick={this.cargarkey}>
