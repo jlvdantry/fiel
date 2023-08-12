@@ -134,6 +134,25 @@ class Service
     }
 
     /**
+     * Consume the "SolicitaDescarga" web service
+     *
+     * @param QueryParameters $parameters
+     * @return QueryResult
+     */
+    public function query_i($soapBody,$token): QueryResult
+    {
+
+        $responseBody = $this->consume(
+            'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga',
+            $this->endpoints->getQuery(),
+            $soapBody,
+            $token
+        );
+        return $queryTranslator->createQueryResultFromSoapResponse($responseBody);
+    }
+
+
+    /**
      * Consume the "VerificaSolicitudDescarga" web service
      *
      * @param string $requestId

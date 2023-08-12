@@ -197,7 +197,6 @@ const fiel = function()
           var md = window.forge.md.sha256.create();
           md.update(cadena);
           try {var firmado=btoa(this.rk.sign(md));} catch(err) { alert(err); return false; }
-          //console.log('Firmado='+firmado+' cadena='+cadena);
           var certificado=this.damecertificadofiel();
           var actual=new Date().toISOString();
           if (actual>certificado.validity.notAfter.toJSON() || actual<certificado.validity.notBefore.toJSON()) {

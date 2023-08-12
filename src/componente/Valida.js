@@ -36,7 +36,7 @@ class Valida extends Component {
         <Card id="validafiel" className="p-2 m-2">
 	      <h2 className="text-center" >Validar firma electrónica</h2>
               <Container className="border p-2 mb-3">
-		      <FormGroup class="container">
+		      <FormGroup className="container">
 			<Label for="pwdfiel">Contraseña de la llave privada</Label>
                         <InputGroup>
 				<Input type={type} name="password" id="pwdfiel" placeholder="contraseña" />
@@ -45,7 +45,7 @@ class Valida extends Component {
                                 </InputGroupAddon>
                         </InputGroup>
 		      </FormGroup>
-                      <div class="flex-col d-flex justify-content-center">
+                      <div className="flex-col d-flex justify-content-center">
 		           <Button color="primary" onClick={this.validafirma}>Validar</Button>
                       </div>
               </Container>

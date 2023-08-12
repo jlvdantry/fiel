@@ -12,7 +12,7 @@ class Master extends Component {
     return  (
       <div>
 	      <Menumi />
-	      <Container className="mt-4">
+	      <Container className="mt-4 col-lg-8">
 		  {this.props.children}
 	      </Container>
       </div>

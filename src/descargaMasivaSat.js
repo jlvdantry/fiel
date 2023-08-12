@@ -49,7 +49,31 @@ var DescargaMasivaSat = function()
        return arma;
    } 
 
-   this.armaBodySol = function () {
+   this.armaBodySol = function (estado) {
+          var solicitud = { 'RfcSolicitante' : estado.firma.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.firma.rfc };
+          var solicitudAttributesAsText='';
+          var xmlRfcReceived='';
+          this.toDigestXml =  '<des:SolicitaDescarga xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
+                '<des:solicitud '+solicitudAttributesAsText+'>'+
+                    xmlRfcReceived+
+                '</des:solicitud>'+
+            '</des:SolicitaDescarga>';
+          this.datofirmado=this.creafirma(this.toDigestXml);
+          this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
+                '<s:Header/>'+
+                '<s:Body>'+
+                    '<des:SolicitaDescarga>'+
+                        '<des:solicitud '+solicitudAttributesAsText+
+                            +xmlRfcReceived+
+                            +this.datofirmado+
+                        '</des:solicitud>'+
+                    '</des:SolicitaDescarga>'+
+                '</s:Body>'+
+            '</s:Envelope>';
+           this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc';
+           this.urlproxy='/solicita.php?solicitadescarga=""';
+           this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+
    }
 
    this.armaBodyAut = function () {
@@ -76,7 +100,7 @@ var DescargaMasivaSat = function()
 
         this.datofirmado=this.creafirma(this.toDigestXml,'#_0',this.keyInfoData);
 
-  this.xmltoken='<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">'+
+        this.xmltoken='<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">'+
 	'<s:Header>'+
 		'<o:Security xmlns:o="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" s:mustUnderstand="1">'+
                        this.toDigestXml_+
@@ -103,7 +127,7 @@ var DescargaMasivaSat = function()
 	'</s:Body>'+
 '</s:Envelope>';
 	   this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc';
-	   this.urlproxy='/prueba_fiel.php';
+	   this.urlproxy='/autentica.php';
 	   this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
    }
 
@@ -146,11 +170,49 @@ var DescargaMasivaSat = function()
       });
    }
 
-   this.solicita = function (estado) {
-        console.log('llego a solicita'+estado.token.value);
-        var solicitud = { 'RfcSolicitante' : 'a', 'TipoSolicitud' : 'a' };
-        return solicitud;
+   this.solicita_enviasoa= function (soa,token) {
+        var url=this.urlproxy;
+        return new Promise(function (resolve, reject) {
+                let hs1 = new Headers();
+                hs1.append('Content-Type', 'text/xml;charset=UTF-8');
+                hs1.append('Accept', 'text/xml');
+                hs1.append('Accept-Charset', 'utf-8');
+                hs1.append('Cache-Control', 'no-cache');
+                hs1.append('token_value', token.value);
+                hs1.append('token_created', token.created);
+                hs1.append('token_expired', token.expires);
+                hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga');
+
+                var opciones = { method: 'POST', body:soa, headers:hs1 };
+                fetch(url, opciones)
+                    .then(
+                          response =>
+                                response.text()
+                         )
+                    .then(function (result) {
+                           resolve ( { ok:true, msg : 'Solicitud correcta' , token : result })
+                          }
+                         )
+                    .catch(function(err) {
+                             reject( { ok:false , msg : err });
+                          }
+                    );
+      });
+   }
+
+this.solicita_armasoa = function (estado) {
+                this.mifiel = new fiel();
+                var res=this.mifiel.validafiellocal(estado.pwdfiel);
+                if (res.ok) {
+                   estado.firma = res;
+                   this.armaBodySol(estado);
+                   return { ok:true, msg :'Fiel correcta', soap:this.xmltoken }
+                } else {
+                   return { ok:false , msg : res.msg };
+                }
+
    }
 
 }
+
 export default DescargaMasivaSat;

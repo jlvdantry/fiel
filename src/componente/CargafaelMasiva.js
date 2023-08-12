@@ -7,12 +7,16 @@ import {  DatePicker } from "reactstrap-date-picker";
 
 
 let timer = null;
+
+        const days = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
 class CargafaelMasiva extends Component {
 
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/2022"),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,dropdownValueC:'CFDI'};
+    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/2022"),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:''};
     this.cargar = this.cargar.bind(this);
     this.cambio = this.cambio.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -36,13 +40,12 @@ class CargafaelMasiva extends Component {
         });
     }
 
-
     changeValue(e) {
         this.setState({dropdownValue: e.currentTarget.textContent});
     }
 
     changeValueC(e) {
-        this.setState({dropdownValueC: e.currentTarget.textContent});
+        this.setState({TipoSolicitud: e.currentTarget.textContent});
     }
 
 
@@ -122,10 +125,17 @@ class CargafaelMasiva extends Component {
     if (res.ok===true) {
        this.setState({ ok: true, nook:false });
        x.autenticate_enviasoa(res.soap).then((ret) =>  {
-                 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token)}));
-                 x.solicita(this.state);
+                 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value}));
+                 var resa=x.solicita_armasoa(this.state);
+                 if (resa.ok===true) {
+			 this.setState({ ok: true, nook:false });
+			 x.solicita_enviasoa(res.soap,this.state.token).then((ret) => {
+				 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value}));
+			 })
+                 }
        });
     }
+
     if (res.ok===false) {
        this.setState({ ok: false, nook:true,msg:res.msg  });
     }
@@ -159,9 +169,8 @@ class CargafaelMasiva extends Component {
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
-
-                        <FormGroup className="container row col-lg-12">
-                          <div className="col-lg-6 d-flex">
+                        <FormGroup className="container row col-lg-12 justify-content-around">
+                          <div className="col-lg-6 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" size="lg">
 						   Solicitud {this.state.dropdownValue} 
@@ -173,14 +182,14 @@ class CargafaelMasiva extends Component {
 				</Dropdown>
                           </div>
 
-                          <div className="col-lg-6 d-flex">
+                          <div className="col-lg-6 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpenC} toggle={this.toggleC}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" size="lg">
-						   Solicitud de {this.state.dropdownValueC}
+						   Solicitud de {this.state.TipoSolicitud}
 				      </DropdownToggle>
 				      <DropdownMenu>
 					<DropdownItem onClick={this.changeValueC} >CFDI</DropdownItem>
-					<DropdownItem onClick={this.changeValueC} >Retenciones</DropdownItem>
+					<DropdownItem onClick={this.changeValueC} >Metadata</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
                           </div>
@@ -202,18 +211,18 @@ class CargafaelMasiva extends Component {
                       </FormGroup>
 
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
-                          <div className="col-lg-6">
+                          <div className="col-lg-6 mt-1">
                             <Label>Fecha Inicial</Label>
-                            <DatePicker id="fechainicial" value="{this.state.start}" onChange={(v,f) => this.handleChangeini(v, f)} />
+                            <DatePicker dayLabels={days} monthLabels={months} id="fechainicial" value={this.state.start} maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />
                             { this.state.okfechai===false &&
                                 <div  className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
                                           <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> La fecha inicial es obligatoria </Alert>
                                 </div> }
                           </div>
-                          <div className="col-lg-6">
+                          <div className="col-lg-6 mt-1">
                             <Label>Fecha Final</Label>
-                            <DatePicker id="fechafinal" maxDate="{new Date()}" value="{this.state.end}" onChange={(v,f) => this.handleChangefin(v, f)} />
+                            <DatePicker dayLabels={days} monthLabels={months}  id="fechafinal" maxDate={new Date().toISOString()} value={this.state.end} onChange={(v,f) => this.handleChangefin(v, f)} />
                             { this.state.okfechaf===false &&
                                 <div className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
