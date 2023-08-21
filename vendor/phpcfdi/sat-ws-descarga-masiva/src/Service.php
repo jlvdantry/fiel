@@ -141,7 +141,7 @@ class Service
      */
     public function query_i($soapBody,$token): QueryResult
     {
-
+        $queryTranslator = new QueryTranslator();
         $responseBody = $this->consume(
             'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga',
             $this->endpoints->getQuery(),

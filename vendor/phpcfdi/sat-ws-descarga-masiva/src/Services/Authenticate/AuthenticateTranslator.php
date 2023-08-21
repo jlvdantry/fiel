@@ -20,6 +20,7 @@ class AuthenticateTranslator
         $created = DateTime::create($this->findContent($env, 'header', 'security', 'timestamp', 'created') ?: 0);
         $expires = DateTime::create($this->findContent($env, 'header', 'security', 'timestamp', 'expires') ?: 0);
         $value = $this->findContent($env, 'body', 'autenticaResponse', 'autenticaResult');
+        error_log(__FUNCTION__.' created= '.print_r($created,true).' expires='.print_r($expires,true).PHP_EOL,3,'/var/tmp/firma_error.log');
         return new Token($created, $expires, $value);
     }
 

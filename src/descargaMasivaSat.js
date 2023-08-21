@@ -40,10 +40,10 @@ var DescargaMasivaSat = function()
             '<KeyInfo>'+
                 '<X509Data>'+
                     '<X509IssuerSerial>'+
-                        '<X509IssuerName>'+this.cer.emisor+'</X509IssuerName>'+
+                        '<X509IssuerName>'+this.cer.issuer.attributes[1].value+'</X509IssuerName>'+
                         '<X509SerialNumber>'+this.cer.serialNumber+'</X509SerialNumber>'+
                     '</X509IssuerSerial>'+
-                    '<X509Certificate></X509Certificate>'+
+                    '<X509Certificate>'+this.cer.certificado+'</X509Certificate>'+
                 '</X509Data>'+
             '</KeyInfo>';
        return arma;
@@ -51,8 +51,9 @@ var DescargaMasivaSat = function()
 
    this.armaBodySol = function (estado) {
           var solicitud = { 'RfcSolicitante' : estado.firma.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.firma.rfc };
-          var solicitudAttributesAsText='';
-          var xmlRfcReceived='';
+          var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="'+solicitud.RfcEmisor+'" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
+          var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor></des:RfcReceptor></des:RfcReceptores>';
+	  this.vuuid=this.uuid();
           this.toDigestXml =  '<des:SolicitaDescarga xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:solicitud '+solicitudAttributesAsText+'>'+
                     xmlRfcReceived+
@@ -60,12 +61,18 @@ var DescargaMasivaSat = function()
             '</des:SolicitaDescarga>';
           this.datofirmado=this.creafirma(this.toDigestXml);
           this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
-                '<s:Header/>'+
+        '<s:Header/>'+
                 '<s:Body>'+
                     '<des:SolicitaDescarga>'+
-                        '<des:solicitud '+solicitudAttributesAsText+
-                            +xmlRfcReceived+
-                            +this.datofirmado+
+                        '<des:solicitud '+solicitudAttributesAsText+'>'+
+                            xmlRfcReceived+
+                        '<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">'+
+                                this.datofirmado.signedinfo+
+                                '<SignatureValue>'+
+                                this.datofirmado.sello+
+                                '</SignatureValue>'+
+                                this.datofirmado.keyInfo+
+                        '</Signature>'+
                         '</des:solicitud>'+
                     '</des:SolicitaDescarga>'+
                 '</s:Body>'+
@@ -73,6 +80,8 @@ var DescargaMasivaSat = function()
            this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc';
            this.urlproxy='/solicita.php?solicitadescarga=""';
            this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+           //this.urlproxy='/solicita.php?solicitadescarga="'+this.xmltoken+'"';
+           this.urlproxy='/solicita.php';
 
    }
 

@@ -7,7 +7,8 @@ use PhpCfdi\SatWsDescargaMasiva\RequestBuilder\FielRequestBuilder\Fiel;
 use PhpCfdi\SatWsDescargaMasiva\RequestBuilder\FielRequestBuilder\FielRequestBuilder;
 use PhpCfdi\SatWsDescargaMasiva\Service;
 use PhpCfdi\SatWsDescargaMasiva\WebClient\GuzzleWebClient;
-use PhpCfdi\SatWsDescargaMasiva\shared\Token;
+use PhpCfdi\SatWsDescargaMasiva\Shared\Token;
+use PhpCfdi\SatWsDescargaMasiva\Shared\DateTime;
 
 $webClient = new GuzzleWebClient();
 
@@ -15,6 +16,14 @@ $service = new Service(null, $webClient);
  
 $payload=file_get_contents('php://input');
 $h=getallheaders();
-error_log("header= ",3,$h,"/var/tmp/my-errors.log");
-$t= new Token(Datetime('@'.$h['token_created']),Datetime('@'.$h['token_expired']),$h['token_value']);
+error_log(__FUNCTION__.' header= '.print_r($h,true).PHP_EOL,3,'/var/tmp/firma_error.log');
+error_log(__FUNCTION__.' created= '.print_r(date('Y-m-d H:i:s',$h['token_created']),true).' expired='.print_r(date('Y-m-d H:i:s',$h['token_expired']),true).PHP_EOL,3,'/var/tmp/firma_error.log');
+$tc = new DateTime(date('Y-m-d H:i:s',$h['token_created']));
+$te = new DateTime(date('Y-m-d H:i:s',$h['token_expired']));
+error_log(__FUNCTION__.' tc= '.print_r($tc,true).PHP_EOL,3,'/var/tmp/firma_error.log');
+error_log(__FUNCTION__.' te= '.print_r($te,true).PHP_EOL,3,'/var/tmp/firma_error.log');
+error_log(__FUNCTION__.' token_valuee= '.print_r($h['token_value'],true).PHP_EOL,3,'/var/tmp/firma_error.log');
+error_log(__FUNCTION__.' payload= '.print_r($payload,true).PHP_EOL,3,'/var/tmp/firma_error.log');
+$t= new Token($tc,$te,$h['token_value']);
+error_log(__FUNCTION__.' token= '.print_r($t,true).PHP_EOL,3,'/var/tmp/firma_error.log');
 echo json_encode($service->query_i($payload,$t));
