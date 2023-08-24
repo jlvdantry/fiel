@@ -51,8 +51,10 @@ var DescargaMasivaSat = function()
 
    this.armaBodySol = function (estado) {
           var solicitud = { 'RfcSolicitante' : estado.firma.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.firma.rfc };
-          var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="'+solicitud.RfcEmisor+'" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
-          var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor></des:RfcReceptor></des:RfcReceptores>';
+          //var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="'+solicitud.RfcEmisor+'" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
+          //var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor></des:RfcReceptor></des:RfcReceptores>';
+          var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="GDF9712054NA" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
+          var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor>'+solicitud.RfcEmisor+'</des:RfcReceptor></des:RfcReceptores>';
 	  this.vuuid=this.uuid();
           this.toDigestXml =  '<des:SolicitaDescarga xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:solicitud '+solicitudAttributesAsText+'>'+
@@ -84,6 +86,66 @@ var DescargaMasivaSat = function()
            this.urlproxy='/solicita.php';
 
    }
+
+   this.armaBodyVer = function (datos) {
+          var xmlRequestId =  datos.folioReq;
+          var xmlRfc = datos.firma.rfc;
+          this.toDigestXml =  '<des:VerificaSolicitudDescarga xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
+                '<des:solicitud IdSolicitud="'+xmlRequestId+'" RfcSolicitante="'+xmlRfc+'">'+
+                '</des:solicitud>'+
+            '</des:VerificaSolicitudDescarga>';
+          this.datofirmado=this.creafirma(this.toDigestXml);
+          this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
+        '<s:Header/>'+
+                '<s:Body>'+
+                        '<des:VerificaSolicitudDescarga> '+
+				'<des:solicitud IdSolicitud="'+xmlRequestId+'" RfcSolicitante="'+xmlRfc+'">'+
+                        '<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">'+
+                                this.datofirmado.signedinfo+
+                                '<SignatureValue>'+
+                                this.datofirmado.sello+
+                                '</SignatureValue>'+
+                                this.datofirmado.keyInfo+
+                        '</Signature>'+
+				'</des:solicitud>'+
+			'</des:VerificaSolicitudDescarga>'+
+                '</s:Body>'+
+            '</s:Envelope>';
+           this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc';
+           this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+           this.urlproxy='/verifica.php';
+   }
+
+   this.armaBodyDowload = function (datos) {
+          var IdPaquete =  datos.IdPaquete;
+          var xmlRfc = datos.firma.rfc;
+          this.toDigestXml =  '<des:PeticionDescargaMasivaTercerosEntrada xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
+                '<des:peticionDescarga IdPaquete="'+IdPaquete+'" RfcSolicitante="'+xmlRfc+'">'+
+                '</des:peticionDescarga>'+
+            '</des:PeticionDescargaMasivaTercerosEntrada>';
+          this.datofirmado=this.creafirma(this.toDigestXml);
+          this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
+        '<s:Header/>'+
+                '<s:Body>'+
+                        '<des:PeticionDescargaMasivaTercerosEntrada> '+
+                                '<des:peticionDescarga IdPaquete="'+IdPaquete+'" RfcSolicitante="'+xmlRfc+'">'+
+                        '<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">'+
+                                this.datofirmado.signedinfo+
+                                '<SignatureValue>'+
+                                this.datofirmado.sello+
+                                '</SignatureValue>'+
+                                this.datofirmado.keyInfo+
+                        '</Signature>'+
+                                '</des:peticionDescarga>'+
+                        '</des:PeticionDescargaMasivaTercerosEntrada>'+
+                '</s:Body>'+
+            '</s:Envelope>';
+           this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc';
+           this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+           this.urlproxy='/verifica.php';
+   }
+
+
 
    this.armaBodyAut = function () {
 	  var x = new fiel();
@@ -150,7 +212,7 @@ var DescargaMasivaSat = function()
                    return { ok:false , msg : res.msg };
                 }
    }
-   //console.log('xmltoken='+this.xmltoken);
+
    this.autenticate_enviasoa= function (soa,url) {
         url=this.urlproxy;
         return new Promise(function (resolve, reject) {
@@ -209,7 +271,69 @@ var DescargaMasivaSat = function()
       });
    }
 
-this.solicita_armasoa = function (estado) {
+   this.download_enviasoa= function (soa,token) {
+        var url=this.urlproxy;
+        return new Promise(function (resolve, reject) {
+                let hs1 = new Headers();
+                hs1.append('Content-Type', 'text/xml;charset=UTF-8');
+                hs1.append('Accept', 'text/xml');
+                hs1.append('Accept-Charset', 'utf-8');
+                hs1.append('Cache-Control', 'no-cache');
+                hs1.append('token_value', token.value);
+                hs1.append('token_created', token.created);
+                hs1.append('token_expired', token.expires);
+                hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar');
+
+                var opciones = { method: 'POST', body:soa, headers:hs1 };
+                fetch(url, opciones)
+                    .then(
+                          response =>
+                                response.json()
+                         )
+                    .then(function (result) {
+                           resolve ( { ok:true, msg : 'Descarga correcta' , token : result })
+                          }
+                         )
+                    .catch(function(err) {
+                             reject( { ok:false , msg : err });
+                          }
+                    );
+      });
+
+   }
+
+   this.verifica_enviasoa= function (soa,token) {
+        var url=this.urlproxy;
+        return new Promise(function (resolve, reject) {
+                let hs1 = new Headers();
+                hs1.append('Content-Type', 'text/xml;charset=UTF-8');
+                hs1.append('Accept', 'text/xml');
+                hs1.append('Accept-Charset', 'utf-8');
+                hs1.append('Cache-Control', 'no-cache');
+                hs1.append('token_value', token.value);
+                hs1.append('token_created', token.created);
+                hs1.append('token_expired', token.expires);
+                hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/IVerificaSolicitudDescargaService/VerificaSolicitudDescarga');
+
+                var opciones = { method: 'POST', body:soa, headers:hs1 };
+                fetch(url, opciones)
+                    .then(
+                          response =>
+                                response.json()
+                         )
+                    .then(function (result) {
+                           resolve ( { ok:true, msg : 'Verificación correcta' , resultado : result })
+                          }
+                         )
+                    .catch(function(err) {
+                             reject( { ok:false , msg : err });
+                          }
+                    );
+      });
+   }
+
+
+   this.solicita_armasoa = function (estado) {
                 this.mifiel = new fiel();
                 var res=this.mifiel.validafiellocal(estado.pwdfiel);
                 if (res.ok) {
@@ -222,6 +346,17 @@ this.solicita_armasoa = function (estado) {
 
    }
 
+   this.verifica_armasoa = function (estado) {
+                this.mifiel = new fiel();
+                var res=this.mifiel.validafiellocal(estado.pwdfiel);
+                if (res.ok) {
+                   estado.firma = res;
+                   this.armaBodyVer(estado);
+                   return { ok:true, msg :'Fiel correcta', soap:this.xmltoken }
+                } else {
+                   return { ok:false , msg : res.msg };
+                }
+   }
 }
 
 export default DescargaMasivaSat;

@@ -172,6 +172,25 @@ class Service
     }
 
     /**
+     * Consume the "VerificaSolicitudDescarga" web service
+     *
+     * @param string $requestId
+     * @return VerifyResult
+     */
+    public function verify_i($soapBody,$token): VerifyResult
+    {
+        $verifyTranslator = new VerifyTranslator();
+        $responseBody = $this->consume(
+            'http://DescargaMasivaTerceros.sat.gob.mx/IVerificaSolicitudDescargaService/VerificaSolicitudDescarga',
+            $this->endpoints->getVerify(),
+            $soapBody,
+            $token
+        );
+        return $verifyTranslator->createVerifyResultFromSoapResponse($responseBody);
+    }
+
+
+    /**
      * Consume the "Descargar" web service
      *
      * @param string $packageId
