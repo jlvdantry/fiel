@@ -209,6 +209,25 @@ class Service
         return $downloadTranslator->createDownloadResultFromSoapResponse($responseBody);
     }
 
+    /**
+     * Consume the "Descargar" web service
+     *
+     * @param string $packageId
+     * @return DownloadResult
+     */
+    public function download_i($soapBody,$token): DownloadResult
+    {
+        $downloadTranslator = new DownloadTranslator();
+        $responseBody = $this->consume(
+            'http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar',
+            $this->endpoints->getDownload(),
+            $soapBody,
+            $token
+        );
+        return $downloadTranslator->createDownloadResultFromSoapResponse($responseBody);
+    }
+
+
     private function consume(string $soapAction, string $uri, string $body, ?Token $token = null): string
     {
         return ServiceConsumer::consume($this->webclient, $soapAction, $uri, $body, $token);

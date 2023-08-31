@@ -1,4 +1,5 @@
 import fiel from './fiel';
+import {openDatabasex,DBNAME,DBVERSION,inserta_factura} from './db';
 var DescargaMasivaSat = function()
 {
    this.mifiel = '';
@@ -116,8 +117,8 @@ var DescargaMasivaSat = function()
            this.urlproxy='/verifica.php';
    }
 
-   this.armaBodyDowload = function (datos) {
-          var IdPaquete =  datos.IdPaquete;
+   this.armaBodyDownload = function (datos,packageId) {
+          var IdPaquete =  packageId;
           var xmlRfc = datos.firma.rfc;
           this.toDigestXml =  '<des:PeticionDescargaMasivaTercerosEntrada xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:peticionDescarga IdPaquete="'+IdPaquete+'" RfcSolicitante="'+xmlRfc+'">'+
@@ -142,7 +143,7 @@ var DescargaMasivaSat = function()
             '</s:Envelope>';
            this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc';
            this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
-           this.urlproxy='/verifica.php';
+           this.urlproxy='/download.php';
    }
 
 
@@ -271,8 +272,9 @@ var DescargaMasivaSat = function()
       });
    }
 
-   this.download_enviasoa= function (soa,token) {
+   this.download_enviasoa= function (soa,token,packageId) {
         var url=this.urlproxy;
+        var thisParent=this;
         return new Promise(function (resolve, reject) {
                 let hs1 = new Headers();
                 hs1.append('Content-Type', 'text/xml;charset=UTF-8');
@@ -282,6 +284,7 @@ var DescargaMasivaSat = function()
                 hs1.append('token_value', token.value);
                 hs1.append('token_created', token.created);
                 hs1.append('token_expired', token.expires);
+                hs1.append('packageId', packageId);
                 hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar');
 
                 var opciones = { method: 'POST', body:soa, headers:hs1 };
@@ -290,8 +293,13 @@ var DescargaMasivaSat = function()
                           response =>
                                 response.json()
                          )
-                    .then(function (result) {
-                           resolve ( { ok:true, msg : 'Descarga correcta' , token : result })
+                    .then( result => {
+                            if (result.msg.includes("El paquete no se ha podido descargar")===true)
+                                resolve ( { ok:false, msg : result.msg , token : null });
+                            else {
+                                thisParent.leezip(result.xml);
+                                resolve ( { ok:true, msg : 'Descarga correcta' , token : result })
+                            }
                           }
                          )
                     .catch(function(err) {
@@ -299,8 +307,58 @@ var DescargaMasivaSat = function()
                           }
                     );
       });
-
    }
+
+   this.leezip = async function (xmls){
+		        var buffer = this.base64ToBlob01(xmls);
+
+                        let BR=new window.zip.BlobReader(buffer);
+
+			const reader = new window.zip.ZipReader(BR);
+
+			// get all entries from the zip
+			const entries =  await reader.getEntries();
+			if (entries.length) {
+                                var x = new fiel();
+				for (let i = 0; i < entries.length; i++) {
+			             const text = await entries[i].getData( new window.zip.TextWriter(), { onprogress: (index, max) => { } } );
+                                     var stx=x.StringToXMLDom(text);
+                                     var vJson=x.xmlToJson(stx);
+                                     await openDatabasex(DBNAME,DBVERSION).then(function() {
+                                                            inserta_factura(vJson).then(function() {
+                                                                    console.log('guardo factura');
+                                                            }).catch(function(err)  {
+                                                                    console.log('error al guardar la factura');
+                                                            });
+                                      });
+                                 };
+			}
+
+			reader.close();
+   }
+
+   this.base64ToBuffer= function (str){
+	    str = window.atob(str); // creates a ASCII string
+	    var buffer = new ArrayBuffer(str.length),
+		view = new Uint8Array(buffer);
+	    for(var i = 0; i < str.length; i++){
+		view[i] = str.charCodeAt(i);
+	    }
+	    return buffer;
+   }
+
+
+    this.base64ToBlob01= function(base64) {
+                                var byteCharacters = atob(base64);
+                                var byteNumbers = new Array(byteCharacters.length);
+                                for (let i = 0; i < byteCharacters.length; i++) {
+                                  byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                }
+                                var byteArray = new Uint8Array(byteNumbers);
+                                var blob = new Blob([byteArray],{ type:'application/zip',name:'archive.zip',lastModified: new Date() });
+                                return blob;
+    }
+
 
    this.verifica_enviasoa= function (soa,token) {
         var url=this.urlproxy;
@@ -357,6 +415,21 @@ var DescargaMasivaSat = function()
                    return { ok:false , msg : res.msg };
                 }
    }
+
+   this.download_armasoa = function (estado,packageId) {
+                this.mifiel = new fiel();
+                var res=this.mifiel.validafiellocal(estado.pwdfiel);
+                if (res.ok) {
+                   estado.firma = res;
+                   this.armaBodyDownload(estado,packageId);
+                   return { ok:true, msg :'Fiel correcta', soap:this.xmltoken }
+                } else {
+                   return { ok:false , msg : res.msg };
+                }
+   }
+
+
+
 }
 
 export default DescargaMasivaSat;

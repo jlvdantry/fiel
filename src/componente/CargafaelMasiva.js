@@ -16,7 +16,8 @@ class CargafaelMasiva extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true};
+    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null
+    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null};
     this.cargar = this.cargar.bind(this);
     this.cambio = this.cambio.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -154,7 +155,20 @@ class CargafaelMasiva extends Component {
 			 if (resa.ok===true) {
 				 this.setState({ ok: true, nook:false });
 			         x.verifica_enviasoa(resa.soap,this.state.token).then((ret) => {
-				     this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value}));
+				     this.setState(state => ({ ok:ret.ok, msg:ret.msg, resultadoVerifica:ret.resultado,pwdfiel:document.querySelector('#pwdfiel').value}));
+                                     if (ret.resultado.statusRequest.value===3)  { // solicituda aceptada
+                                        var estado=this.state;
+                                        ret.resultado.packagesIds.forEach( (e) => {
+						var resa=x.download_armasoa(estado,e);
+						if (resa.ok===true) {
+						   x.download_enviasoa(resa.soap,estado.token,e).then((ret) => {
+							 this.setState(state => ({ estatusDownload:ret.ok, estatusDownloadMsg:ret.msg}));
+						   });
+						}
+                                        },undefined,estado);
+                                     } else {
+					 this.setState(state => ({ estatusDownload:false, estatusDownloadMsg:ret.resultado.message}));
+                                     }
 				 })
                          }          
               });
@@ -280,7 +294,14 @@ class CargafaelMasiva extends Component {
                                 <div id="nook" className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
                                           <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El folio del requerimiento es obligatorio </Alert>
-                                </div> }
+                                </div> 
+                                }
+                                { this.state.estatusDownload===false &&
+                                <div id="nook" className="mt-1">
+                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {  this.state.estatusDownloadMsg } </Alert>
+                                </div> 
+                                }
 
                       </FormGroup> }
 
