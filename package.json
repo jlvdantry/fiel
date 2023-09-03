@@ -12,7 +12,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@version/react-router-v3": "^1.0.0",
-    "@zip.js/zip.js": "^2.7.25",
+    "@zip.js/zip.js": "^2.7.28",
     "bootstrap": "^4.5.2",
     "chart.js": "^2.9.3",
     "jquery.soap": "^1.7.3",

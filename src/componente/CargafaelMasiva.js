@@ -54,7 +54,7 @@ class CargafaelMasiva extends Component {
       browserHistory.push(path);
   }
   componentDidMount(){
-      timer = setInterval(() => this.cambio(), 2000)
+      //timer = setInterval(() => this.cambio(), 2000)
   }
   componentWillUnmount() {
     clearTimeout(timer);
@@ -65,14 +65,14 @@ class CargafaelMasiva extends Component {
   }
 
   cambio() {
-       var xml_name=[];
+        var xml_name=[];
 	for (var i = 0; i < localStorage.length; i++) {
           var key = localStorage.key(i);
           if (key.indexOf('xml_name_')!==-1) {
              xml_name.push(localStorage.getItem(key));
           }
 	}
-        this.setState({xml_name : xml_name });
+        //this.setState({xml_name : xml_name });
   }
 
   cargar() {
@@ -254,7 +254,7 @@ class CargafaelMasiva extends Component {
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Inicial</Label>
-                            <DatePicker dayLabels={days} monthLabels={months} id="fechainicial" value={this.state.start} maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />
+                            <DatePicker dayLabels={days} monthLabels={months} defaultValue={this.state.start} id="fechainicial" maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />
                             { this.state.okfechai===false &&
                                 <div  className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
@@ -263,7 +263,7 @@ class CargafaelMasiva extends Component {
                           </div>
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Final</Label>
-                            <DatePicker dayLabels={days} monthLabels={months}  id="fechafinal" maxDate={new Date().toISOString()} defaultValue={this.state.end} onChange={(v,f) => this.handleChangefin(v, f)} />
+                            <DatePicker dayLabels={days} monthLabels={months}  id="fechafinal" defaultValue={this.state.end} maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangefin(v, f)} />
                             { this.state.okfechaf===false &&
                                 <div className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
