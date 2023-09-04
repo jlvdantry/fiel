@@ -51,11 +51,11 @@ var DescargaMasivaSat = function()
    } 
 
    this.armaBodySol = function (estado) {
-          var solicitud = { 'RfcSolicitante' : estado.firma.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.firma.rfc };
-          //var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="'+solicitud.RfcEmisor+'" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
-          //var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor></des:RfcReceptor></des:RfcReceptores>';
-          var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="GDF9712054NA" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
-          var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor>'+solicitud.RfcEmisor+'</des:RfcReceptor></des:RfcReceptores>';
+          var solicitud = { 'RfcSolicitante' : estado.firma.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.RFCEmisor 
+               ,'RFCReceptor': estado.RFCReceptor
+              };
+          var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="'+estado.RFCEmisor+'" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
+          var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor>'+solicitud.RFCReceptor+'</des:RfcReceptor></des:RfcReceptores>';
 	  this.vuuid=this.uuid();
           this.toDigestXml =  '<des:SolicitaDescarga xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:solicitud '+solicitudAttributesAsText+'>'+

@@ -17,9 +17,9 @@ class CargafaelMasiva extends Component {
     super(props);
     this.nextPath = this.nextPath.bind(this);
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null
-    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null};
+    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:null,OKRFCEmisor:null,RFCReceptor:null,OKRFCReceptor:null
+    };
     this.cargar = this.cargar.bind(this);
-    this.cambio = this.cambio.bind(this);
     this.showHide = this.showHide.bind(this)
     this.handleChangeini = this.handleChangeini.bind(this)
     this.handleChangefin = this.handleChangefin.bind(this)
@@ -62,17 +62,6 @@ class CargafaelMasiva extends Component {
 
   onChangeHandler=event=>{
     console.log(event.target.files[0])
-  }
-
-  cambio() {
-        var xml_name=[];
-	for (var i = 0; i < localStorage.length; i++) {
-          var key = localStorage.key(i);
-          if (key.indexOf('xml_name_')!==-1) {
-             xml_name.push(localStorage.getItem(key));
-          }
-	}
-        //this.setState({xml_name : xml_name });
   }
 
   cargar() {
@@ -129,6 +118,25 @@ class CargafaelMasiva extends Component {
        } else {
            this.setState({okfechaf:true});
        }
+       this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
+       if (this.state.RFCEmisor===null || this.state.RFCEmisor==='') {
+           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio' });
+           return;
+       } else {
+           this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
+       }
+       this.setState({RFCReceptor:document.querySelector('#RFCReceptor').value});
+       if (this.state.RFCReceptor===null || this.state.RFCReceptors==='') {
+           this.setState({okRFCReceptor:false,msgRFCReceptor:'El RFC del receptor es obligatoria' });
+           return;
+       } else {
+           this.setState({okRFCReceptor:true,msgRFCReceptor:'' });
+       }
+       if (this.state.RFCReceptor===this.state.RFCEmisor) {
+           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor y del receptor no pueden ser iguales' });
+           return;
+       }
+
 
     }
 
@@ -250,6 +258,39 @@ class CargafaelMasiva extends Component {
                                           <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {this.state.msg} </Alert>
 		                </div> }
                       </FormGroup>
+
+                      { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
+                          <div className="col-lg-6 mt-1">
+				<Label>RFC Emisor</Label>
+				<InputGroup>
+					<Input type="input" name="password" id="RFCEmisor" placeholder="Teclee el RFC emisor" 
+                                                onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()}
+                                               />
+				</InputGroup>
+                                { this.state.okRFCEmisor===false &&
+					<div id="nook" className="mt-1">
+					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCEmisor } </Alert>
+					</div>
+                                }
+                          </div>
+                          <div className="col-lg-6 mt-1">
+                                <Label>RFC Receptor</Label>
+                                <InputGroup>
+                                        <Input type="input" id="RFCReceptor" placeholder="Teclee el RFC receptor" 
+                                                onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()}
+                                        />
+                                </InputGroup>
+                                { this.state.okRFCReceptor===false &&
+					<div id="nook" className="mt-1">
+					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCReceptor } </Alert>
+					</div>
+                                }
+                          </div>
+
+                      </FormGroup> }
+
 
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
