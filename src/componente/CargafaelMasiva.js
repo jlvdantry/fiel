@@ -27,6 +27,8 @@ class CargafaelMasiva extends Component {
     this.changeValue = this.changeValue.bind(this);
     this.toggleC =  this.toggleC.bind(this)
     this.changeValueC = this.changeValueC.bind(this);
+    this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
+    this.cambioRFCReceptor = this.cambioRFCReceptor.bind(this);
   }
 
     toggle(event) {
@@ -44,6 +46,15 @@ class CargafaelMasiva extends Component {
     changeValue(e) {
         this.setState({dropdownValue: e.currentTarget.textContent});
     }
+
+    cambioRFCEmisor() {
+        this.setState({RFCEmisor : document.querySelector('#RFCEmisor').value});
+    }
+
+    cambioRFCReceptor() {
+        this.setState({RFCReceptor : document.querySelector('#RFCReceptor').value});
+    }
+
 
     changeValueC(e) {
         this.setState({TipoSolicitud: e.currentTarget.textContent});
@@ -263,7 +274,7 @@ class CargafaelMasiva extends Component {
                           <div className="col-lg-6 mt-1">
 				<Label>RFC Emisor</Label>
 				<InputGroup>
-					<Input type="input" name="password" id="RFCEmisor" placeholder="Teclee el RFC emisor" 
+					<Input type="input" name="password" id="RFCEmisor" placeholder="Teclee el RFC emisor"  onChange={this.cambioRFCEmisor}
                                                 onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()}
                                                />
 				</InputGroup>
@@ -277,7 +288,7 @@ class CargafaelMasiva extends Component {
                           <div className="col-lg-6 mt-1">
                                 <Label>RFC Receptor</Label>
                                 <InputGroup>
-                                        <Input type="input" id="RFCReceptor" placeholder="Teclee el RFC receptor" 
+                                        <Input type="input" id="RFCReceptor" placeholder="Teclee el RFC receptor" onChange={this.cambioRFCReceptor}
                                                 onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()}
                                         />
                                 </InputGroup>

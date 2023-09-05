@@ -100,7 +100,7 @@ var creadb = function(db) {
                         objectStore.createIndex('ID', 'ID', { unique: false });
                     };
 
-                   if(!db.objectStoreNames.contains('facturas')) { /* Catalogos propiios del aplicativo */
+                   if(!db.objectStoreNames.contains('facturas')) { /* facturas electronicas  */
                         console.log('[db.js] va a crear el objeto catalogos');
                         objectStore = db.createObjectStore('facturas', { autoIncrement : true });
                         objectStore.createIndex('hora', 'hora', { unique: false });

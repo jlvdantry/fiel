@@ -83,7 +83,6 @@ var DescargaMasivaSat = function()
            this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc';
            this.urlproxy='/solicita.php?solicitadescarga=""';
            this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
-           //this.urlproxy='/solicita.php?solicitadescarga="'+this.xmltoken+'"';
            this.urlproxy='/solicita.php';
 
    }
@@ -199,7 +198,8 @@ var DescargaMasivaSat = function()
 	'</s:Body>'+
 '</s:Envelope>';
 	   this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc';
-	   this.urlproxy='/autentica.php';
+	   //this.urlproxy='/autentica.php';
+	   this.urlproxy=this.urlAutenticate;
 	   this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
    }
 
@@ -223,9 +223,9 @@ var DescargaMasivaSat = function()
                 hs1.append('Accept-Charset', 'utf-8');
                 hs1.append('Cache-Control', 'no-cache');
                 hs1.append('Access-Control-Allow-Origin', '*');
-                hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica');
+                hs1.append('SOAPAction', 'Autentica');
 
-                var opciones = { method: 'POST', body:soa, headers:hs1 };
+                var opciones = { method: 'get', body:soa, headers:hs1,mode:'no-cors' };
                 fetch(url, opciones)
                     .then(
                           response => 
