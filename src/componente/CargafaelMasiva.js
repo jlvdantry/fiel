@@ -162,7 +162,7 @@ class CargafaelMasiva extends Component {
 			 if (resa.ok===true) {
 				 this.setState({ ok: true, nook:false });
 				 x.solicita_enviasoa(resa.soap,this.state.token).then((ret) => {
-					 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value}));
+					 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:ret.token,pwdfiel:document.querySelector('#pwdfiel').value}));
 				 })
 			 }
 	       });

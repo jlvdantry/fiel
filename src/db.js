@@ -128,16 +128,16 @@ var openObjectStore = function(db, storeName, transactionMode) {
 /* agrega un objeto a una tabla
    objectStore objecto o tabla a adcionar un registro
    object registo a almacenar 
-   regresa el id insertado que es un consecutivo
+   regresa el id insertado del objeto y el objeto mismo
    */
 var addObject = function(objectStore, object) {
-        return new Promise(function (resolve, reject) {
+        return new Promise( (resolve, reject) => {
         var request = objectStore.add(object);
-        request.onsuccess = function (event) {
+        request.onsuccess = (event) => {
                 console.log('[addObject] inserto el objeto='+event.target.result);
-                resolve(event.target.result);
+                resolve(event.target.result,object);
              }
-        request.onerror = function (event) {
+        request.onerror = (event) => {
                 console.log('[addObject] error al agregar el objeto='+event.target.error);
                 reject(event);
              }
@@ -362,8 +362,9 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto)
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
                                 console.log('[inserta_request] menu a requesitar='+idmenu);
-                                addObject(objectStore, json).then(function(key) { 
-                                    resolve(key) ; } );
+                                addObject(objectStore, json).then( (key) => { 
+                                    json.key=key;
+                                    resolve(json) ; } );
                         }).catch(function(err) {
                                 console.log("[inserta_request] Database error: "+err.message);
                 });
@@ -561,4 +562,4 @@ function bajafirmas(key)
 
 
 export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject
-                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma } ;
+                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects } ;

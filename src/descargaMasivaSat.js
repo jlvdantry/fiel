@@ -1,5 +1,6 @@
 import fiel from './fiel';
-import {openDatabasex,DBNAME,DBVERSION,inserta_factura} from './db';
+import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,updObject_01,openObjectStore} from './db';
+import {MENUS} from './componente/Constantes';
 var DescargaMasivaSat = function()
 {
    this.mifiel = '';
@@ -198,8 +199,7 @@ var DescargaMasivaSat = function()
 	'</s:Body>'+
 '</s:Envelope>';
 	   this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc';
-	   //this.urlproxy='/autentica.php';
-	   this.urlproxy=this.urlAutenticate;
+	   this.urlproxy='/autentica.php';
 	   this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
    }
 
@@ -225,7 +225,7 @@ var DescargaMasivaSat = function()
                 hs1.append('Access-Control-Allow-Origin', '*');
                 hs1.append('SOAPAction', 'Autentica');
 
-                var opciones = { method: 'get', body:soa, headers:hs1,mode:'no-cors' };
+                var opciones = { method: 'post', body:soa, headers:hs1,mode:'no-cors' };
                 fetch(url, opciones)
                     .then(
                           response => 
@@ -242,10 +242,11 @@ var DescargaMasivaSat = function()
       });
    }
 
-   this.solicita_enviasoa= function (soa,token) {
+   this.solicita_enviasoa= async function (soa,token) {
         var url=this.urlproxy;
-        return new Promise(function (resolve, reject) {
+        return new Promise(async (resolve, reject) => {
                 let hs1 = new Headers();
+                var idRequest=null;
                 hs1.append('Content-Type', 'text/xml;charset=UTF-8');
                 hs1.append('Accept', 'text/xml');
                 hs1.append('Accept-Charset', 'utf-8');
@@ -256,19 +257,33 @@ var DescargaMasivaSat = function()
                 hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga');
 
                 var opciones = { method: 'POST', body:soa, headers:hs1 };
-                fetch(url, opciones)
-                    .then(
-                          response =>
-                                response.text()
-                         )
-                    .then(function (result) {
-                           resolve ( { ok:true, msg : 'Solicitud correcta' , token : result })
-                          }
-                         )
-                    .catch(function(err) {
-                             reject( { ok:false , msg : err });
-                          }
-                    );
+		const result = await openDatabasex(DBNAME,DBVERSION).then( () => {
+					    inserta_request('SolicitaDescarga',null,MENUS.DESCARGAMASIVA,null).then( (json) => {
+						idRequest=json.key;
+						fetch(url, opciones)
+						    .then( response => response.json())
+						    .then(async (result) => {
+						           console.log('idRequest fetch='+idRequest);
+                                                           var passdata = {  ok:true, msg : 'Solicitud correcta' , token : result } 
+                                                           openDatabasex(DBNAME,DBVERSION).then( db => {
+                                                                 return openObjectStore(db, 'request', "readwrite");
+                                                                     }).then( objectStore => {   
+                                                                       var reg=objectStore.get(idRequest);
+                                                                       console.log('obj='+JSON.stringify(json));
+                                                                       json.passdata=passdata;
+                                                                       updObject_01(objectStore,json,idRequest);
+                                                                     });
+							   resolve ( passdata )
+							  })
+						    .catch(function(err) {
+							     reject( { ok:false , msg : err });
+							  }
+						    );
+
+					    }).catch(function(err)  {
+						    console.log('error al guardar solicitud');
+				    });
+	        });
       });
    }
 
