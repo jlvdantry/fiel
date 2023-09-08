@@ -1,5 +1,5 @@
 import fiel from './fiel';
-import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,updObject_01,openObjectStore} from './db';
+import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,updObject_01,openObjectStore,selObjects} from './db';
 import {MENUS} from './componente/Constantes';
 var DescargaMasivaSat = function()
 {
@@ -242,8 +242,9 @@ var DescargaMasivaSat = function()
       });
    }
 
-   this.solicita_enviasoa= async function (soa,token) {
+   this.solicita_enviasoa= async function (soa,token,passdata) {
         var url=this.urlproxy;
+        var filas=null;
         return new Promise(async (resolve, reject) => {
                 let hs1 = new Headers();
                 var idRequest=null;
@@ -258,13 +259,13 @@ var DescargaMasivaSat = function()
 
                 var opciones = { method: 'POST', body:soa, headers:hs1 };
 		const result = await openDatabasex(DBNAME,DBVERSION).then( () => {
-					    inserta_request('SolicitaDescarga',null,MENUS.DESCARGAMASIVA,null).then( (json) => {
+					    inserta_request('SolicitaDescarga',passdata,MENUS.DESCARGAMASIVA,null).then( (json) => {
 						idRequest=json.key;
 						fetch(url, opciones)
 						    .then( response => response.json())
 						    .then(async (result) => {
 						           console.log('idRequest fetch='+idRequest);
-                                                           var passdata = {  ok:true, msg : 'Solicitud correcta' , token : result } 
+                                                           passdata.ok=true; passdata.msg = 'Solicitud correcta'; passdata.token = result ; 
                                                            openDatabasex(DBNAME,DBVERSION).then( db => {
                                                                  return openObjectStore(db, 'request', "readwrite");
                                                                      }).then( objectStore => {   
@@ -272,8 +273,11 @@ var DescargaMasivaSat = function()
                                                                        console.log('obj='+JSON.stringify(json));
                                                                        json.passdata=passdata;
                                                                        updObject_01(objectStore,json,idRequest);
+                                                                       selObjects(objectStore,'url','SolicitaDescarga','prev').then( f => { 
+                                                                                   passdata.solicitudes=f;
+                                                                                   resolve (passdata)
+                                                                       })
                                                                      });
-							   resolve ( passdata )
 							  })
 						    .catch(function(err) {
 							     reject( { ok:false , msg : err });

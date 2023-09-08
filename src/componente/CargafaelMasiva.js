@@ -4,7 +4,7 @@ import { browserHistory  } from 'react-router';
 import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
-
+import { MiDataGrid } from './DataGridSolicitud';
 
 let timer = null;
 
@@ -16,7 +16,7 @@ class CargafaelMasiva extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null
+    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
     ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:null,OKRFCEmisor:null,RFCReceptor:null,OKRFCReceptor:null
     };
     this.cargar = this.cargar.bind(this);
@@ -161,8 +161,11 @@ class CargafaelMasiva extends Component {
 			 var resa=x.solicita_armasoa(this.state);
 			 if (resa.ok===true) {
 				 this.setState({ ok: true, nook:false });
-				 x.solicita_enviasoa(resa.soap,this.state.token).then((ret) => {
-					 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:ret.token,pwdfiel:document.querySelector('#pwdfiel').value}));
+                                 var passdata = { 'fechaini':this.state.start,'fechafin':this.state.end,'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
+				 x.solicita_enviasoa(resa.soap,this.state.token,passdata).then((ret) => {
+                                         var solicitudes=[];
+                                         passdata.solicitudes.forEach( e => solicitudes.push(e.valor.passdata) )
+					 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:ret.token,pwdfiel:document.querySelector('#pwdfiel').value,solicitudes:solicitudes}));
 				 })
 			 }
 	       });
@@ -361,6 +364,7 @@ class CargafaelMasiva extends Component {
                       <div className="flex-col d-flex justify-content-center">
                            <Button color="primary" onClick={this.cargar}>Solicitar</Button>
                       </div>
+                      <MiDataGrid className="container" filas={this.state.solicitudes}/>
         </Card>
     )
   }
