@@ -265,7 +265,7 @@ var DescargaMasivaSat = function()
 						    .then( response => response.json())
 						    .then(async (result) => {
 						           console.log('idRequest fetch='+idRequest);
-                                                           passdata.ok=true; passdata.msg = 'Solicitud correcta'; passdata.token = result ; 
+                                                           passdata.ok=true; passdata.msg = result.status.message; passdata.token = result ; 
                                                            openDatabasex(DBNAME,DBVERSION).then( db => {
                                                                  return openObjectStore(db, 'request', "readwrite");
                                                                      }).then( objectStore => {   

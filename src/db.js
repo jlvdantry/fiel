@@ -459,6 +459,43 @@ function leefirmas()
         })
 }
 
+function leeSolicitudes(direccion='next')
+{
+        console.log('[db.js leeSolicitudes] entro');
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[db.js leeSolicitudes] va a seleccionar ');
+                                selObjects(objectStore,'url','SolicitaDescarga',direccion).then(function(requests) {
+                                                               resolve(requests) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[db.js leeSolicitudes] Database error: "+err.message);
+                });
+        })
+}
+
+function leeSolicitudesCorrectas()
+{
+        var solicitudesCorrectas=[];
+        return new Promise(function (resolve, reject) {
+               leeSolicitudes('prev').then( a  => {
+                    a.forEach( 
+                          e => { if (e.valor.passdata!==null) { 
+                                //if  (e.valor.passdata.msg=='Solicitud correcta')  { 
+                                         solicitudesCorrectas.push(e.valor.passdata) 
+                                //    } 
+                          } }
+                    );
+                    resolve(solicitudesCorrectas);
+               });
+        })
+                   
+}
+        console.log('[db.js leefirmas] entro');
+
+
 function leefirma(key)
 {
         console.log('[db.js leefirmas] entro');
@@ -562,4 +599,4 @@ function bajafirmas(key)
 
 
 export { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject
-                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects } ;
+                  ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas } ;

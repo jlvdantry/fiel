@@ -5,6 +5,7 @@ import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
+import { leeSolicitudesCorrectas } from '../db.js';
 
 let timer = null;
 
@@ -65,7 +66,7 @@ class CargafaelMasiva extends Component {
       browserHistory.push(path);
   }
   componentDidMount(){
-      //timer = setInterval(() => this.cambio(), 2000)
+      leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
   }
   componentWillUnmount() {
     clearTimeout(timer);
@@ -161,7 +162,7 @@ class CargafaelMasiva extends Component {
 			 var resa=x.solicita_armasoa(this.state);
 			 if (resa.ok===true) {
 				 this.setState({ ok: true, nook:false });
-                                 var passdata = { 'fechaini':this.state.start,'fechafin':this.state.end,'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
+                                 var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
 				 x.solicita_enviasoa(resa.soap,this.state.token,passdata).then((ret) => {
                                          var solicitudes=[];
                                          passdata.solicitudes.forEach( e => solicitudes.push(e.valor.passdata) )
@@ -361,7 +362,7 @@ class CargafaelMasiva extends Component {
                       </FormGroup> }
 
 
-                      <div className="flex-col d-flex justify-content-center">
+                      <div className="flex-col d-flex justify-content-center mb-2">
                            <Button color="primary" onClick={this.cargar}>Solicitar</Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
