@@ -78,13 +78,15 @@ var creadb = function(db) {
                         objectStore.createIndex('dia', 'dia', { unique: false });
                         objectStore.createIndex('mes', 'mes', { unique: false });
                         objectStore.createIndex('ano', 'ano', { unique: false });
-                        objectStore.createIndex('estadoIndex', 'estado', { unique: false });
+                        objectStore.createIndex('estado', 'estado', { unique: false });
                         objectStore.createIndex('idmenu', 'idmenu', { unique: false });
                         objectStore.createIndex('usename', 'usename', { unique: false });
                         objectStore.createIndex('fecha', 'fecha', { unique: false });
                         objectStore.createIndex('idmenu_fecha', 'idmenu_fecha', { unique: false });
                         objectStore.createIndex('url_fecha', 'url_fecha', { unique: false });
-                        objectStore.createIndex('url_fechaC', ['url','fecha'], { unique: false });
+                        objectStore.createIndex('sello', 'sello', { unique: true });
+                        objectStore.createIndex('header', 'header', { unique: false });
+                        objectStore.createIndex('body', 'body', { unique: false });
                     };
 
                    if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propiios del aplicativo */
@@ -186,32 +188,29 @@ var selObjectByKey = function(objectStore,key) {
    si llegan valida indexname e indexvalue se regresan todos los valores del objeto
    */ 
 var selObjects = function(objectStore, indexname, indexvalue, direction='next') {
-        var regs  = [];
-        var cursor = {};
-        var myIndex = null;
         return new Promise(function (resolve, reject) {
+        var objects = [];
+        var cursor;
         if (indexname!==undefined && indexvalue!==undefined) {
-           let range = IDBKeyRange.only(indexvalue);
-           myIndex=objectStore.index(indexname);  
-           cursor  = myIndex.openCursor(range);
-           console.log('[selObjects] cursor='+JSON.stringify(cursor));
+           cursor  = objectStore.index(indexname).openCursor(indexvalue,direction);
+           console.log('[selObjects] cursor='+cursor);
         } else {
            cursor = objectStore.openCursor();
         }
-        cursor.onerror   = event => {
+        cursor.onerror   = function(event) {
            console.log('[selObjects] error');
         }
-        cursor.onsuccess = event => {
+        cursor.onsuccess = function(event) {
             var cursor1 = event.target.result;
             var json = { };
             if (cursor1) {
                console.log('[selObjects] key='+cursor1.primaryKey+' value='+cursor1.value);
                json.valor=cursor1.value;
                json.key  =cursor1.primaryKey;
-               regs.push( json );
+               objects.push( json );
                cursor1.continue();
             } else {
-               resolve(regs); 
+               resolve(objects); 
             };
         };
     });
@@ -290,7 +289,7 @@ var delObject = function(objectStore, idmenu, estado) {
    */
 var updObject_01 = function(objectStore, object, id) {
         return new Promise(function (resolve, reject) {
-		console.log('[db.js] updObject_01 va a actualizar registro con id='+id);
+		console.log('[db.js] updObject_01 va a actualizar registro con id='+id+' objeto='+JSON.stringify(object));
 		var upd=objectStore.put(object,id);
 		upd.onsuccess = function () { console.log('[db.js] updObject_01 actualizo registro con id='+id); resolve(); };
 		upd.onerror = function () { console.log('[db.js] updObject_01 error al actualizar el registro con id='+id); reject(); }
@@ -307,7 +306,7 @@ var updObjectByKey = function(objectStore, object, id) {
 		openDatabasex(DBNAME, DBVERSION).then(function(db) {
 		  return openObjectStore(db, objectStore, "readwrite");
 		}).then(function(oS) {
-				console.log('[db.js] updObject_01 va a actualizar registro con id='+id);
+				console.log('[db.js] updObject_01 va a actualizar registro con id='+id+' objeto='+JSON.stringify(object));
 				var upd=oS.put(object,id);
 				upd.onsuccess = function () { console.log('[db.js] updObjectByKey actualizo registro con id='+id); resolve(); };
 				upd.onerror = function () { console.log('[db.js] updObjectByKey error al actualizar el registro con id='+id); reject(); }
@@ -509,7 +508,7 @@ function leeSolicitudes(direccion='next')
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
                                 console.log('[db.js leeSolicitudes] va a seleccionar ');
-                                selObjects(objectStore,'url','/solicita.php',direccion).then(function(requests) {
+                                selObjects(objectStore,'url','SolicitaDescarga',direccion).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {
@@ -525,7 +524,9 @@ function leeSolicitudesCorrectas()
                leeSolicitudes('prev').then( a  => {
                     a.forEach( 
                           e => { if (e.valor.passdata!==null) { 
+                                //if  (e.valor.passdata.msg=='Solicitud correcta')  { 
                                          solicitudesCorrectas.push(e.valor.passdata) 
+                                //    } 
                           } }
                     );
                     resolve(solicitudesCorrectas);
@@ -638,4 +639,4 @@ function bajafirmas(key)
 
 
 
-export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey } ;
+export = { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey } ;

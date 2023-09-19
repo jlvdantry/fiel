@@ -1,6 +1,6 @@
 import fiel from './fiel';
-import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,updObject_01,openObjectStore,selObjects} from './db';
-import {MENUS} from './componente/Constantes';
+import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,updObject_01,openObjectStore,selObjects,selObjectByKey,updObjectByKey} from './db';
+import {MENUS,FORMA,MOVIMIENTO} from './componente/Constantes';
 var DescargaMasivaSat = function()
 {
    this.mifiel = '';
@@ -214,40 +214,39 @@ var DescargaMasivaSat = function()
                 }
    }
 
-   this.autenticate_enviasoa= function (soa,url) {
-        url=this.urlproxy;
-        return new Promise(function (resolve, reject) {
-                let hs1 = new Headers();
-                hs1.append('Content-Type', 'text/xml;charset=UTF-8');
-                hs1.append('Accept', 'text/xml');
-                hs1.append('Accept-Charset', 'utf-8');
-                hs1.append('Cache-Control', 'no-cache');
-                hs1.append('Access-Control-Allow-Origin', '*');
-                hs1.append('SOAPAction', 'Autentica');
-
-                var opciones = { method: 'post', body:soa, headers:hs1,mode:'no-cors' };
-                fetch(url, opciones)
-                    .then(
-                          response => 
-                                response.text()
-                         ) 
-                    .then(function (result) {
-                           resolve ( { ok:true, msg : 'Firma correcta' , token : result })
-                          }
-                         )
-                    .catch(function(err) {
-                             reject( { ok:false , msg : err });
-                          }
-                    );
-      });
+   this.autenticate_enviasoa= function (soa,url='/autentica.php') {
+                var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Autentica'};
+                inserta_request(url,'',MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.AUTENTICA,hs1,soa).then( key => {
+                                if ("serviceWorker" in navigator && "SyncManager" in window) {
+                                   navigator.serviceWorker.ready.then(function(registration) {
+                                       registration.sync.register("autentica");
+                                       console.log('[inserta_request] envio sincronizacion al service worker ');
+                                   }).catch(function(err) {console.log("[broseaing.js] inserta_request El servicio de trabajo no esta listo: "+err.message)});
+                                } else { console.log('[inserta_request] no envio la sincronizacion con el service worker '); }
+                }).catch(function(err) {
+                                console.log("[inserta_request] Database error: "+err.message);
+                });
    }
 
    this.solicita_enviasoa= async function (soa,token,passdata) {
         var url=this.urlproxy;
-        var filas=null;
+        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expires};
+                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITA,hs1,soa).then( key => {
+                                if ("serviceWorker" in navigator && "SyncManager" in window) {
+                                   navigator.serviceWorker.ready.then(function(registration) {
+                                       registration.sync.register("autentica");
+                                       console.log('[solicita_enviasoa] envio sincronizacion al service worker ');
+                                   }).catch(function(err) {console.log("[broseaing.js] inserta_request El servicio de trabajo no esta listo: "+err.message)});
+                                } else { console.log('[solicita_enviasoa] no envio la sincronizacion con el service worker '); }
+                }).catch(function(err) {
+                                console.log("[solicita_enviasoa] Database error: "+err.message);
+                });
+
+
+/*
         return new Promise(async (resolve, reject) => {
                 let hs1 = new Headers();
-                var idRequest=null;
+                var idKey=null;
                 hs1.append('Content-Type', 'text/xml;charset=UTF-8');
                 hs1.append('Accept', 'text/xml');
                 hs1.append('Accept-Charset', 'utf-8');
@@ -260,21 +259,22 @@ var DescargaMasivaSat = function()
                 var opciones = { method: 'POST', body:soa, headers:hs1 };
 		const result = await openDatabasex(DBNAME,DBVERSION).then( () => {
 					    inserta_request('SolicitaDescarga',passdata,MENUS.DESCARGAMASIVA,null).then( (json) => {
-						idRequest=json.key;
+						idKey=json.key;
 						fetch(url, opciones)
 						    .then( response => response.json())
 						    .then(async (result) => {
-						           console.log('idRequest fetch='+idRequest);
+						           console.log('idRequest fetch='+idKey);
                                                            passdata.ok=true; passdata.msg = result.status.message; passdata.token = result ; 
                                                            openDatabasex(DBNAME,DBVERSION).then( db => {
                                                                  return openObjectStore(db, 'request', "readwrite");
                                                                      }).then( objectStore => {   
-                                                                       var reg=objectStore.get(idRequest);
+                                                                       objectStore.get(idKey);
                                                                        console.log('obj='+JSON.stringify(json));
                                                                        json.passdata=passdata;
-                                                                       updObject_01(objectStore,json,idRequest);
+                                                                       updObject_01(objectStore,json,idKey);
                                                                        selObjects(objectStore,'url','SolicitaDescarga','prev').then( f => { 
                                                                                    passdata.solicitudes=f;
+                                                                                   passdata.idKey=idKey;
                                                                                    resolve (passdata)
                                                                        })
                                                                      });
@@ -289,9 +289,10 @@ var DescargaMasivaSat = function()
 				    });
 	        });
       });
+*/
    }
 
-   this.download_enviasoa= function (soa,token,packageId) {
+   this.download_enviasoa= function (soa,token,packageId,idKey) {
         var url=this.urlproxy;
         var thisParent=this;
         return new Promise(function (resolve, reject) {
@@ -308,19 +309,20 @@ var DescargaMasivaSat = function()
 
                 var opciones = { method: 'POST', body:soa, headers:hs1 };
                 fetch(url, opciones)
-                    .then(
-                          response =>
-                                response.json()
-                         )
+                    .then( response => response.json() )
                     .then( result => {
-                            if (result.msg.includes("El paquete no se ha podido descargar")===true)
-                                resolve ( { ok:false, msg : result.msg , token : null });
-                            else {
-                                thisParent.leezip(result.xml);
-                                resolve ( { ok:true, msg : 'Descarga correcta' , token : result })
-                            }
-                          }
-                         )
+                           selObjectByKey('request',idKey).then ( obj => {
+                                   obj.passdata.msg_d = result.message;
+                                   updObjectByKey('request',obj,idKey).then ( () => {
+					    if (result.msg.includes("El paquete no se ha podido descargar")===true)
+						resolve ( { ok:false, msg : result.msg , token : null });
+					    else {
+						thisParent.leezip(result.xml);
+						resolve ( { ok:true, msg : 'Descarga correcta' , token : result })
+					    }
+                                   });
+                            });
+                          })
                     .catch(function(err) {
                              reject( { ok:false , msg : err });
                           }
@@ -379,7 +381,7 @@ var DescargaMasivaSat = function()
     }
 
 
-   this.verifica_enviasoa= function (soa,token) {
+   this.verifica_enviasoa= function (soa,token,idKey) {
         var url=this.urlproxy;
         return new Promise(function (resolve, reject) {
                 let hs1 = new Headers();
@@ -394,12 +396,15 @@ var DescargaMasivaSat = function()
 
                 var opciones = { method: 'POST', body:soa, headers:hs1 };
                 fetch(url, opciones)
-                    .then(
-                          response =>
-                                response.json()
-                         )
-                    .then(function (result) {
-                           resolve ( { ok:true, msg : 'Verificación correcta' , resultado : result })
+                    .then( response => response.json())
+                    .then( result => {
+                           selObjectByKey('request',idKey).then ( obj => {
+                                   obj.passdata.msg_v = result.statusRequest.message;
+                                   obj.passdata.Cfdis = result.numberCfdis;
+                                   updObjectByKey('request',obj,idKey).then ( () => {
+                                        resolve ( { ok:true, msg : 'Verificación correcta' , resultado : result })
+                                   });
+                           })
                           }
                          )
                     .catch(function(err) {
@@ -413,6 +418,7 @@ var DescargaMasivaSat = function()
    this.solicita_armasoa = function (estado) {
                 this.mifiel = new fiel();
                 var res=this.mifiel.validafiellocal(estado.pwdfiel);
+                this.cer = this.mifiel.damecertificadofiel();
                 if (res.ok) {
                    estado.firma = res;
                    this.armaBodySol(estado);
@@ -421,6 +427,29 @@ var DescargaMasivaSat = function()
                    return { ok:false , msg : res.msg };
                 }
 
+   }
+
+   this.verificando = async function (estado,idKey) {
+        return new Promise(function (resolve, reject) {
+                 var resv=this.verifica_armasoa(estado,idKey);
+		 if (resv.ok===true) {
+		       this.verifica_enviasoa(resv.soap,estado.token,idKey).then((ret) => {
+			     if (ret.resultado.statusRequest.value===3)  { // solicituda aceptada
+				var estado=this.state;
+				ret.resultado.packagesIds.forEach( (e) => {
+					var resa=this.download_armasoa(estado,e);
+					if (resa.ok===true) {
+					   this.download_enviasoa(resa.soap,estado.token,e,idKey).then((ret) => {
+						 resolve({ ok:'ok', msg:'Descargo facturas'});
+					   });
+					}
+				},undefined,estado);
+			     } else {
+				 reject({ ok:'no', msg:'Solicitud rechazada'});
+			     }
+			 })
+		 }
+         });
    }
 
    this.verifica_armasoa = function (estado) {

@@ -6,8 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
 import { leeSolicitudesCorrectas } from '../db.js';
+import { ESTADOREQ } from '../componente/Constantes.js';
 
-let timer = null;
+let handleMessage = null;
 
         const days = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -18,7 +19,7 @@ class CargafaelMasiva extends Component {
     super(props);
     this.nextPath = this.nextPath.bind(this);
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
-    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:null,OKRFCEmisor:null,RFCReceptor:null,OKRFCReceptor:null
+    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:null,OKRFCEmisor:null,RFCReceptor:null,OKRFCReceptor:null,folioReq:null
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -30,8 +31,9 @@ class CargafaelMasiva extends Component {
     this.changeValueC = this.changeValueC.bind(this);
     this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
     this.cambioRFCReceptor = this.cambioRFCReceptor.bind(this);
-  }
+  };
 
+    
     toggle(event) {
         this.setState({
             dropdownOpen: !this.state.dropdownOpen
@@ -67,9 +69,34 @@ class CargafaelMasiva extends Component {
   }
   componentDidMount(){
       leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+            // Listen for messages from the service worker
+      handleMessage = (event) => {
+              console.log('[componentDidMount] recibio mensaje el cliente');
+              if (event.data.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
+                 this.setState({ token: event.data.respuesta,pwdfiel:document.querySelector('#pwdfiel').value });
+                 var x = new DMS();
+                         var resa=x.solicita_armasoa(this.state);
+                         if (resa.ok===true) {
+                                 this.setState({ ok: true, nook:false });
+                                 var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
+                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
+                                 x.solicita_enviasoa(resa.soap,this.state.token,passdata)
+                         }
+              }
+              if (event.data.request.value.url==="/solicita.php") {
+                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                 var token = { created: event.data.request.value.token_creared ,expired:event.data.request.value.token_expired ,value:event.data.request.value.token_value }
+                 this.setState(state => ({ token:token,pwdfiel:document.querySelector('#pwdfiel').value,
+                                                                           folioReq:event.data.request.value.folioReq}));
+
+              }
+      };
+
+      navigator.serviceWorker.addEventListener('message', handleMessage);
   }
+
   componentWillUnmount() {
-    clearTimeout(timer);
+    navigator.serviceWorker.removeEventListener('message',handleMessage)
   }
 
   onChangeHandler=event=>{
@@ -152,36 +179,50 @@ class CargafaelMasiva extends Component {
 
     }
 
-    var x = new DMS();
+    var x = new DMS(); 
     var res=x.autenticate_armasoa(document.querySelector('#pwdfiel').value);
     if (res.ok===true) {
        if (this.state.dropdownValue!=='Verificar Solicitud') {
 	       this.setState({ ok: true, nook:false });
-	       x.autenticate_enviasoa(res.soap).then((ret) =>  {
-			 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value}));
+	       x.autenticate_enviasoa(res.soap);
+/*
+               .then((aut) =>  {
+			 this.setState(state => ({ ok:aut.ok, msg:aut.msg, token:JSON.parse(aut.token),pwdfiel:document.querySelector('#pwdfiel').value}));
 			 var resa=x.solicita_armasoa(this.state);
 			 if (resa.ok===true) {
 				 this.setState({ ok: true, nook:false });
-                                 var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
-				 x.solicita_enviasoa(resa.soap,this.state.token,passdata).then((ret) => {
+                                 var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
+                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
+				 x.solicita_enviasoa(resa.soap,this.state.token,passdata).then((rets) => {
                                          var solicitudes=[];
-                                         passdata.solicitudes.forEach( e => solicitudes.push(e.valor.passdata) )
-					 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:ret.token,pwdfiel:document.querySelector('#pwdfiel').value,solicitudes:solicitudes}));
+                                         passdata.solicitudes.forEach( e => solicitudes.push(e.valor.passdata) )  
+					 this.setState(state => ({ ok:rets.ok, msg:rets.msg, token:aut.token,pwdfiel:document.querySelector('#pwdfiel').value,solicitudes:solicitudes}));
+                                         if (rets.msg==='Solicitud Aceptada') {
+						 this.setState(state => ({ ok:rets.ok, msg:rets.msg, token:JSON.parse(aut.token),pwdfiel:document.querySelector('#pwdfiel').value,
+									   folioReq:rets.token.requestId}));
+                                                 x.verificando(this.state,rets.idKey).then(d => { 
+                                                      this.setState(state => ({ resultadoVerifica: d.ok }));
+                                                 }).catch (d => {
+                                                      this.setState(state => ({ resultadoVerifica: d.ok }));
+                                                 })
+                                         }
 				 })
 			 }
 	       });
+*/
        } else {
 	       this.setState({ ok: true, nook:false });
 	       x.autenticate_enviasoa(res.soap).then((ret) =>  {
-			 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value,folioReq:document.querySelector('#folioReq').value}));
+			 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value,
+                                                   folioReq:document.querySelector('#folioReq').value}));
 			 var resa=x.verifica_armasoa(this.state);
 			 if (resa.ok===true) {
 				 this.setState({ ok: true, nook:false });
-			         x.verifica_enviasoa(resa.soap,this.state.token).then((ret) => {
-				     this.setState(state => ({ ok:ret.ok, msg:ret.msg, resultadoVerifica:ret.resultado,pwdfiel:document.querySelector('#pwdfiel').value}));
-                                     if (ret.resultado.statusRequest.value===3)  { // solicituda aceptada
+			         x.verifica_enviasoa(resa.soap,this.state.token).then((retv) => {
+				     this.setState(state => ({ ok:retv.ok, msg:ret.msg, resultadoVerifica:retv.resultado,pwdfiel:document.querySelector('#pwdfiel').value}));
+                                     if (retv.resultado.statusRequest.value===3)  { // solicituda aceptada
                                         var estado=this.state;
-                                        ret.resultado.packagesIds.forEach( (e) => {
+                                        retv.resultado.packagesIds.forEach( (e) => {
 						var resa=x.download_armasoa(estado,e);
 						if (resa.ok===true) {
 						   x.download_enviasoa(resa.soap,estado.token,e).then((ret) => {

@@ -4,9 +4,11 @@ import  Menumi  from '../componente/Menu';
 
 
 class Master extends Component {
+/*
   constructor(props){
     super(props);
   }
+*/
 
   render() {
     return  (

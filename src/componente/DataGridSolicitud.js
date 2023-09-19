@@ -1,16 +1,20 @@
 
 import 'react-data-grid/lib/styles.css';
 
-import DataGrid from 'react-data-grid';
-const fechaformateada = ({value}) => { const valor=value.substring(0,9); console.log('formatter='+valor);return valor; };
+import DG from 'react-data-grid';
 const columns = [
-  { key: 'fechaini',  name: 'Fecha Inicial', formatter : ({value}) => { const valor=value.substring(0,9); console.log('formatter='+value);return <b>value</b>; }},
+  { key: 'fechaini',  name: 'Fecha Inicial'},
   { key: 'fechafin',  name: 'Fecha Final' },
   { key: 'RFCEmisor', name: 'RFC Emisor' },
   { key: 'RFCReceptor', name: 'RFC Receptor' },
-  { key: 'msg', name: 'Estado' }
+  { key: 'msg', name: 'Estado Solicitud' },
+  { key: 'msg_v', name: 'Estado Verificacion' },
+  { key: 'msg_d', name: 'Estado Descarga',
+    renderHeaderCell: (props) => {
+      return <div className="text-success">Estado Descarga</div>;
+    }}
 ];
 
 export function MiDataGrid(props) {
-  return <DataGrid columns={columns} rows={props.filas} />;
+  return <DG columns={columns} rows={props.filas} />;
 }

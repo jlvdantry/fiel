@@ -1,7 +1,7 @@
-
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
-
+   importScripts('db.js');
+   importScripts('Constantes.js');
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -20,7 +20,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([]);
+    workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -59,4 +59,101 @@ if ("function" === typeof importScripts) {
     console.error("Workbox could not be loaded. No offline support");
   }
 }
+
+self.addEventListener("sync", event => {
+    console.log('[sync] sync '+event.tag);
+    if (event.tag === "autentica") {
+       console.log('[sync] sync tag='+event.tag);
+       event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
+       //event.waitUntil(syncRequest(2));
+       //event.waitUntil(syncRequest(8));
+    };
+
+    if (event.tag === "sync-servidor_0") {
+       console.log('[sync] sync tag='+event.tag);
+       event.waitUntil(syncRequest(0));
+    };
+
+});
+
+var syncRequest = estado => {
+    openDatabasex(DBNAME, DBVERSION).then( db => {
+          var oS=openObjectStore(db, 'request', "readonly"); return oS;
+    }).then( objectStore => {
+          var req=selObjects(objectStore, "estadoIndex", estado); return req;
+    }).then( requests => {
+                  return Promise.all(
+                         requests.map(function(request) {
+                                console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
+				const jsonHeaders = request.value.header;
+				const headers = new Headers(jsonHeaders);
+                                fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
+                                .then(response => {
+                                          if (response.status==500) { updestado(request,ESTADOREQ.ERROR); return { 'error' : response.status };
+                                          } else { return response.json(); }
+                                })
+                                .then(response => {
+                                          if(request.value.url=='/autentica.php') { updestado(request,estado,ESTADOREQ.AUTENTICADO, response); return response;
+                                          } else { updestado(request,ESTADOREQ.RECIBIDO, response); return response; }
+                                 })
+                                .then(response => { querespuesta(request,response); return Promise.resolve(); })
+                                .catch(function(err)  { return Promise.reject(err); })
+                         })
+                   );
+    });
+};
+
+var updestado = function (request,estado,respuesta) {
+        return new Promise(function (resolve, reject) {
+            var now = new Date();
+            console.log( '[updestado] updestado key='+request.key+' Estado='+estado);
+            openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                  return openObjectStore(db, 'request', "readwrite");
+                   }).then(function(objectStore) {
+                           request.value.estado=estado;
+                           request.value.respuesta=respuesta;
+                           return updObject_01(objectStore, request.value, request.key);
+                   }).then(function(objectStore) {
+                           console.log('[updestado] upestado debe de actualizar la forma key='+request.key+' Estado='+estado);
+                           postRequestUpd(request,estado,"update-request",respuesta);
+                   }).catch(function(err)  {
+                           return Promise.reject(err);
+                   });
+            resolve('ok');
+        });
+};
+
+var postRequestUpd = function(request,estado,accion,respuesta) {
+        self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
+                clients.forEach(function(client) {
+                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key+' Estado='+estado);
+                        client.postMessage(
+                                {action: accion, request: request, estado: estado, respuesta: respuesta}
+                        );
+                });
+        });
+};
+
+var querespuesta = function(request,respuesta) {
+      console.log('[querespuesta] respuesta recibida del servidor='+respuesta);
+         if("error" in respuesta) {
+            updestado(request,5,respuesta);
+            return;
+         }
+
+         if("created" in respuesta) {
+            updestado(request,ESTADOREQ.AUTENTICADO,respuesta);
+            return;
+         }
+         if("status" in respuesta) {
+            if ("code" in respuesta.status) {
+               updestado(request,respuesta.status.code,respuesta.status.message);
+               request.value.passdata.msg=respuesta.status.message;
+               "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
+               updObjectByKey("request",request.value,request.key);
+               return;
+            }
+         }
+     updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
+};
 

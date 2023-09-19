@@ -72,7 +72,7 @@ class Consultafael extends Component {
 			<CardHeader color="success" className="text-center" >Comprobante</CardHeader>
 			<CardBody>
 			  <CardSubtitle className="text-center">Fecha: {data.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
-			  <CardSubtitle className="text-center">Tipo de comprobante: TC.{data.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante}</CardSubtitle>
+			  <CardSubtitle className="text-center">Tipo de comprobante: {TC[data.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
 			  <CardSubtitle className="text-center">SubTotal: <CurrencyFormat value={data.valor.passdata["cfdi:Comprobante"]["@attributes"].SubTotal} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
 			  <CardSubtitle className="text-center">Total: <CurrencyFormat value={data.valor.passdata["cfdi:Comprobante"]["@attributes"].Total} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
 			</CardBody>
