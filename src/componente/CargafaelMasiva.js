@@ -71,10 +71,11 @@ class CargafaelMasiva extends Component {
       leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
             // Listen for messages from the service worker
       handleMessage = (event) => {
-              console.log('[componentDidMount] recibio mensaje el cliente');
+              console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url);
+              var x = null;
               if (event.data.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel:document.querySelector('#pwdfiel').value });
-                 var x = new DMS();
+                 x = new DMS();
                          var resa=x.solicita_armasoa(this.state);
                          if (resa.ok===true) {
                                  this.setState({ ok: true, nook:false });
@@ -83,12 +84,15 @@ class CargafaelMasiva extends Component {
                                  x.solicita_enviasoa(resa.soap,this.state.token,passdata)
                          }
               }
-              if (event.data.request.value.url==="/solicita.php") {
+              if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
                  leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-                 var token = { created: event.data.request.value.token_creared ,expired:event.data.request.value.token_expired ,value:event.data.request.value.token_value }
-                 this.setState(state => ({ token:token,pwdfiel:document.querySelector('#pwdfiel').value,
-                                                                           folioReq:event.data.request.value.folioReq}));
-
+                 var token = { created: event.data.request.value.header.token_created ,expired:event.data.request.value.header.token_expired ,value:event.data.request.value.header.token_value }
+                 this.setState(state => ({ token:token,pwdfiel:document.querySelector('#pwdfiel').value, folioReq:event.data.request.value.folioReq}));
+                 x = new DMS();
+                 x.verificando(	this.state,event.data.request.key);
+              } else { leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) }); }
+              if (event.data.request.value.url==="/verifica.php") {
+                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
               }
       };
 

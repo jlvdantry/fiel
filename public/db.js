@@ -194,7 +194,7 @@ var selObjects = function(objectStore, indexname, indexvalue, direction='next') 
            let range = IDBKeyRange.only(indexvalue);
            myIndex=objectStore.index(indexname);  
            cursor  = myIndex.openCursor(range);
-           console.log('[selObjects] cursor='+JSON.stringify(cursor));
+           //console.log('[selObjects] cursor='+JSON.stringify(cursor));
         } else {
            cursor = objectStore.openCursor();
         }
@@ -205,7 +205,7 @@ var selObjects = function(objectStore, indexname, indexvalue, direction='next') 
             var cursor1 = event.target.result;
             var json = { };
             if (cursor1) {
-               console.log('[selObjects] key='+cursor1.primaryKey+' value='+cursor1.value);
+               //console.log('[selObjects] key='+cursor1.primaryKey+' value='+cursor1.value);
                json.value=cursor1.value;
                json.key  =cursor1.primaryKey;
                regs.push( json );
@@ -307,7 +307,7 @@ var updObjectByKey = function(objectStore, object, id) {
 		openDatabasex(DBNAME, DBVERSION).then(function(db) {
 		  return openObjectStore(db, objectStore, "readwrite");
 		}).then(function(oS) {
-				console.log('[db.js] updObject_01 va a actualizar registro con id='+id+' objeto='+JSON.stringify(object));
+				console.log('[db.js] updObjectByKey  va a actualizar registro con id='+id);
 				var upd=oS.put(object,id);
 				upd.onsuccess = function () { console.log('[db.js] updObjectByKey actualizo registro con id='+id); resolve(); };
 				upd.onerror = function () { console.log('[db.js] updObjectByKey error al actualizar el registro con id='+id); reject(); }

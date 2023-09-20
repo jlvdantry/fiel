@@ -63,15 +63,7 @@ if ("function" === typeof importScripts) {
 self.addEventListener("sync", event => {
     console.log('[sync] sync '+event.tag);
     if (event.tag === "autentica") {
-       console.log('[sync] sync tag='+event.tag);
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
-       //event.waitUntil(syncRequest(2));
-       //event.waitUntil(syncRequest(8));
-    };
-
-    if (event.tag === "sync-servidor_0") {
-       console.log('[sync] sync tag='+event.tag);
-       event.waitUntil(syncRequest(0));
     };
 
 });
@@ -147,13 +139,37 @@ var querespuesta = function(request,respuesta) {
          }
          if("status" in respuesta) {
             if ("code" in respuesta.status) {
-               updestado(request,respuesta.status.code,respuesta.status.message);
-               request.value.passdata.msg=respuesta.status.message;
-               "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
-               updObjectByKey("request",request.value,request.key);
-               return;
+               if (request.value.url=='/solicita.php') {
+		       updestado(request,respuesta.status.code,respuesta.status.message);
+		       request.value.passdata.msg=respuesta.status.message;
+		       "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
+		       updObjectByKey("request",request.value,request.key);
+		       return;
+               }
+               if (request.value.url=='/verifica.php') {
+		       updestado(request,respuesta.status.code,respuesta.statusRequest.message);
+		       request.value.passdata.msg_v=respuesta.statusRequest.message;
+		       "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
+		       updObjectByKey("request",request.value,request.key);
+                       if (respuesta.codeRequest.value!=5000) { updSolicitud(respuesta.codeRequest.message,request.value.passdata.keySolicitud) ; }
+                       else 
+                          { 
+                              if (respuesta.statusRequest.message!=="Terminada")
+                                 { updSolicitud(respuesta.statusRequest.message,request.value.passdata.keySolicitud); }
+                              else  
+                                 { updSolicitud('Facturas '+respuesta.numberCfdis,request.value.passdata.keySolicitud); }
+                          }
+		       return;
+               }
             }
          }
      updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
 };
+
+var updSolicitud = (mensaje,idKey) => {
+      selObjectByKey('request',idKey).then( obj => {
+                obj.passdata.msg_v=mensaje;
+                updObjectByKey('request',obj,idKey);
+      });
+}
 

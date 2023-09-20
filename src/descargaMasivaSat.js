@@ -383,6 +383,19 @@ var DescargaMasivaSat = function()
 
    this.verifica_enviasoa= function (soa,token,idKey) {
         var url=this.urlproxy;
+        var passdata={ keySolicitud:idKey };
+        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'VerificaSolicitudDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
+                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
+                                if ("serviceWorker" in navigator && "SyncManager" in window) {
+                                   navigator.serviceWorker.ready.then(function(registration) {
+                                       registration.sync.register("autentica");
+                                       console.log('[verifica_enviasoa] envio sincronizacion al service worker ');
+                                   }).catch(function(err) {console.log("[verifica_enviasoa] inserta_request El servicio de trabajo no esta listo: "+err.message)});
+                                } else { console.log('[verifica_enviasoa] no envio la sincronizacion con el service worker '); }
+                }).catch(function(err) {
+                                console.log("[verifica_enviasoa] Database error: "+err.message);
+                });
+/*
         return new Promise(function (resolve, reject) {
                 let hs1 = new Headers();
                 hs1.append('Content-Type', 'text/xml;charset=UTF-8');
@@ -412,6 +425,7 @@ var DescargaMasivaSat = function()
                           }
                     );
       });
+*/
    }
 
 
@@ -430,31 +444,16 @@ var DescargaMasivaSat = function()
    }
 
    this.verificando = async function (estado,idKey) {
-        return new Promise(function (resolve, reject) {
                  var resv=this.verifica_armasoa(estado,idKey);
 		 if (resv.ok===true) {
-		       this.verifica_enviasoa(resv.soap,estado.token,idKey).then((ret) => {
-			     if (ret.resultado.statusRequest.value===3)  { // solicituda aceptada
-				var estado=this.state;
-				ret.resultado.packagesIds.forEach( (e) => {
-					var resa=this.download_armasoa(estado,e);
-					if (resa.ok===true) {
-					   this.download_enviasoa(resa.soap,estado.token,e,idKey).then((ret) => {
-						 resolve({ ok:'ok', msg:'Descargo facturas'});
-					   });
-					}
-				},undefined,estado);
-			     } else {
-				 reject({ ok:'no', msg:'Solicitud rechazada'});
-			     }
-			 })
+		       this.verifica_enviasoa(resv.soap,estado.token,idKey);
 		 }
-         });
    }
 
    this.verifica_armasoa = function (estado) {
                 this.mifiel = new fiel();
                 var res=this.mifiel.validafiellocal(estado.pwdfiel);
+                this.cer = this.mifiel.damecertificadofiel();
                 if (res.ok) {
                    estado.firma = res;
                    this.armaBodyVer(estado);

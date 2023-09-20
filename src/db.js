@@ -205,7 +205,6 @@ var selObjects = function(objectStore, indexname, indexvalue, direccion='next') 
             var cursor1 = event.target.result;
             var json = { };
             if (cursor1) {
-               console.log('[selObjects] key='+cursor1.primaryKey+' value='+cursor1.value);
                json.valor=cursor1.value;
                json.key  =cursor1.primaryKey;
                regs.push( json );
@@ -307,7 +306,7 @@ var updObjectByKey = function(objectStore, object, id) {
 		openDatabasex(DBNAME, DBVERSION).then(function(db) {
 		  return openObjectStore(db, objectStore, "readwrite");
 		}).then(function(oS) {
-				console.log('[db.js] updObject_01 va a actualizar registro con id='+id);
+				console.log('[db.js] updObjectByKey va a actualizar registro con id='+id);
 				var upd=oS.put(object,id);
 				upd.onsuccess = function () { console.log('[db.js] updObjectByKey actualizo registro con id='+id); resolve(); };
 				upd.onerror = function () { console.log('[db.js] updObjectByKey error al actualizar el registro con id='+id); reject(); }
