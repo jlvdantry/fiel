@@ -185,7 +185,7 @@ var selObjectByKey = function(objectStore,key) {
    indexvalue   valor del indice a buscar
    si llegan valida indexname e indexvalue se regresan todos los valores del objeto
    */ 
-var selObjects = function(objectStore, indexname, indexvalue, direction='next') {
+var selObjects = function(objectStore, indexname, indexvalue, direccion='next') {
         var regs  = [];
         var cursor = {};
         var myIndex = null;
@@ -193,7 +193,7 @@ var selObjects = function(objectStore, indexname, indexvalue, direction='next') 
         if (indexname!==undefined && indexvalue!==undefined) {
            let range = IDBKeyRange.only(indexvalue);
            myIndex=objectStore.index(indexname);  
-           cursor  = myIndex.openCursor(range);
+           cursor  = myIndex.openCursor(range,direccion);
            console.log('[selObjects] cursor='+JSON.stringify(cursor));
         } else {
            cursor = objectStore.openCursor();
@@ -503,12 +503,12 @@ function leefirmas()
 
 function leeSolicitudes(direccion='next')
 {
-        console.log('[db.js leeSolicitudes] entro');
+        console.log('[src/db.js leeSolicitudes] entroi direccion='+direccion);
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[db.js leeSolicitudes] va a seleccionar ');
+                                console.log('[src/db.js leeSolicitudes] va a seleccionar ');
                                 selObjects(objectStore,'url','/solicita.php',direccion).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
