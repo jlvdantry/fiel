@@ -5,7 +5,6 @@ var PERFIL='inven_agn'
 
 var openDatabasex = function(dbName, dbVersion) {
         return new Promise(function (resolve, reject) {
-                console.log('[db.js] entro a abrir la base de datos '+dbName+' version='+dbVersion);
                 /* eslint-disable-next-line no-restricted-globals */
                 if (!self.indexedDB) {
                 reject('IndexedDB not supported');
@@ -18,7 +17,6 @@ var openDatabasex = function(dbName, dbVersion) {
                 };
 
                 request.onupgradeneeded = function(event) {
-                   console.log('[db.js] entro a actualizar la base de datos '+dbName+' version='+dbVersion);
                    var db = event.target.result;
                    if (dbName===DBNAME) {
                       creadb(db);
@@ -254,10 +252,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
                json.key  =cursor1.primaryKey;
                resolve(json);
             } else {
-              console.log('[db.js] selObjectUlt no cursor indexname='+indexname+' indexvalue='+indexvalue);
-              json.valor=0;
-              json.key  =0;
-              resolve(json);
+              reject();
             };
         };
    });
@@ -502,12 +497,11 @@ function leefirmas()
 
 function leeSolicitudes(direccion='next')
 {
-        console.log('[src/db.js leeSolicitudes] entroi direccion='+direccion);
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[src/db.js leeSolicitudes] va a seleccionar ');
+                                //console.log('[src/db.js leeSolicitudes] va a seleccionar ');
                                 selObjects(objectStore,'url','/solicita.php',direccion).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });

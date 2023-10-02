@@ -1,5 +1,5 @@
 import fiel from './fiel';
-import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,updObject_01,openObjectStore,selObjects,selObjectByKey,updObjectByKey} from './db';
+import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,selObjectUlt} from './db';
 import {MENUS,FORMA,MOVIMIENTO} from './componente/Constantes';
 var DescargaMasivaSat = function()
 {
@@ -26,7 +26,6 @@ var DescargaMasivaSat = function()
         var digerido = "";
         md.update(digest,'utf8');
         digerido = btoa(md.digest().data);
-        console.log('digerido='+digerido);
 
         var signedinfo = '<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI="'+urifirmado+'"><Transforms><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod><DigestValue>'+digerido+'</DigestValue></Reference></SignedInfo>';
         var signedinfox = '<SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI="'+urifirmado+'"><Transforms><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod><DigestValue>'+digerido+'</DigestValue></Reference></SignedInfo>';
@@ -52,7 +51,7 @@ var DescargaMasivaSat = function()
    } 
 
    this.armaBodySol = function (estado) {
-          var solicitud = { 'RfcSolicitante' : estado.firma.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.RFCEmisor 
+          var solicitud = { 'RfcSolicitante' : estado.certificado.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.RFCEmisor 
                ,'RFCReceptor': estado.RFCReceptor
               };
           var solicitudAttributesAsText=' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" RfcEmisor="'+estado.RFCEmisor+'" RfcSolicitante="'+solicitud.RfcSolicitante+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
@@ -207,19 +206,22 @@ var DescargaMasivaSat = function()
                 this.mifiel = new fiel();
                 var res=this.mifiel.validaprivada(pwd);
                 if (res.ok) {
+                   var cer=this.mifiel.damecertificadofiel();
+                   var cerRecortado= { certificado:cer.certificado, issuer:cer.issuer.attributes[1].value, serialNumber:cer.serialNumber,nombre:cer.subject.attributes[0].value,rfc:cer.subject.attributes[5].value, mifirma:mifirmaString }
                    this.armaBodyAut();
-                   return { ok:true, msg :'Fiel correcta', soap:this.xmltoken }
+                   var mifirmaString=this.mifiel.toString();
+                   return { ok:true, msg :'Fiel correcta', soap:this.xmltoken, cer:cerRecortado , mifirma:mifirmaString}
                 } else {
                    return { ok:false , msg : res.msg };
                 }
    }
 
-   this.autenticate_enviasoa= function (soa,url='/autentica.php') {
+   this.autenticate_enviasoa= function (res,pwd,url='/autentica.php') {
                 var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Autentica'};
-                inserta_request(url,'',MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.AUTENTICA,hs1,soa).then( key => {
+                inserta_request(url,res.cer,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.AUTENTICA,hs1,res.soap).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
-                                       registration.sync.register("autentica");
+                                       registration.sync.register("autentica_"+pwd);
                                        console.log('[inserta_request] envio sincronizacion al service worker ');
                                    }).catch(function(err) {console.log("[broseaing.js] inserta_request El servicio de trabajo no esta listo: "+err.message)});
                                 } else { console.log('[inserta_request] no envio la sincronizacion con el service worker '); }
@@ -241,93 +243,24 @@ var DescargaMasivaSat = function()
                 }).catch(function(err) {
                                 console.log("[solicita_enviasoa] Database error: "+err.message);
                 });
-
-
-/*
-        return new Promise(async (resolve, reject) => {
-                let hs1 = new Headers();
-                var idKey=null;
-                hs1.append('Content-Type', 'text/xml;charset=UTF-8');
-                hs1.append('Accept', 'text/xml');
-                hs1.append('Accept-Charset', 'utf-8');
-                hs1.append('Cache-Control', 'no-cache');
-                hs1.append('token_value', token.value);
-                hs1.append('token_created', token.created);
-                hs1.append('token_expired', token.expires);
-                hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga');
-
-                var opciones = { method: 'POST', body:soa, headers:hs1 };
-		const result = await openDatabasex(DBNAME,DBVERSION).then( () => {
-					    inserta_request('SolicitaDescarga',passdata,MENUS.DESCARGAMASIVA,null).then( (json) => {
-						idKey=json.key;
-						fetch(url, opciones)
-						    .then( response => response.json())
-						    .then(async (result) => {
-						           console.log('idRequest fetch='+idKey);
-                                                           passdata.ok=true; passdata.msg = result.status.message; passdata.token = result ; 
-                                                           openDatabasex(DBNAME,DBVERSION).then( db => {
-                                                                 return openObjectStore(db, 'request', "readwrite");
-                                                                     }).then( objectStore => {   
-                                                                       objectStore.get(idKey);
-                                                                       console.log('obj='+JSON.stringify(json));
-                                                                       json.passdata=passdata;
-                                                                       updObject_01(objectStore,json,idKey);
-                                                                       selObjects(objectStore,'url','SolicitaDescarga','prev').then( f => { 
-                                                                                   passdata.solicitudes=f;
-                                                                                   passdata.idKey=idKey;
-                                                                                   resolve (passdata)
-                                                                       })
-                                                                     });
-							  })
-						    .catch(function(err) {
-							     reject( { ok:false , msg : err });
-							  }
-						    );
-
-					    }).catch(function(err)  {
-						    console.log('error al guardar solicitud');
-				    });
-	        });
-      });
-*/
    }
 
-   this.download_enviasoa= function (soa,token,packageId,idKey) {
+   this.download_enviasoa= function (soa,token,packageId,keySolicitud) {
         var url=this.urlproxy;
-        var thisParent=this;
-        return new Promise(function (resolve, reject) {
-                let hs1 = new Headers();
-                hs1.append('Content-Type', 'text/xml;charset=UTF-8');
-                hs1.append('Accept', 'text/xml');
-                hs1.append('Accept-Charset', 'utf-8');
-                hs1.append('Cache-Control', 'no-cache');
-                hs1.append('token_value', token.value);
-                hs1.append('token_created', token.created);
-                hs1.append('token_expired', token.expires);
-                hs1.append('packageId', packageId);
-                hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar');
+        var passdata = { keySolicitud : keySolicitud }
+        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Descargar','token_value':token.value,'token_created':token.created,'token_expired':token.expired,'packageId':packageId};
+                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
+                                if ("serviceWorker" in navigator && "SyncManager" in window) {
+                                   navigator.serviceWorker.ready.then(function(registration) {
+                                       registration.sync.register("autentica");
+                                       console.log('[download_enviasoa] envio sincronizacion al service worker ');
+                                   }).catch(function(err) {console.log("[broseaing.js] inserta_request El servicio de trabajo no esta listo: "+err.message)});
+                                } else { console.log('[download_enviasoa] no envio la sincronizacion con el service worker '); }
+                }).catch(function(err) {
+                                console.log("[download_enviasoa] Database error: "+err.message);
+                });
 
-                var opciones = { method: 'POST', body:soa, headers:hs1 };
-                fetch(url, opciones)
-                    .then( response => response.json() )
-                    .then( result => {
-                           selObjectByKey('request',idKey).then ( obj => {
-                                   obj.passdata.msg_d = result.message;
-                                   updObjectByKey('request',obj,idKey).then ( () => {
-					    if (result.msg.includes("El paquete no se ha podido descargar")===true)
-						resolve ( { ok:false, msg : result.msg , token : null });
-					    else {
-						thisParent.leezip(result.xml);
-						resolve ( { ok:true, msg : 'Descarga correcta' , token : result })
-					    }
-                                   });
-                            });
-                          })
-                    .catch(function(err) {
-                             reject( { ok:false , msg : err });
-                          }
-                    );
-      });
+
    }
 
    this.leezip = async function (xmls){
@@ -388,44 +321,13 @@ var DescargaMasivaSat = function()
                 inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
-                                       registration.sync.register("autentica");
+                                       registration.sync.register("verifica");
                                        console.log('[verifica_enviasoa] envio sincronizacion al service worker ');
                                    }).catch(function(err) {console.log("[verifica_enviasoa] inserta_request El servicio de trabajo no esta listo: "+err.message)});
                                 } else { console.log('[verifica_enviasoa] no envio la sincronizacion con el service worker '); }
                 }).catch(function(err) {
                                 console.log("[verifica_enviasoa] Database error: "+err.message);
                 });
-/*
-        return new Promise(function (resolve, reject) {
-                let hs1 = new Headers();
-                hs1.append('Content-Type', 'text/xml;charset=UTF-8');
-                hs1.append('Accept', 'text/xml');
-                hs1.append('Accept-Charset', 'utf-8');
-                hs1.append('Cache-Control', 'no-cache');
-                hs1.append('token_value', token.value);
-                hs1.append('token_created', token.created);
-                hs1.append('token_expired', token.expires);
-                hs1.append('SOAPAction', 'http://DescargaMasivaTerceros.sat.gob.mx/IVerificaSolicitudDescargaService/VerificaSolicitudDescarga');
-
-                var opciones = { method: 'POST', body:soa, headers:hs1 };
-                fetch(url, opciones)
-                    .then( response => response.json())
-                    .then( result => {
-                           selObjectByKey('request',idKey).then ( obj => {
-                                   obj.passdata.msg_v = result.statusRequest.message;
-                                   obj.passdata.Cfdis = result.numberCfdis;
-                                   updObjectByKey('request',obj,idKey).then ( () => {
-                                        resolve ( { ok:true, msg : 'Verificación correcta' , resultado : result })
-                                   });
-                           })
-                          }
-                         )
-                    .catch(function(err) {
-                             reject( { ok:false , msg : err });
-                          }
-                    );
-      });
-*/
    }
 
 
@@ -433,13 +335,15 @@ var DescargaMasivaSat = function()
                 this.mifiel = new fiel();
                 var res=this.mifiel.validafiellocal(estado.pwdfiel);
                 this.cer = this.mifiel.damecertificadofiel();
-                if (res.ok) {
-                   estado.firma = res;
-                   this.armaBodySol(estado);
-                   return { ok:true, msg :'Fiel correcta', soap:this.xmltoken }
-                } else {
-                   return { ok:false , msg : res.msg };
-                }
+                this.estaAutenticado().then( (res) => {
+                   if (res.autenticado) { 
+                      estado.certificado=res.certificado;
+                      var passdata = { 'fechaini':estado.start.substring(0,10),'fechafin':estado.end.substring(0,10),
+                                                  'RFCEmisor':estado.RFCEmisor,'RFCReceptor':estado.RFCReceptor };
+                      this.armaBodySol(estado);
+                      this.solicita_enviasoa(this.xmltoken,estado.token,passdata)
+                   }
+                })
 
    }
 
@@ -449,6 +353,14 @@ var DescargaMasivaSat = function()
 		       this.verifica_enviasoa(resv.soap,estado.token,idKey);
 		 }
    }
+
+   this.descargando = async (estado,packageId,keySolicitud) => {
+                 var resv=this.download_armasoa(estado,packageId[0]);
+                 if (resv.ok===true) {
+                       this.download_enviasoa(resv.soap,estado.token,packageId[0],keySolicitud);
+                 }
+   }
+
 
    this.verifica_armasoa = function (estado) {
                 this.mifiel = new fiel();
@@ -466,6 +378,7 @@ var DescargaMasivaSat = function()
    this.download_armasoa = function (estado,packageId) {
                 this.mifiel = new fiel();
                 var res=this.mifiel.validafiellocal(estado.pwdfiel);
+                this.cer = this.mifiel.damecertificadofiel();
                 if (res.ok) {
                    estado.firma = res;
                    this.armaBodyDownload(estado,packageId);
@@ -475,8 +388,20 @@ var DescargaMasivaSat = function()
                 }
    }
 
-
-
+   this.estaAutenticado = () => {
+                return new Promise(function (resolve, reject) {
+                     selObjectUlt('request','url','/autentica.php','prev').then( obj => {
+                     var actual=Math.floor(Date.now() / 1000);
+                     if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expires) {
+                         console.log('estaAutenticado token activo');
+                         resolve({ autenticado:true,certificado:obj.valor.passdata })
+                     } else {
+                         console.log('estaAutenticado token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expires);
+                         resolve({ autenticado:false }); }
+                     }).
+                     catch( e=> { resolve({autenticado:false}) });
+                });
+   }
 }
 
 export default DescargaMasivaSat;

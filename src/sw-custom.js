@@ -62,31 +62,57 @@ if ("function" === typeof importScripts) {
 
 self.addEventListener("sync", event => {
     console.log('[sync] sync '+event.tag);
-    if (event.tag === "autentica") {
+    if (event.tag.substring(0,9)=== "autentica") {
+       if (event.tag.substring(10)!=='') {
+                     PWDFIEL=event.tag.substring(10);
+                     console.log('[sync] PWDFIEL='+PWDFIEL);;
+       }
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
+    };
+    if (event.tag === "verifica") {
+       event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
+       event.waitUntil(syncRequest(ESTADOREQ.ACEPTADO));
+    };
+    if (event.tag === "dameContra") {
+        event.waitUntil(enviaContra())
     };
 
 });
 
 var syncRequest = estado => {
+    console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
           var req=selObjects(objectStore, "estadoIndex", estado); return req;
     }).then( requests => {
                   return Promise.all(
-                         requests.map(function(request) {
+                         requests.map( async (request) => {
+                                if (request.value.url=='/verifica.php' & (request.value.respuesta=="Terminada" || request.value.respuesta=="Rechazada")) {  
+                                                 // no procesa las verificaciones ya terminadas 
+                                     return;
+                                }
+                                if (request.value.url=='/solicita.php' & (estado==ESTADOREQ.ACEPTADO || estado==ESTADOREQ.REQUIRIENDO)) {  // no procesa las verificaciones ya terminadas 
+                                     return;
+                                }
+                                if (request.value.url=='factura') {
+                                     return;
+                                }
                                 console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
+                                await updestado(request,ESTADOREQ.REQUIRIENDO, null);
                                 fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
                                 .then(response => {
                                           if (response.status==500) { updestado(request,ESTADOREQ.ERROR); return { 'error' : response.status };
                                           } else { return response.json(); }
                                 })
                                 .then(response => {
-                                          if(request.value.url=='/autentica.php') { updestado(request,estado,ESTADOREQ.AUTENTICADO, response); return response;
-                                          } else { updestado(request,ESTADOREQ.RECIBIDO, response); return response; }
+                                          if(request.value.url=='/autentica.php') 
+                                            { updestado(request,ESTADOREQ.AUTENTICADO, response); }
+                                          else 
+                                            { updestado(request,ESTADOREQ.RECIBIDO, response); }
+                                          return response;
                                  })
                                 .then(response => { querespuesta(request,response); return Promise.resolve(); })
                                 .catch(function(err)  { return Promise.reject(err); })
@@ -95,81 +121,131 @@ var syncRequest = estado => {
     });
 };
 
-var updestado = function (request,estado,respuesta) {
-        return new Promise(function (resolve, reject) {
+/* actualiza el estado del request */
+var updestado = (request,esta,respuesta) => {
+        request.value.estado=esta;
+        request.value.respuesta=respuesta;
+        return new Promise( (resolve, reject) => {
             var now = new Date();
-            console.log( '[updestado] updestado key='+request.key+' Estado='+estado);
             openDatabasex(DBNAME, DBVERSION).then(function(db) {
                   return openObjectStore(db, 'request', "readwrite");
-                   }).then(function(objectStore) {
-                           request.value.estado=estado;
-                           request.value.respuesta=respuesta;
+                   }).then( objectStore => {
                            return updObject_01(objectStore, request.value, request.key);
-                   }).then(function(objectStore) {
-                           console.log('[updestado] upestado debe de actualizar la forma key='+request.key+' Estado='+estado);
-                           postRequestUpd(request,estado,"update-request",respuesta);
+                   }).then( objectStore => {
+                           console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
+                           resolve(request);
                    }).catch(function(err)  {
                            return Promise.reject(err);
                    });
-            resolve('ok');
+            resolve(request);
         });
 };
 
-var postRequestUpd = function(request,estado,accion,respuesta) {
+var postRequestUpd = function(request,accion,respuesta) {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key+' Estado='+estado);
+                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
-                                {action: accion, request: request, estado: estado, respuesta: respuesta}
+                                {action: accion, request: request, respuesta: respuesta, PWDFIEL:PWDFIEL}
                         );
                 });
         });
 };
+ 
+var enviaContra = () => {
+        self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
+                clients.forEach(function(client) {
+                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
+                        client.postMessage(
+                                {contra: PWDFIEL}
+                        );
+                });
+        });
 
-var querespuesta = function(request,respuesta) {
-      console.log('[querespuesta] respuesta recibida del servidor='+respuesta);
+}
+
+var querespuesta = (request,respuesta) => {
+         console.log('[querespuesta] respuesta recibida del servidor id='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
-            updestado(request,5,respuesta);
+            updestado(request,5,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
             return;
          }
 
          if("created" in respuesta) {
-            updestado(request,ESTADOREQ.AUTENTICADO,respuesta);
+            respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
+            respuesta.expiresLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
+            updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
+                          { postRequestUpd(r,"update-request",respuesta); }
+            );
             return;
          }
          if("status" in respuesta) {
             if ("code" in respuesta.status) {
                if (request.value.url=='/solicita.php') {
-		       updestado(request,respuesta.status.code,respuesta.status.message);
-		       request.value.passdata.msg=respuesta.status.message;
-		       "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
-		       updObjectByKey("request",request.value,request.key);
+		       updestado(request,respuesta.status.code,respuesta.status.message)
+                       .then( (r) => { 
+		                 request.value.passdata.msg=respuesta.status.message;
+		                 "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
+		                 updObjectByKey("request",request.value,request.key); /* actualiza el folio del requerimiento de la solicitud */
+                              })
+                       .then ( () => {
+                                 postRequestUpd(request,"update-request",respuesta);
+                             });
 		       return;
                }
                if (request.value.url=='/verifica.php') {
-		       updestado(request,respuesta.status.code,respuesta.statusRequest.message);
 		       request.value.passdata.msg_v=respuesta.statusRequest.message;
-		       "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
-		       updObjectByKey("request",request.value,request.key);
-                       if (respuesta.codeRequest.value!=5000) { updSolicitud(respuesta.codeRequest.message,request.value.passdata.keySolicitud) ; }
-                       else 
-                          { 
-                              if (respuesta.statusRequest.message!=="Terminada")
-                                 { updSolicitud(respuesta.statusRequest.message,request.value.passdata.keySolicitud); }
-                              else  
-                                 { updSolicitud('Facturas '+respuesta.numberCfdis,request.value.passdata.keySolicitud); }
-                          }
+		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
+		       updestado(request,respuesta.status.code,respuesta.statusRequest.message).then( () => {
+			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
+			       updSolicitud(respuesta,request.value.passdata.keySolicitud) 
+                               .then( () => {
+			            postRequestUpd(request,"update-request",respuesta);
+                               });
+                       });
 		       return;
                }
             }
          }
+
+         if(respuesta.msg=="El paquete se descargo") {
+		       request.value.passdata.msg_d=respuesta.msg;
+                       updestado(request,ESTADOREQ.PAQUETEDESCARGADO,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+                               updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
+                               updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
+                               .then( () => {
+                                    postRequestUpd(request,"update-request",respuesta);
+                               });
+                       });
+                       return;
+         }
      updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
 };
 
-var updSolicitud = (mensaje,idKey) => {
-      selObjectByKey('request',idKey).then( obj => {
-                obj.passdata.msg_v=mensaje;
-                updObjectByKey('request',obj,idKey);
-      });
+var updSolicitud = (respuesta,idKey) => {
+        return new Promise( (resolve, reject) => {
+		      selObjectByKey('request',idKey).then( obj => {
+				var mensaje = respuesta.statusRequest.message!=="Terminada" ?  respuesta.statusRequest.message : 'Facturas '+respuesta.numberCfdis ;
+				obj.passdata.msg_v=mensaje;
+				updObjectByKey('request',obj,idKey);
+		      }).then( () => { resolve() });
+        });
 }
+
+var updSolicitudDownload = (mensaje,idKey) => {
+        return new Promise( (resolve, reject) => {
+                      selObjectByKey('request',idKey).then( obj => {
+                                obj.passdata.msg_d=mensaje;
+                                updObjectByKey('request',obj,idKey);
+                      }).then( () => { resolve() });
+        });
+}
+
+self.addEventListener('activate', function(event) {
+  setInterval(function() {
+       syncRequest(ESTADOREQ.INICIAL);
+       syncRequest(ESTADOREQ.ACEPTADO);
+  }, 60 * 1000); // Perform sync every 1 hour (adjust the interval as needed)
+});
+
 

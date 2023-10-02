@@ -6,9 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
 import { leeSolicitudesCorrectas } from '../db.js';
-import { ESTADOREQ } from '../componente/Constantes.js';
+import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
 
 let handleMessage = null;
+let estaAutenticado = null;
 
         const days = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -18,8 +19,10 @@ class CargafaelMasiva extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:'',dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
-    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:null,OKRFCEmisor:null,RFCReceptor:null,OKRFCReceptor:null,folioReq:null
+    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null
+                   ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
+                   ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
+                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:null,RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:null,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -31,6 +34,7 @@ class CargafaelMasiva extends Component {
     this.changeValueC = this.changeValueC.bind(this);
     this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
     this.cambioRFCReceptor = this.cambioRFCReceptor.bind(this);
+    this.revisaSiEstaAutenticado = this.revisaSiEstaAutenticado.bind(this);
   };
 
     
@@ -50,12 +54,23 @@ class CargafaelMasiva extends Component {
         this.setState({dropdownValue: e.currentTarget.textContent});
     }
 
-    cambioRFCEmisor() {
+    cambioRFCEmisor(event) {
         this.setState({RFCEmisor : document.querySelector('#RFCEmisor').value});
+	    const inputValue = event.target.value;
+	    // Use a regular expression pattern to define your validation criteria
+	    const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
+
+	    this.setState({ RFCEmisorIsValid: isValid, });
     }
 
-    cambioRFCReceptor() {
-        this.setState({RFCReceptor : document.querySelector('#RFCReceptor').value});
+    cambioRFCReceptor(event) {
+        this.setState({RFCReceptor : event.target.value});
+            const inputValue = event.target.value;
+            // Use a regular expression pattern to define your validation criteria
+            const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
+
+            this.setState({ RFCReceptorIsValid: isValid, });
+
     }
 
 
@@ -67,40 +82,63 @@ class CargafaelMasiva extends Component {
   nextPath(path) {
       browserHistory.push(path);
   }
+
+  revisaSiEstaAutenticado () {
+      var mifi = null;
+      mifi = new DMS();
+      mifi.estaAutenticado().then( res => {
+               console.log('revisaSiEstaAutenticado res='+res+' this.state.estaAutenticado='+this.state.estaAutenticado);
+               if (res.autenticado!== this.state.estaAutenticado) {
+                   this.setState({ estaAutenticado : res.autenticado });
+               }
+      });
+  }
+
   componentDidMount(){
+      estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (REVISA.VIGENCIATOKEN * 1000));
       leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-            // Listen for messages from the service worker
       handleMessage = (event) => {
-              console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url);
+              console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
               var x = null;
-              if (event.data.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
-                 this.setState({ token: event.data.respuesta,pwdfiel:document.querySelector('#pwdfiel').value });
+              if (event.data.request.value.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
+                 this.setState({ token: event.data.respuesta,pwdfiel: document.querySelector('#pwdfiel').value});
                  x = new DMS();
                          var resa=x.solicita_armasoa(this.state);
+/*
                          if (resa.ok===true) {
                                  this.setState({ ok: true, nook:false });
                                  var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
                                                   'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
                                  x.solicita_enviasoa(resa.soap,this.state.token,passdata)
                          }
+*/
               }
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
                  leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-                 var token = { created: event.data.request.value.header.token_created ,expired:event.data.request.value.header.token_expired ,value:event.data.request.value.header.token_value }
+                 var token = { created: event.data.request.value.header.token_created,expired:event.data.request.value.header.token_expired,value:event.data.request.value.header.token_value }
                  this.setState(state => ({ token:token,pwdfiel:document.querySelector('#pwdfiel').value, folioReq:event.data.request.value.folioReq}));
                  x = new DMS();
                  x.verificando(	this.state,event.data.request.key);
               } else { leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) }); }
-              if (event.data.request.value.url==="/verifica.php") {
+              if (event.data.request.value.url==="/verifica.php" & event.data.request.value.respuesta==='Terminada') {
+                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                 x = new DMS();
+                 x.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
+              } else {
                  leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
               }
+              if (event.data.request.value.url==="/download.php") {
+                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                 x = new DMS();
+                 x.leezip(event.data.respuesta.xml);
+              }
       };
-
       navigator.serviceWorker.addEventListener('message', handleMessage);
   }
 
   componentWillUnmount() {
     navigator.serviceWorker.removeEventListener('message',handleMessage)
+    clearInterval(estaAutenticado);
   }
 
   onChangeHandler=event=>{
@@ -126,15 +164,6 @@ class CargafaelMasiva extends Component {
        }
     }
 
-    if (this.state.dropdownValue==='Verificar Solicitud') {
-       this.setState({folioReq:document.querySelector('#folioReq').value});
-       if (this.state.folioReq==='') {
-           this.setState({okfolioReq:false});
-           return;
-       } else {
-           this.setState({okfolioReq:true});
-       }
-    }
 
 
     if (this.state.dropdownValue==='por rango de fechas') {
@@ -186,65 +215,8 @@ class CargafaelMasiva extends Component {
     var x = new DMS(); 
     var res=x.autenticate_armasoa(document.querySelector('#pwdfiel').value);
     if (res.ok===true) {
-       if (this.state.dropdownValue!=='Verificar Solicitud') {
-	       this.setState({ ok: true, nook:false });
-	       x.autenticate_enviasoa(res.soap);
-/*
-               .then((aut) =>  {
-			 this.setState(state => ({ ok:aut.ok, msg:aut.msg, token:JSON.parse(aut.token),pwdfiel:document.querySelector('#pwdfiel').value}));
-			 var resa=x.solicita_armasoa(this.state);
-			 if (resa.ok===true) {
-				 this.setState({ ok: true, nook:false });
-                                 var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
-                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
-				 x.solicita_enviasoa(resa.soap,this.state.token,passdata).then((rets) => {
-                                         var solicitudes=[];
-                                         passdata.solicitudes.forEach( e => solicitudes.push(e.valor.passdata) )  
-					 this.setState(state => ({ ok:rets.ok, msg:rets.msg, token:aut.token,pwdfiel:document.querySelector('#pwdfiel').value,solicitudes:solicitudes}));
-                                         if (rets.msg==='Solicitud Aceptada') {
-						 this.setState(state => ({ ok:rets.ok, msg:rets.msg, token:JSON.parse(aut.token),pwdfiel:document.querySelector('#pwdfiel').value,
-									   folioReq:rets.token.requestId}));
-                                                 x.verificando(this.state,rets.idKey).then(d => { 
-                                                      this.setState(state => ({ resultadoVerifica: d.ok }));
-                                                 }).catch (d => {
-                                                      this.setState(state => ({ resultadoVerifica: d.ok }));
-                                                 })
-                                         }
-				 })
-			 }
-	       });
-*/
-       } else {
-	       this.setState({ ok: true, nook:false });
-	       x.autenticate_enviasoa(res.soap).then((ret) =>  {
-			 this.setState(state => ({ ok:ret.ok, msg:ret.msg, token:JSON.parse(ret.token),pwdfiel:document.querySelector('#pwdfiel').value,
-                                                   folioReq:document.querySelector('#folioReq').value}));
-			 var resa=x.verifica_armasoa(this.state);
-			 if (resa.ok===true) {
-				 this.setState({ ok: true, nook:false });
-			         x.verifica_enviasoa(resa.soap,this.state.token).then((retv) => {
-				     this.setState(state => ({ ok:retv.ok, msg:ret.msg, resultadoVerifica:retv.resultado,pwdfiel:document.querySelector('#pwdfiel').value}));
-                                     if (retv.resultado.statusRequest.value===3)  { // solicituda aceptada
-                                        var estado=this.state;
-                                        retv.resultado.packagesIds.forEach( (e) => {
-						var resa=x.download_armasoa(estado,e);
-						if (resa.ok===true) {
-						   x.download_enviasoa(resa.soap,estado.token,e).then((ret) => {
-							 this.setState(state => ({ estatusDownload:ret.ok, estatusDownloadMsg:ret.msg}));
-						   });
-						}
-                                        },undefined,estado);
-                                     } else {
-					 this.setState(state => ({ estatusDownload:false, estatusDownloadMsg:ret.resultado.message}));
-                                     }
-				 })
-                         }          
-              });
-       }
-    }
-
-    if (res.ok===false) {
-       this.setState({ ok: false, nook:true,msg:res.msg  });
+              this.setState({ ok: true, nook:false });
+              x.autenticate_enviasoa(res,document.querySelector('#pwdfiel').value)
     }
 
   }
@@ -286,7 +258,6 @@ class CargafaelMasiva extends Component {
 				      <DropdownMenu>
 					<DropdownItem onClick={this.changeValue} >por rango de fechas</DropdownItem>
 					<DropdownItem onClick={this.changeValue} >por folio</DropdownItem>
-					<DropdownItem onClick={this.changeValue} >Verificar Solicitud</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
                           </div>
@@ -304,20 +275,20 @@ class CargafaelMasiva extends Component {
                           </div>
                       </FormGroup>
 
-
-                      <FormGroup className="container">
-                        <Label>Contraseña de la llave privada</Label>
-                        <InputGroup>
-                                <Input type={this.state.type} name="password" id="pwdfiel" placeholder="contraseña" />
-                                <InputGroupAddon addonType="append">
-                                        <Button onClick={this.showHide} ><FontAwesomeIcon icon={['fas' , this.state.ojos]} /></Button>
-                                </InputGroupAddon>
-                        </InputGroup> 
-		        { this.state.nook && <div id="nook" className="mt-1">
-			               <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {this.state.msg} </Alert>
-		                </div> }
-                      </FormGroup>
+		      <FormGroup className="container">
+				<Label>Contraseña de la llave privada</Label>
+				<InputGroup>
+					<Input type={this.state.type} name="password" id="pwdfiel" placeholder="contraseña" disabled={this.state.estaAutenticado}/>
+					<InputGroupAddon addonType="append">
+						<Button onClick={this.showHide} ><FontAwesomeIcon icon={['fas' , this.state.ojos]} /></Button>
+					</InputGroupAddon>
+				</InputGroup> 
+				{ this.state.nook && <div id="nook" className="mt-1">
+					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {this.state.msg} </Alert>
+					</div> 
+				}
+		      </FormGroup>
 
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
@@ -333,6 +304,12 @@ class CargafaelMasiva extends Component {
 						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCEmisor } </Alert>
 					</div>
                                 }
+                                { this.state.RFCEmisorIsValid===false &&
+					<div id="nook" className="mt-1">
+					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El RFC Emisor esta mal tecleado </Alert>
+					</div>
+                                }
                           </div>
                           <div className="col-lg-6 mt-1">
                                 <Label>RFC Receptor</Label>
@@ -346,6 +323,12 @@ class CargafaelMasiva extends Component {
 					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
 						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCReceptor } </Alert>
 					</div>
+                                }
+                                { this.state.RFCReceptorIsValid===false &&
+                                        <div id="nook" className="mt-1">
+                                               <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                                  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} />  El RFC Receptor  esta mal tecleado  </Alert>
+                                        </div>
                                 }
                           </div>
 
@@ -385,27 +368,6 @@ class CargafaelMasiva extends Component {
                                 </div> }
 
                       </FormGroup> }
-
-                      { this.state.dropdownValue==='Verificar Solicitud' && <FormGroup className="container">
-                                <Label>Folio del requerimiento</Label>
-                                <InputGroup>
-                                        <Input type="input" name="password" id="folioReq" placeholder="Folio del requerimiento" />
-                                </InputGroup>
-                                { this.state.okfolioReq===false &&
-                                <div id="nook" className="mt-1">
-                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El folio del requerimiento es obligatorio </Alert>
-                                </div> 
-                                }
-                                { this.state.estatusDownload===false &&
-                                <div id="nook" className="mt-1">
-                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {  this.state.estatusDownloadMsg } </Alert>
-                                </div> 
-                                }
-
-                      </FormGroup> }
-
 
                       <div className="flex-col d-flex justify-content-center mb-2">
                            <Button color="primary" onClick={this.cargar}>Solicitar</Button>

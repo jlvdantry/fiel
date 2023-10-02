@@ -5,7 +5,6 @@ var PERFIL='inven_agn'
 
 var openDatabasex = function(dbName, dbVersion) {
         return new Promise(function (resolve, reject) {
-                console.log('[db.js] entro a abrir la base de datos '+dbName+' version='+dbVersion);
                 /* eslint-disable-next-line no-restricted-globals */
                 if (!self.indexedDB) {
                 reject('IndexedDB not supported');
@@ -239,11 +238,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
         }
 
         cursor.onerror = function(event) {
-               console.log('[db.js] selObjectUlt error ');
-               var json = { };
-               json.valor=0;
-               json.key  =0;
-               resolve(json);
+               reject();
         }
 
         cursor.onsuccess = function(event,indexname,indexvalue) {
@@ -255,10 +250,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
                json.key  =cursor1.primaryKey;
                resolve(json);
             } else {
-              console.log('[db.js] selObjectUlt no cursor indexname='+indexname+' indexvalue='+indexvalue);
-              json.valor=0;
-              json.key  =0;
-              resolve(json);
+              reject();
             };
         };
    });
