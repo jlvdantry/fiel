@@ -7,6 +7,7 @@ import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
 import { leeSolicitudesCorrectas } from '../db.js';
 import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 let handleMessage = null;
 let estaAutenticado = null;
@@ -208,9 +209,11 @@ class CargafaelMasiva extends Component {
            this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor y del receptor no pueden ser iguales' });
            return;
        }
-
-
+       if (this.state.RFCEmisorIsValid===false || this.state.RFCReceptorIsValid===false) {
+           return;
+       }
     }
+
 
     var x = new DMS(); 
     var res=x.autenticate_armasoa(document.querySelector('#pwdfiel').value);
@@ -278,10 +281,13 @@ class CargafaelMasiva extends Component {
 		      <FormGroup className="container">
 				<Label>Contraseña de la llave privada</Label>
 				<InputGroup>
-					<Input type={this.state.type} name="password" id="pwdfiel" placeholder="contraseña" disabled={this.state.estaAutenticado}/>
+					<Input type={this.state.type} name="password_" id="pwdfiel" placeholder="contraseña" disabled={this.state.estaAutenticado}/>
 					<InputGroupAddon addonType="append">
 						<Button onClick={this.showHide} ><FontAwesomeIcon icon={['fas' , this.state.ojos]} /></Button>
 					</InputGroupAddon>
+                                        <div className="d-flex align-content-center flex-wrap">
+                                             <FontAwesomeIcon id="miayuda" icon={['fas' , 'question']} className="ml-1" data-tooltip-id="my-tooltip-1" />
+                                        </div>
 				</InputGroup> 
 				{ this.state.nook && <div id="nook" className="mt-1">
 					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
@@ -373,7 +379,10 @@ class CargafaelMasiva extends Component {
                            <Button color="primary" onClick={this.cargar}>Solicitar</Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
+                      <ReactTooltip id="my-tooltip-1" className="text-center border border-info" place="bottom" variant="info" html="<div >En el caso de que este protegido la contraseña,<br> quiere decir que ya esta identificado ante el <b>SAT</b>,<br> esto tiene una duración de cinco minutos,<br> cuando se termine este tiempo se debe de volver a teclear la contraseña.</div>" />
         </Card>
+
+
     )
   }
 };
