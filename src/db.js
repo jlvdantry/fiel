@@ -1,5 +1,6 @@
 var DBNAME='fiel_menus';
-var DBVERSION='4';
+var DBVERSION='6';
+var DBNAME=DBNAME+'_'+DBVERSION;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
 
@@ -422,11 +423,14 @@ function inserta_factura(faeljson)
                 json.sello=faeljson["cfdi:Comprobante"]["@attributes"].Sello;
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
-                        }).then(function(objectStore) {
+                        }).then(objectStore => {
                                 console.log('[inserta_factura] menu a requesitar=');
-                                addObject(objectStore, json).then(function(key) {
-                                                               resolve(key) ; 
-                                                            }).catch(function(err) {  reject(err) });
+                                selObjects(objectStore,'sello',json.sello).then( x => {
+                                       if (x.length===0)   { /* no esta registrado el sello y lo da de alta */
+					  addObject(objectStore, json).then(key => { resolve('Guardo factura con id='+key) ; }).catch(function(err) {  reject(err) });
+                                       } else { resolve('factura duplicada');
+                                       }
+                                })
                         }).catch(function(err) {
                                 console.log("[inserta_request] Database error: "+err.message);
                 });

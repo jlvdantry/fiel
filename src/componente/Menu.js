@@ -9,13 +9,14 @@ class Menumi extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { isOpen: false, online: true , showInstallMessage:false, windowWidth: window.innerWidth, windowHeigth : window.innerHeight };
+    this.state = { isOpen: false, online: true , showInstallMessage:false, windowWidth: window.innerWidth, windowHeigth : window.innerHeight, nombre:null };
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
     this.quitainstala = this.quitainstala.bind(this);
     this.setOnlineStatus = this.setOnlineStatus.bind(this);
     this.defaultlink = React.createRef();
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+    this.cambio = this.cambio.bind(this);
   }
 
  
@@ -61,7 +62,15 @@ class Menumi extends Component {
 	}
 	  //this.setState({ showInstallMessage: true });
     document.querySelector('#ayuda').click();
+      timer = setInterval(() => this.cambio(), 2000)
   }
+
+  cambio() {
+       if (localStorage.getItem('nombre')!=null) {
+          this.setState({nombre : localStorage.getItem('nombre')})
+       } else {  this.setState({nombre : null })  }
+  }
+
   
   quitainstala() {
     document.querySelector('#instalar').classList.remove("d-flex");
@@ -85,7 +94,7 @@ class Menumi extends Component {
     return (
       <div id='menu'>
         <Navbar color="blue" light expand="md">
-          <h1>FIEL</h1>
+          <h3>FIEL-{this.state.nombre}</h3>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto " navbar>

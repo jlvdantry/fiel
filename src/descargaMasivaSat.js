@@ -279,8 +279,8 @@ var DescargaMasivaSat = function()
                                      var stx=x.StringToXMLDom(text);
                                      var vJson=x.xmlToJson(stx);
                                      await openDatabasex(DBNAME,DBVERSION).then(function() {
-                                                            inserta_factura(vJson).then(function() {
-                                                                    console.log('guardo factura');
+                                                            inserta_factura(vJson).then( msg =>  {
+                                                                    console.log('leezip msg='+msg);
                                                             }).catch(function(err)  {
                                                                     console.log('error al guardar la factura');
                                                             });

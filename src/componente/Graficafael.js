@@ -5,7 +5,7 @@ import { leefacturas } from '../db';
 import {Doughnut,HorizontalBar,Bar,Pie} from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { JsonToExcel } from "react-json-to-excel";
+import { exportToExcel } from "react-json-to-excel";
 
 
 class Graficafael extends Component {
@@ -37,13 +37,48 @@ class Graficafael extends Component {
         var datosFactura=[];
         leefacturas().then( (cuantas) => {
                 cuantas.map( (x) => {
-                       datosFactura.push( { Emisor : x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc,
-                                            Receptor:x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc} );
+                       var descripcion='';
+                       var ingreso='desconocido', egreso='desconocido';
+                       var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
+                       var rfcEmisor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
+                       var rfcReceptor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
+                       var total=Number(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
+                       if ( x.valor.passdata["cfdi:Comprobante"]["cfdi:Conceptos"].length===1 ) {
+                          descripcion=x.valor.passdata["cfdi:Comprobante"]["cfdi:Conceptos"]["cfdi:Concepto"]["@attributes"].Descripcion;
+                       } else { descripcion='Varios conceptos' }
+                       var rfc=localStorage.getItem('rfc');     
+                       if (rfc===rfcReceptor) {
+                          if (tc==='I' ) {
+                             ingreso=0; egreso=total;
+                          }
+                          if (tc==='N') {
+                             ingreso=total; egreso=0;
+                          }
+                       }
+                       if (rfc===rfcEmisor) {
+                          if (tc==='E' ) {
+                             ingreso=0; egreso=total;
+                          }
+                          if (tc==='I') {
+                             ingreso=total; egreso=0;
+                          }
+                          if (tc==='N') {
+                             ingreso=0; egreso=total;
+                          }
+                       }
+                       datosFactura.push( { Emisor : rfcEmisor
+                                            ,"Nombre Emisor" : x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
+                                            ,Receptor: rfcReceptor
+                                            ,"Fecha Emision" : x.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
+                                            ,"Descuento" : Number(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
+                                            ,"Descripcion": descripcion
+                                            ,"Tipo de Comprobante": x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
+                                            ,"Ingreso": ingreso
+                                            ,"Egreso": egreso 
+                                          }
+                                        );
                 });
-                console.log('[Graficafael] exportaExcel termino leefacturas datosFactura='+datosFactura);
-		this.setState(  { exportaExcel:true, datosExcel:datosFactura },() => { ; 
-			    console.log('[Graficafael] exportaExcel datosExcel='+this.state.datosExcel);
-		});
+                exportToExcel(datosFactura,'MisFacturas')
         });
   }
 
@@ -156,7 +191,7 @@ class Graficafael extends Component {
 		      }
                     }
                    }
-    console.log('[Graficafael] render datosExcel='+JSON.stringify(datosExcel)+' this.state.exportaExcel='+this.state.exportaExcel)
+    //console.log('[Graficafael] render datosExcel='+JSON.stringify(datosExcel)+' this.state.exportaExcel='+this.state.exportaExcel)
     return  (
       <>
         <Card className="p-2 m-2">
@@ -173,7 +208,7 @@ class Graficafael extends Component {
 					<DropdownItem onClick={this.changeValue} >Dona</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
-                                <button onClick={ this.exportaExcel } >
+                                <button className="border-0" onClick={this.exportaExcel} >
 					<FontAwesomeIcon size="3x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
                                 </button>
                         </div>
@@ -210,14 +245,8 @@ class Graficafael extends Component {
                                         </CardBody>
                                 </Card>
                           }
-                      <ReactTooltip id="my-tooltip-1" className="text-center border border-info" place="bottom" variant="info" html="<div >Exporta la facturas electronicas a excel</div>" />
+                      <ReactTooltip id="my-tooltip-1" className="text-center border border-info" place="bottom" variant="info" html="<div >Exporta las facturas electrónicas a excel</div>" />
         </Card>
-        { this.state.exportaExcel===true && <JsonToExcel
-		title="Download as Excel"
-		data={this.state.datosExcel}
-		fileName="sample-file"
-        />
-        }
       </>
     )
   }

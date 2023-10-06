@@ -1,5 +1,6 @@
 var DBNAME='fiel_menus';
-var DBVERSION='4';
+var DBVERSION='6';
+var DBNAME=DBNAME+'_'+DBVERSION;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
 
@@ -22,7 +23,6 @@ var openDatabasex = function(dbName, dbVersion) {
                    if (dbName===DBNAME) {
                       creadb(db);
                       var wlusuario= {}; wlusuario['wl_groname']=PERFIL; 
-                      //inserta_request(SYNCDB,wlusuario,0,'','ss');                     
                    }
                    if (dbName===DBNAMEM) {
                       creadbm(db);
@@ -84,6 +84,7 @@ var creadb = function(db) {
                         objectStore.createIndex('idmenu_fecha', 'idmenu_fecha', { unique: false });
                         objectStore.createIndex('url_fecha', 'url_fecha', { unique: false });
                         objectStore.createIndex('url_fechaC', ['url','fecha'], { unique: false });
+                        objectStore.createIndex('sello', 'sello', { unique: false });
                     };
 
                    if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propiios del aplicativo */

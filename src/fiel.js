@@ -207,6 +207,8 @@ const fiel = function()
              md.update(cadena);
              var esValido = certificado.publicKey.verify(md.digest().bytes(),atob(firmado));
              if (esValido) {
+                localStorage.setItem("rfc",certificado.subject.attributes[5].value);
+                localStorage.setItem("nombre",certificado.subject.attributes[0].value);
                 return { 'ok'  : true, "msg" : "La firma electronica es correcta", nombre: certificado.subject.attributes[0].value
                                                                                  , rfc   : certificado.subject.attributes[5].value
                                                                                  , curp   : certificado.subject.attributes[6].value

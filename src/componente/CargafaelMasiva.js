@@ -220,6 +220,8 @@ class CargafaelMasiva extends Component {
     if (res.ok===true) {
               this.setState({ ok: true, nook:false });
               x.autenticate_enviasoa(res,document.querySelector('#pwdfiel').value)
+    } else {
+       this.setState({ ok: false, nook:true,msg:res.msg  });
     }
 
   }
