@@ -60,8 +60,9 @@ class CargafaelMasiva extends Component {
 	    const inputValue = event.target.value;
 	    // Use a regular expression pattern to define your validation criteria
 	    const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
-
-	    this.setState({ RFCEmisorIsValid: isValid, });
+            if (inputValue!==localStorage.getItem('rfc')) {
+	       this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:localStorage.getItem('rfc')}); }
+            else { this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:''}); }
     }
 
     cambioRFCReceptor(event) {
@@ -251,10 +252,11 @@ class CargafaelMasiva extends Component {
 
 
   render() {
+    console.log('CargafaelMasiva render RFCReceptro='+this.state.RFCReceptor);
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
-                        <FormGroup className="container row col-lg-12 justify-content-around">
+                        <FormGroup className="container col-lg-12 justify-content-around">
                           <div className="col-lg-6 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" size="lg">
@@ -323,7 +325,7 @@ class CargafaelMasiva extends Component {
                                 <Label>RFC Receptor</Label>
                                 <InputGroup>
                                         <Input type="input" id="RFCReceptor" placeholder="Teclee el RFC receptor" onChange={this.cambioRFCReceptor}
-                                                onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()}
+                                                onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()} value={this.state.RFCReceptor}
                                         />
                                 </InputGroup>
                                 { this.state.okRFCReceptor===false &&
