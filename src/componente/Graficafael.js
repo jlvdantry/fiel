@@ -2,16 +2,31 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Card,CardBody,CardHeader,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { leefacturas } from '../db';
-import {Doughnut,HorizontalBar,Bar,Pie} from 'react-chartjs-2';
+import {Doughnut,HorizontalBar,Bar,Pie,Line} from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { exportToExcel } from "react-json-to-excel";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,BarElement,LineController } from 'chart.js';
+
+const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',' Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+  ,LineController
+  ,PointElement
+);
 
 
 class Graficafael extends Component {
   constructor(props){
     super(props);
-    this.state = { datai:{},datae:{},datan:{},dropdownOpen:false,dropdownValue:'Barras Horizontales', refresca:true, exportaExcel:false, datosExcel:null}
+    this.state = { data:{},dropdownOpen:false,dropdownValue:'Barras Verticales', refresca:true, exportaExcel:false, datosExcel:null}
     this.toggle =  this.toggle.bind(this)
     this.changeValue = this.changeValue.bind(this);
     this.actuaFacturas = this.actuaFacturas.bind(this);
@@ -30,6 +45,7 @@ class Graficafael extends Component {
     }
 
   componentWillMount(){
+       console.log('Graficafael labels='+labels);
        this.actuaFacturas();
   }
 
@@ -48,27 +64,17 @@ class Graficafael extends Component {
                        } else { descripcion='Varios conceptos' }
                        var rfc=localStorage.getItem('rfc');     
                        if (rfc===rfcReceptor) {
-                          if (tc==='I' ) {
-                             ingreso=0; egreso=total;
-                          }
-                          if (tc==='N') {
-                             ingreso=total; egreso=0;
-                          }
+                          if (tc==='I' ) { ingreso=0; egreso=total; }
+                          if (tc==='N') { ingreso=total; egreso=0; }
                        }
                        if (rfc===rfcEmisor) {
-                          if (tc==='E' ) {
-                             ingreso=0; egreso=total;
-                          }
-                          if (tc==='I') {
-                             ingreso=total; egreso=0;
-                          }
-                          if (tc==='N') {
-                             ingreso=0; egreso=total;
-                          }
+                          if (tc==='E' ) { ingreso=0; egreso=total; }
+                          if (tc==='I') { ingreso=total; egreso=0; }
+                          if (tc==='N') { ingreso=0; egreso=total; }
                        }
-                       datosFactura.push( { Emisor : rfcEmisor
+                       datosFactura.push( {  "Emisor" : rfcEmisor
                                             ,"Nombre Emisor" : x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
-                                            ,Receptor: rfcReceptor
+                                            ,"Receptor": rfcReceptor
                                             ,"Fecha Emision" : x.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
                                             ,"Descuento" : Number(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
                                             ,"Descripcion": descripcion
@@ -84,114 +90,78 @@ class Graficafael extends Component {
 
   actuaFacturas(){
         var that=this;
-        that.setState({datai:{},datae:{},datan:{}});
+        that.setState({data:{}});
         leefacturas().then(function(cuantas) {
-                       var labels = [];
-                       var colors = [];
-                       var datase = [];   /* egresos */
-                       var datasr = [];   /* ingresos */
-                       var datasn = [];   /* neto */
+                    var colors = []; var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
 		    var dynamicColors = function() {
-			var r = Math.floor(Math.random() * 255);
-			var g = Math.floor(Math.random() * 255);
-			var b = Math.floor(Math.random() * 255);
+			var r = Math.floor(Math.random() * 255); var g = Math.floor(Math.random() * 255); var b = Math.floor(Math.random() * 255);
 			return "rgb(" + r + "," + g + "," + b + ")";
 		    };
-                       cuantas.map((x) => {
-                                   var rfce=x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
-                                   var rfcr=x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
-                                   var total=Number(parseFloat(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Total).toFixed(2));
-                                   var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante; //tipo de comprobante
+                    cuantas.map((x) => {
+                       var ingreso=0, egreso=0;
+                       var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
+                       var rfcEmisor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
+                       var rfcReceptor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
+                       var total=parseFloat(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Total);
+
+		       var rfc=localStorage.getItem('rfc');
+                       var mes=parseInt(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(5,7))-1;
+				   if (rfc===rfcReceptor) {
+					  if (tc==='I' ) { ingreso=0; egreso=total; }
+					  if (tc==='N') { ingreso=total; egreso=0; }
+				   }
+				   if (rfc===rfcEmisor) {
+					  if (tc==='E' ) { ingreso=0; egreso=total; }
+					  if (tc==='I') { ingreso=total; egreso=0; }
+					  if (tc==='N') { ingreso=0; egreso=total; }
+				   }
                                     // I=ingreso para el emisor  egreso  para el receptor
                                     // E=egresos para el emisor  ingreso para el receptor
                                     // N=nomina egreso para el emisor  ingreso para el receptor
                                     // T=Traslado
                                     // P=Pago
-                                   if (labels.indexOf(rfce) ===-1) {
-                                          labels.push(rfce);
-                                          datase.push(0);
-                                          datasr.push(0);
-                                          datasn.push(0);
-                                   }
-                                   if (labels.indexOf(rfcr) ===-1) {
-                                          labels.push(rfcr);
-                                          datase.push(0);
-                                          datasr.push(0);
-                                          datasn.push(0);
-                                   }
-                                    if (tc==='E') {
-                                      datase[labels.indexOf(rfce)]+=total;
-                                      datasn[labels.indexOf(rfce)]-=total;
-                                      datasr[labels.indexOf(rfcr)]+=total;
-                                      datasn[labels.indexOf(rfcr)]+=total;
-                                    }
-                                    if (tc==='I') {
-                                      datase[labels.indexOf(rfcr)]+=total;
-                                      datasn[labels.indexOf(rfcr)]-=total;
-                                      datasr[labels.indexOf(rfce)]+=total;
-                                      datasn[labels.indexOf(rfce)]+=total;
-                                    }
-                                    if (tc==='N') {
-                                      datase[labels.indexOf(rfce)]+=total;
-                                      datasn[labels.indexOf(rfce)]-=total;
-                                      datasr[labels.indexOf(rfcr)]+=total;
-                                      datasn[labels.indexOf(rfcr)]+=total;
-                                    }
-                                    datase[labels.indexOf(rfce)]=Number(datase[labels.indexOf(rfce)].toFixed(2));
-                                    datasn[labels.indexOf(rfce)]=Number(datasn[labels.indexOf(rfce)].toFixed(2));
-                                    datasr[labels.indexOf(rfce)]=Number(datasr[labels.indexOf(rfce)].toFixed(2));
-                                    datase[labels.indexOf(rfcr)]=Number(datase[labels.indexOf(rfcr)].toFixed(2));
-                                    datasn[labels.indexOf(rfcr)]=Number(datasn[labels.indexOf(rfcr)].toFixed(2));
-                                    datasr[labels.indexOf(rfcr)]=Number(datasr[labels.indexOf(rfcr)].toFixed(2));
-                                   return null;
-                       })
-                       labels.map((x) => {
-                                   colors.push(dynamicColors());
-                                   return null;
-                       })
-                       labels.map((x) => {
-                                   colors.push(dynamicColors());
-                                   return null;
-                       })
+                                    datai[mes]=datai[mes]+ingreso; datae[mes]=datae[mes]+egreso; datan[mes]=datan[mes]+(ingreso-egreso);
+                                    return null;
+                    })
+                    var colori=dynamicColors();
+                    var colore=dynamicColors();
+                    var colorn=dynamicColors();
 
-                       console.log('labels='+labels);
-                                                            that.setState({
-                                                                             datai:{labels : labels ,datasets: [
-                                                                                        {data:datasr,backgroundColor:colors}
-                                                                                         ],
-                                                                                    options: { legend: { display: false }}
-                                                                                   },
-                                                                             datae:{labels : labels ,datasets: [
-                                                                                        {data:datase,backgroundColor:colors}
-                                                                                         ]},
-                                                                             datan:{labels : labels ,datasets: [
-                                                                                        {data:datasn,backgroundColor:colors}
-                                                                                         ]},
-                                                                           });
-                                                    }).catch(function(err)  {
-                                                            that.setState({datai:{},datae:{},datan:{}});
-                                                    });
+                    that.setState({
+                            data:{labels : labels 
+                                 ,datasets: [ 
+                                        {label:'Ingreso',data:datai,backgroundColor:colori,borderColor:colori} 
+                                       ,{label:'Egreso',data:datae,backgroundColor:colore,borderColor:colore} 
+                                       ,{label:'Neto',data:datan,backgroundColor:colorn,borderColor:colorn,type:'line'} 
+                                 ]
+                                 },
+                    });
+         }).catch(function(err)  {
+                    that.setState({datai:{},datae:{},datan:{}});
+         });
   }
 
   render() {
-    const datai = this.state.datai
-    const datae = this.state.datae
-    const datan = this.state.datan
+    console.log('Graficafael render data='+JSON.stringify(this.state.data));
     const dropdownValue = this.state.dropdownValue
     const datosExcel = this.state.datosExcel
-    const optionsc={ legend: { display:false },
-		    tooltips: {
-		      callbacks: {
-			title: function(tooltipItem, data) {
-			  return data['labels'][tooltipItem[0]['index']];
-			},
-			label: function(tooltipItem, data) {
-			  return data['datasets'][0]['data'][tooltipItem['index']].toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-			},
-		      }
-                    }
+    const options={ indexAxis: 'y',
+		    elements: {
+			    bar: {
+			      borderWidth: 2,
+			    },
+	       	    },
+                    responsive:true,
+		    plugins: {
+			    legend: {
+			      position: 'right',
+			    },
+			    title: {
+			      display: true,
+			      text: 'Ingresos y Egresos',
+			    },
+		   }
                    }
-    //console.log('[Graficafael] render datosExcel='+JSON.stringify(datosExcel)+' this.state.exportaExcel='+this.state.exportaExcel)
     return  (
       <>
         <Card className="p-2 m-2">
@@ -212,39 +182,13 @@ class Graficafael extends Component {
 					<FontAwesomeIcon size="3x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
                                 </button>
                         </div>
-                        { datai.labels && datai.labels.length>0 &&
+                        { this.state.data.labels && this.state.data.labels.length>0 &&
 				<Card className="m-1">
-					<CardHeader color="success" className="text-center" >Ingreso</CardHeader>
 					<CardBody>
-						{ (dropdownValue==='Dona') && <Doughnut data={datai} options={optionsc}> </Doughnut> }
-						{ (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datai} options={optionsc}> </HorizontalBar> }
-						{ (dropdownValue==='Barras Verticales') && <Bar data={datai} options={optionsc}> </Bar> }
-						{ (dropdownValue==='Pie') && <Pie data={datai} options={optionsc}> </Pie> }
+						{ (dropdownValue==='Barras Verticales') && <Bar data={this.state.data} options={options}> </Bar> }
 					</CardBody>
 				</Card>
                          }
-                         { datae.labels && datai.labels.length>0 &&
-				<Card className="m-1">
-					<CardHeader color="success" className="text-center" >Egreso</CardHeader>
-					<CardBody>
-						{ (dropdownValue==='Pie') && <Pie data={datae}  options={optionsc}> </Pie> }
-						{ (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datae} options={optionsc}> </HorizontalBar> }
-                                                { (dropdownValue==='Dona') && <Doughnut data={datae} options={optionsc}> </Doughnut> }
-                                                { (dropdownValue==='Barras Verticales') && <Bar data={datae} options={optionsc}> </Bar> }
-					</CardBody>
-				</Card>
-                          }
-                          { datan.labels && datai.labels.length>0 &&
-                                <Card className="m-1">
-                                        <CardHeader color="success" className="text-center" >Neto</CardHeader>
-                                        <CardBody>
-                                                { (dropdownValue==='Pie') && <Pie data={datan} options={optionsc}> </Pie> }
-                                                { (dropdownValue==='Barras Horizontales') && <HorizontalBar data={datan} options={optionsc}> </HorizontalBar> }
-                                                { (dropdownValue==='Dona') && <Doughnut data={datan}  options={optionsc}> </Doughnut> }
-                                                { (dropdownValue==='Barras Verticales') && <Bar data={datan} options={optionsc}> </Bar> }
-                                        </CardBody>
-                                </Card>
-                          }
                       <ReactTooltip id="my-tooltip-1" className="text-center border border-info" place="bottom" variant="info" html="<div >Exporta las facturas electrónicas a excel</div>" />
         </Card>
       </>

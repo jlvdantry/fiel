@@ -13,20 +13,18 @@ class Misfacturas extends Component {
   }
 
   onRefresca() {
-      console.log('entro a refrescar');
       this.setState({ refresca: true });
       this.changeGrafica.current.actuaFacturas();
       this.changeConsulta.current.totalFacturas();
   }
 
   render() {
-    console.log('rendereo misfacturas');
     return (
       <div>
-	      <Cargafael />
-	      <Validafael onRefresca={this.onRefresca}/>
 	      <Graficafael ref={this.changeGrafica}/>
 	      <Consultafael ref={this.changeConsulta} onRefresca={this.onRefresca}/>
+	      <Cargafael />
+	      <Validafael onRefresca={this.onRefresca}/>
       </div> 
     );
   }
