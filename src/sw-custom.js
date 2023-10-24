@@ -243,10 +243,12 @@ var updSolicitudDownload = (mensaje,idKey) => {
 
 self.addEventListener('activate', function(event) {
   console.log('[sw.js] va a activar el intervalor para revisar requerimentos iniciales o aceptados');
+});
+ 
   setInterval(function() {
        syncRequest(ESTADOREQ.INICIAL);
        syncRequest(ESTADOREQ.ACEPTADO);
-  }, REVISA.ESTADOREQ * 1000); 
-});
+  }, REVISA.ESTADOREQ * 1000);
+
 
 

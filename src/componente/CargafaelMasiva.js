@@ -383,7 +383,19 @@ class CargafaelMasiva extends Component {
                            <Button color="primary" onClick={this.cargar}>Solicitar</Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
-                      <ReactTooltip id="my-tooltip-1" className="text-center border border-info" place="bottom" variant="info" html="<div >En el caso de que este protegido la contraseña,<br> quiere decir que ya esta identificado ante el <b>SAT</b>,<br> esto tiene una duración de cinco minutos,<br> cuando se termine este tiempo se debe de volver a teclear la contraseña.</div>" />
+                      <ReactTooltip id="my-tooltip-1" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div >En el caso de que este protegido la contraseña, quiere decir que ya esta identificado ante el <b>SAT</b>, esto tiene una duración de cinco minutos, cuando se termine este tiempo se debe de volver a teclear la contraseña.</div>" />
+      <style>
+        {`
+          /* Media query for screens smaller than 600px */
+          @media (max-width: 600px) {
+            .tooltip {
+              /* Adjust tooltip font size and padding for smaller screens */
+              font-size: 12px;
+              padding: 8px;
+            }
+          }
+        `}
+      </style>
         </Card>
 
 
