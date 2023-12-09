@@ -3,7 +3,7 @@ import 'react-data-grid/lib/styles.css';
 
 import DG from 'react-data-grid';
 const columns = [
-  { key: 'fechaini',  name: 'Fecha Inicial'},
+  { key: 'fechaini',  name: 'Fecha Inicial', backgroundColor:'yellow'},
   { key: 'fechafin',  name: 'Fecha Final' },
   { key: 'RFCEmisor', name: 'RFC Emisor' },
   { key: 'RFCReceptor', name: 'RFC Receptor' },
