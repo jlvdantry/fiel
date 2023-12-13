@@ -22,6 +22,7 @@
     "jspdf": "^2.1.1",
     "node-forge": ">=0.10.0",
     "react": "^18.2.0",
+    "react-autocomplete": "^1.8.1",
     "react-chartjs-2": "^5.2.0",
     "react-currency-format": "^1.0.0",
     "react-data-grid": "^7.0.0-beta.37",
@@ -44,7 +45,7 @@
     "eject": "react-scripts eject",
     "build-sw": "node ./src/sw-build.js",
     "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
-    "build": "react-scripts --max_old_space_size=32768 build && npm run build-sw && npm run clean-cra-sw",
+    "build": "react-scripts --max_old_space_size=32768 build --no-minify && npm run build-sw && npm run clean-cra-sw",
     "dev": "react-scripts dev && npm run build-sw && npm run clean-cra-sw"
   },
   "eslintConfig": {

@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='8';
+var DBVERSION='9';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -86,7 +86,7 @@ var creadb = function(db) {
                         objectStore.createIndex('url_fechaC', ['url','fecha'], { unique: false });
                     };
 
-                   if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propiios del aplicativo */
+                   if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propios del aplicativo */
                         console.log('[db.js] va a crear el objeto catalogos');
                         objectStore = db.createObjectStore('catalogos', { autoIncrement : true });
                         objectStore.createIndex('hora', 'hora', { unique: false });
@@ -96,6 +96,7 @@ var creadb = function(db) {
                         objectStore.createIndex('ano', 'ano', { unique: false });
                         objectStore.createIndex('usename', 'usename', { unique: false });
                         objectStore.createIndex('catalogo', 'catalogo', { unique: false });
+                        objectStore.createIndex('label', 'label', { unique: false });
                         objectStore.createIndex('ID', 'ID', { unique: false });
                     };
 
@@ -354,6 +355,18 @@ var updObject = function(objectStore, object, idmenu, estado) {
         });
 };
 
+function datos_comunesCat(json) {
+      var fecha = new Date();
+      json.ano=fecha.getFullYear();
+      json.mes=fecha.getMonth()+1;
+      json.mes=json.mes < 10 ? '0' + json.mes : '' + json.mes;
+      json.dia=fecha.getDate();
+      json.dia=json.dia < 10 ? '0' + json.dia : '' + json.dia;
+      json.hora=fecha.getHours();
+      json.minutos=fecha.getMinutes();
+      return json;
+}
+
 function datos_comunes(json) {
       var fecha = new Date();
       json.ano=fecha.getFullYear();
@@ -378,6 +391,27 @@ var wl_fecha = function () {
       dia=dia < 10 ? '0' + dia : '' + dia;
       fecha=fecha.getFullYear()+'-'+mes+'-'+dia;
       return fecha;
+}
+
+function inserta_catalogo(catalogo,label)
+{
+        return new Promise(function (resolve, reject) {
+                console.log('[inserta_catalogo] va a grabar en catalogo ='+catalogo);
+                var json= { };
+                json.catalogo=catalogo;
+                json.label=label;
+                json=datos_comunesCat(json);
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'catalogos', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[inserta_catalogos] ='+catalogo);
+                                addObject(objectStore, json).then( (key) => {
+                                    json.key=key;
+                                    resolve(json) ; } );
+                        }).catch(function(err) {
+                                console.log("[inserta_catalogos] Database error: "+err.message);
+                });
+        })
 }
 
 /* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
@@ -476,6 +510,27 @@ function leefacturas()
                                 selObjects(objectStore,'url','factura').then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[db.js leefacturas] Database error: "+err.message);
+                });
+        })
+}
+
+function leeRFCS()
+{
+        console.log('[db.js leeRFCS] entro');
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'catalogos', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[db.js leeRFCS] va a seleccionar ');
+                                selObjects(objectStore,'catalogo','rfcs').then(function(requests) {
+                                    var rfcs=[];
+				    requests.forEach(
+					  e => { rfcs.push({label : e.valor.label})  }
+				    );
+                                    resolve(rfcs);
+                                }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {
                                 console.log("[db.js leefacturas] Database error: "+err.message);
                 });
@@ -635,4 +690,4 @@ function bajafirmas(key)
 
 
 
-export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey } ;
+export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey,inserta_catalogo,leeRFCS } ;

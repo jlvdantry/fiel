@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='8';
+var DBVERSION='9';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -97,6 +97,7 @@ var creadb = function(db) {
                         objectStore.createIndex('ano', 'ano', { unique: false });
                         objectStore.createIndex('usename', 'usename', { unique: false });
                         objectStore.createIndex('catalogo', 'catalogo', { unique: false });
+                        objectStore.createIndex('label', 'label', { unique: false });
                         objectStore.createIndex('ID', 'ID', { unique: false });
                     };
 

@@ -5,9 +5,10 @@ import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
-import { leeSolicitudesCorrectas } from '../db.js';
+import { leeSolicitudesCorrectas,inserta_catalogo,leeRFCS } from '../db.js';
 import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import Autocomplete from "react-autocomplete";
 
 let handleMessage = null;
 let estaAutenticado = null;
@@ -23,7 +24,8 @@ class CargafaelMasiva extends Component {
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
-                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:null,RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:null,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false
+                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:null
+                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false,RFCS:[]
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -36,6 +38,7 @@ class CargafaelMasiva extends Component {
     this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
     this.cambioRFCReceptor = this.cambioRFCReceptor.bind(this);
     this.revisaSiEstaAutenticado = this.revisaSiEstaAutenticado.bind(this);
+    this.handle_inserta_catalogo = this.handle_inserta_catalogo.bind(this);
   };
 
     
@@ -55,8 +58,9 @@ class CargafaelMasiva extends Component {
         this.setState({dropdownValue: e.currentTarget.textContent});
     }
 
+
     cambioRFCEmisor(event) {
-        this.setState({RFCEmisor : document.querySelector('#RFCEmisor').value});
+        this.setState({RFCEmisor : event.target.value.toUpperCase()});
 	    const inputValue = event.target.value;
 	    // Use a regular expression pattern to define your validation criteria
 	    const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
@@ -99,21 +103,17 @@ class CargafaelMasiva extends Component {
   componentDidMount(){
       estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (REVISA.VIGENCIATOKEN * 1000));
       leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+      leeRFCS().then( a => { 
+                             console.log('[CargafaelMasiva rfcs='+JSON.stringify(a));
+                             this.setState({ RFCS: a }) 
+                           });
       handleMessage = (event) => {
               console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
               var x = null;
               if (event.data.request.value.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel: document.querySelector('#pwdfiel').value});
                  x = new DMS();
-                         var resa=x.solicita_armasoa(this.state);
-/*
-                         if (resa.ok===true) {
-                                 this.setState({ ok: true, nook:false });
-                                 var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
-                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor }
-                                 x.solicita_enviasoa(resa.soap,this.state.token,passdata)
-                         }
-*/
+                         x.solicita_armasoa(this.state);
               }
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
                  leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
@@ -249,10 +249,30 @@ class CargafaelMasiva extends Component {
     })
   }
 
+  handle_inserta_catalogo(catalogo,rfc) {
+       inserta_catalogo('rfcs',this.state.RFCEmisor);
+  }
+
 
 
   render() {
-    console.log('CargafaelMasiva render RFCReceptro='+this.state.RFCReceptor);
+	 const wrapperStyle = {
+	    'position': 'relative', // Adjust position as needed
+	    'width': '100%',        // Adjust width as needed
+	    'z-index': '1000'
+	  };
+          const onBlurRFCEmisor = (e) => {
+                if (this.state.RFCEmisorIsValid===true) {
+                    console.log('rfc correcto='+e.target.value);
+			  const matchingItems = this.state.RFCS.filter((x) =>
+			    x.label.toLowerCase().includes(this.state.RFCEmisor)
+			  );
+                          if (matchingItems.length===0) {
+                              this.handle_inserta_catalogo('rfcs',this.state.RFCEmisor);
+                              console.log('no encontro el rfc='+e.target.value);
+                          }
+                };
+          }
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
@@ -303,11 +323,20 @@ class CargafaelMasiva extends Component {
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
 				<Label>RFC Emisor</Label>
-				<InputGroup>
-					<Input type="input" name="password" id="RFCEmisor" placeholder="Teclee el RFC emisor"  onChange={this.cambioRFCEmisor}
-                                                onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()}
-                                               />
-				</InputGroup>
+                                <div className="col-lg-12 px-0">
+					      <Autocomplete 
+						items={this.state.RFCS}
+						getItemValue={item => item.label}
+						renderItem={(item, highlighted) =>
+						  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
+						}
+					        inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCEmisor }}
+						value={this.state.RFCEmisor}
+						onChange={this.cambioRFCEmisor}
+						onSelect={ value => this.setState({ RFCEmisor: value })}
+                                                wrapperStyle={wrapperStyle} 
+					      />
+                                </div>
                                 { this.state.okRFCEmisor===false &&
 					<div id="nook" className="mt-1">
 					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
