@@ -103,10 +103,7 @@ class CargafaelMasiva extends Component {
   componentDidMount(){
       estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (REVISA.VIGENCIATOKEN * 1000));
       leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-      leeRFCS().then( a => { 
-                             console.log('[CargafaelMasiva rfcs='+JSON.stringify(a));
-                             this.setState({ RFCS: a }) 
-                           });
+      leeRFCS().then( a => { this.setState({ RFCS: a }) });
       handleMessage = (event) => {
               console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
               var x = null;
@@ -250,7 +247,9 @@ class CargafaelMasiva extends Component {
   }
 
   handle_inserta_catalogo(catalogo,rfc) {
-       inserta_catalogo('rfcs',this.state.RFCEmisor);
+       inserta_catalogo('rfcs',this.state.RFCEmisor).then( r  => {
+                leeRFCS().then( a => { this.setState({ RFCS: a }) });
+       });
   }
 
 
@@ -265,7 +264,7 @@ class CargafaelMasiva extends Component {
                 if (this.state.RFCEmisorIsValid===true) {
                     console.log('rfc correcto='+e.target.value);
 			  const matchingItems = this.state.RFCS.filter((x) =>
-			    x.label.toLowerCase().includes(this.state.RFCEmisor)
+			    x.label.toLowerCase().includes(e.target.value.toLowerCase())
 			  );
                           if (matchingItems.length===0) {
                               this.handle_inserta_catalogo('rfcs',this.state.RFCEmisor);
@@ -330,10 +329,10 @@ class CargafaelMasiva extends Component {
 						renderItem={(item, highlighted) =>
 						  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
 						}
-					        inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCEmisor }}
+					        inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCEmisor, maxLength:13 }}
 						value={this.state.RFCEmisor}
 						onChange={this.cambioRFCEmisor}
-						onSelect={ value => this.setState({ RFCEmisor: value })}
+						onSelect={ value => this.setState({ RFCEmisor: value, okRFCEmisor:true, RFCEmisorIsValid:true }) }
                                                 wrapperStyle={wrapperStyle} 
 					      />
                                 </div>

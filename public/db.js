@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='9';
+var DBVERSION='11';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -87,7 +87,7 @@ var creadb = function(db) {
                         objectStore.createIndex('sello', 'sello', { unique: false });
                     };
 
-                   if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propiios del aplicativo */
+                   if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propios del aplicativo */
                         console.log('[db.js] va a crear el objeto catalogos');
                         objectStore = db.createObjectStore('catalogos', { autoIncrement : true });
                         objectStore.createIndex('hora', 'hora', { unique: false });
@@ -99,6 +99,7 @@ var creadb = function(db) {
                         objectStore.createIndex('catalogo', 'catalogo', { unique: false });
                         objectStore.createIndex('label', 'label', { unique: false });
                         objectStore.createIndex('ID', 'ID', { unique: false });
+                        objectStore.createIndex('catalogo_label', ['catalogo','label'], { unique: true });
                     };
 
                    if(!db.objectStoreNames.contains('facturas')) { /* facturas electronicas  */

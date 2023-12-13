@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='9';
+var DBVERSION='11';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -98,6 +98,7 @@ var creadb = function(db) {
                         objectStore.createIndex('catalogo', 'catalogo', { unique: false });
                         objectStore.createIndex('label', 'label', { unique: false });
                         objectStore.createIndex('ID', 'ID', { unique: false });
+                        objectStore.createIndex('catalogo_label', ['catalogo','label'], { unique: true });
                     };
 
                    if(!db.objectStoreNames.contains('facturas')) { /* facturas electronicas  */
