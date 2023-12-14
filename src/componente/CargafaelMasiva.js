@@ -24,7 +24,7 @@ class CargafaelMasiva extends Component {
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
-                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:null
+                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
                    ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false,RFCS:[]
     };
     this.cargar = this.cargar.bind(this);
@@ -36,6 +36,7 @@ class CargafaelMasiva extends Component {
     this.toggleC =  this.toggleC.bind(this)
     this.changeValueC = this.changeValueC.bind(this);
     this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
+    this.selectRFCEmisor = this.selectRFCEmisor.bind(this);
     this.cambioRFCReceptor = this.cambioRFCReceptor.bind(this);
     this.revisaSiEstaAutenticado = this.revisaSiEstaAutenticado.bind(this);
     this.handle_inserta_catalogo = this.handle_inserta_catalogo.bind(this);
@@ -68,6 +69,17 @@ class CargafaelMasiva extends Component {
 	       this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:localStorage.getItem('rfc')}); }
             else { this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:''}); }
     }
+
+    selectRFCEmisor(value) {
+        this.setState({RFCEmisor : value.toUpperCase()});
+            const inputValue = value;
+            // Use a regular expression pattern to define your validation criteria
+            const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
+            if (inputValue!==localStorage.getItem('rfc')) {
+               this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:localStorage.getItem('rfc')}); }
+            else { this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:''}); }
+    }
+
 
     cambioRFCReceptor(event) {
         this.setState({RFCReceptor : event.target.value});
@@ -272,6 +284,19 @@ class CargafaelMasiva extends Component {
                           }
                 };
           }
+          const onBlurRFCReceptor = (e) => {
+                if (this.state.RFCReceptorIsValid===true) {
+                    console.log('rfc correcto='+e.target.value);
+                          const matchingItems = this.state.RFCS.filter((x) =>
+                            x.label.toLowerCase().includes(e.target.value.toLowerCase())
+                          );
+                          if (matchingItems.length===0) {
+                              this.handle_inserta_catalogo('rfcs',this.state.RFCReceptor);
+                              console.log('no encontro el rfc='+e.target.value);
+                          }
+                };
+          }
+
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
@@ -332,7 +357,7 @@ class CargafaelMasiva extends Component {
 					        inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCEmisor, maxLength:13 }}
 						value={this.state.RFCEmisor}
 						onChange={this.cambioRFCEmisor}
-						onSelect={ value => this.setState({ RFCEmisor: value, okRFCEmisor:true, RFCEmisorIsValid:true }) }
+						onSelect={ value => this.selectRFCEmisor(value)}
                                                 wrapperStyle={wrapperStyle} 
 					      />
                                 </div>
@@ -351,11 +376,23 @@ class CargafaelMasiva extends Component {
                           </div>
                           <div className="col-lg-6 mt-1">
                                 <Label>RFC Receptor</Label>
-                                <InputGroup>
-                                        <Input type="input" id="RFCReceptor" placeholder="Teclee el RFC receptor" onChange={this.cambioRFCReceptor}
-                                                onInput={(e) => e.target.value = ("" + e.target.value).toUpperCase()} value={this.state.RFCReceptor}
-                                        />
-                                </InputGroup>
+
+                                <div className="col-lg-12 px-0">
+                                              <Autocomplete
+                                                items={this.state.RFCS}
+                                                getItemValue={item => item.label}
+                                                renderItem={(item, highlighted) =>
+                                                  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
+                                                }
+                                                inputProps={{ id: 'RFCReceptor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCReceptor, maxLength:13 }}
+                                                value={this.state.RFCReceptor}
+                                                onChange={this.cambioRFCReceptor}
+                                                onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
+                                                wrapperStyle={wrapperStyle}
+                                              />
+                                </div>
+
+
                                 { this.state.okRFCReceptor===false &&
 					<div id="nook" className="mt-1">
 					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
