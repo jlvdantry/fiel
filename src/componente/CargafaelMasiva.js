@@ -62,31 +62,34 @@ class CargafaelMasiva extends Component {
 
     cambioRFCEmisor(event) {
         this.setState({RFCEmisor : event.target.value.toUpperCase()});
-	    const inputValue = event.target.value;
-	    // Use a regular expression pattern to define your validation criteria
+	    const inputValue = event.target.value.toUpperCase();
 	    const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
-            if (inputValue!==localStorage.getItem('rfc')) {
-	       this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:localStorage.getItem('rfc')}); }
-            else { this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:''}); }
+            this.setState({ RFCEmisorIsValid: isValid }) 
+            if (localStorage.getItem('rfc')!==null) {
+		    if (inputValue!==localStorage.getItem('rfc')) {
+		       this.setState({RFCReceptor:localStorage.getItem('rfc')}); }
+		    else { this.setState({ RFCReceptor:''}); }
+            }
     }
 
     selectRFCEmisor(value) {
-        this.setState({RFCEmisor : value.toUpperCase()});
+        this.setState({RFCEmisor : value});
             const inputValue = value;
             // Use a regular expression pattern to define your validation criteria
             const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
-            if (inputValue!==localStorage.getItem('rfc')) {
-               this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:localStorage.getItem('rfc')}); }
-            else { this.setState({ RFCEmisorIsValid: isValid, RFCReceptor:''}); }
+            this.setState({ RFCEmisorIsValid: isValid }) 
+            if (localStorage.getItem('rfc')!==null) {
+                    if (inputValue!==localStorage.getItem('rfc')) {
+                       this.setState({ RFCReceptor:localStorage.getItem('rfc')}); }
+                    else { this.setState({ RFCReceptor:''}); }
+            }
     }
 
 
     cambioRFCReceptor(event) {
-        this.setState({RFCReceptor : event.target.value});
-            const inputValue = event.target.value;
-            // Use a regular expression pattern to define your validation criteria
+        this.setState({RFCReceptor : event.target.value.toUpperCase()});
+            const inputValue = event.target.value.toUpperCase();
             const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
-
             this.setState({ RFCReceptorIsValid: isValid, });
 
     }
@@ -301,7 +304,7 @@ class CargafaelMasiva extends Component {
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
                         <FormGroup className="container col-lg-12 justify-content-around">
-                          <div className="col-lg-6 d-flex justify-content-center">
+                          <div className="col-lg-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" size="lg">
 						   Solicitud {this.state.dropdownValue} 
@@ -313,7 +316,7 @@ class CargafaelMasiva extends Component {
 				</Dropdown>
                           </div>
 
-                          <div className="col-lg-6 d-flex justify-content-center">
+                          <div className="col-lg-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpenC} toggle={this.toggleC}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" size="lg">
 						   Solicitud de {this.state.TipoSolicitud}
