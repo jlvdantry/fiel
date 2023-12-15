@@ -72,10 +72,14 @@ class Graficafael extends Component {
                           if (tc==='I') { ingreso=total; egreso=0; }
                           if (tc==='N') { ingreso=0; egreso=total; }
                        }
+                       if ( x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
+                          var fechaPago=x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
+                       }
                        datosFactura.push( {  "Emisor" : rfcEmisor
                                             ,"Nombre Emisor" : x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
                                             ,"Receptor": rfcReceptor
                                             ,"Fecha Emision" : x.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
+                                            ,"Fecha Pago" : fechaPago
                                             ,"Descuento" : Number(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
                                             ,"Descripcion": descripcion
                                             ,"Tipo de Comprobante": x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
