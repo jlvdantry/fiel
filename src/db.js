@@ -84,6 +84,7 @@ var creadb = function(db) {
                         objectStore.createIndex('idmenu_fecha', 'idmenu_fecha', { unique: false });
                         objectStore.createIndex('url_fecha', 'url_fecha', { unique: false });
                         objectStore.createIndex('url_fechaC', ['url','fecha'], { unique: false });
+                        objectStore.createIndex('sello', 'sello', { unique: false });
                     };
 
                    if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propios del aplicativo */
