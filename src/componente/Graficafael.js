@@ -6,7 +6,7 @@ import {Doughnut,HorizontalBar,Bar,Pie,Line} from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { exportToExcel } from "react-json-to-excel";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,BarElement,LineController } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,BarElement,LineController,DoughnutController,ArcElement } from 'chart.js';
 
 const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',' Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -20,13 +20,15 @@ ChartJS.register(
   Legend
   ,LineController
   ,PointElement
+  ,DoughnutController
+  ,ArcElement
 );
 
 
 class Graficafael extends Component {
   constructor(props){
     super(props);
-    this.state = { data:{},dropdownOpen:false,dropdownValue:'Barras Verticales', refresca:true, exportaExcel:false, datosExcel:null}
+    this.state = { data:{},dropdownOpen:false,dropdownValue:'Barras Horizontales', refresca:true, exportaExcel:false, datosExcel:null}
     this.toggle =  this.toggle.bind(this)
     this.changeValue = this.changeValue.bind(this);
     this.actuaFacturas = this.actuaFacturas.bind(this);
@@ -42,6 +44,7 @@ class Graficafael extends Component {
 
     changeValue(e) {
         this.setState({dropdownValue: e.currentTarget.textContent});
+       this.actuaFacturas();
     }
 
   componentWillMount(){
@@ -96,11 +99,13 @@ class Graficafael extends Component {
         var that=this;
         that.setState({data:{}});
         leefacturas().then(function(cuantas) {
-                    var colors = []; var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
+                    var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
 		    var dynamicColors = function() {
 			var r = Math.floor(Math.random() * 255); var g = Math.floor(Math.random() * 255); var b = Math.floor(Math.random() * 255);
 			return "rgb(" + r + "," + g + "," + b + ")";
 		    };
+			const colors = [dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()];
+
                     cuantas.map((x) => {
                        var ingreso=0, egreso=0;
                        var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
@@ -130,16 +135,31 @@ class Graficafael extends Component {
                     var colori=dynamicColors();
                     var colore=dynamicColors();
                     var colorn=dynamicColors();
-
-                    that.setState({
-                            data:{labels : labels 
-                                 ,datasets: [ 
-                                        {label:'Ingreso',data:datai,backgroundColor:colori,borderColor:colori} 
-                                       ,{label:'Egreso',data:datae,backgroundColor:colore,borderColor:colore} 
-                                       ,{label:'Neto',data:datan,backgroundColor:colorn,borderColor:colorn,type:'line'} 
-                                 ]
-                                 },
-                    });
+                    console.log('Graficafael actuaFacturas that.state.dropdownValue='+JSON.stringify(that.state.dropdownValue));
+                    if (that.state.dropdownValue==="Dona") {
+                            that.setState({
+                                    data:{labels : labels
+                                         ,datasets: [
+                                                {data:datai,label:'Ingreso'
+                                              ,backgroundColor:[colors[1],colors[2],colors,[3],colors[4],colors[5],colors[6],colors[7],colors,[8],colors[9],colors[10],colors[11],colors[12]]}
+                                                ,{data:datae,label:'Egreso'
+                                              ,backgroundColor:[colors[1],colors[2],colors,[3],colors[4],colors[5],colors[6],colors[7],colors,[8],colors[9],colors[10],colors[11],colors[12]]}
+                                                ,{data:datan,label:'Neto'
+                                              ,backgroundColor:[colors[1],colors[2],colors,[3],colors[4],colors[5],colors[6],colors[7],colors,[8],colors[9],colors[10],colors[11],colors[12]]}
+                                         ]
+                                         },
+                            });
+                    } else {
+			    that.setState({
+				    data:{labels : labels 
+					 ,datasets: [ 
+						{label:'Ingreso',data:datai,backgroundColor:colori,borderColor:colori} 
+					       ,{label:'Egreso',data:datae,backgroundColor:colore,borderColor:colore} 
+					       ,{label:'Neto',data:datan,backgroundColor:colorn,borderColor:colorn} 
+					 ]
+					 },
+			    });
+                    }
          }).catch(function(err)  {
                     that.setState({datai:{},datae:{},datan:{}});
          });
@@ -149,7 +169,9 @@ class Graficafael extends Component {
     console.log('Graficafael render data='+JSON.stringify(this.state.data));
     const dropdownValue = this.state.dropdownValue
     const datosExcel = this.state.datosExcel
-    const options={ indexAxis: 'y',
+    var options={};
+    if (dropdownValue==='Barras Horizontales') {
+       options={ indexAxis: 'y',
 		    elements: {
 			    bar: {
 			      borderWidth: 2,
@@ -166,6 +188,43 @@ class Graficafael extends Component {
 			    },
 		   }
                    }
+    }
+    if (dropdownValue==='Barras Verticales') {
+       options={ 
+                    elements: {
+                            bar: {
+                              borderWidth: 2,
+                            },
+                    },
+                    responsive:true,
+                    plugins: {
+                            legend: {
+                              position: 'top',
+                            },
+                            title: {
+                              display: true,
+                              text: 'Ingresos y Egresos',
+                            },
+                   }
+                   }
+    }
+    if (dropdownValue==='Dona') {
+       options={ 
+         elements: {
+              
+              center: {
+                legend: { display: true, position: "right" },
+                text: "Red is 2/3 the total numbers",
+                color: "#FF6384", // Default is #000000
+                fontStyle: "Arial", // Default is Arial
+                sidePadding: 20, // Default is 20 (as a percentage)
+                minFontSize: 20, // Default is 20 (in px), set to false and text will not wrap.
+                lineHeight: 25 // Default is 25 (in px), used for when text wraps
+              }
+            }
+       }
+    }
+
     return  (
       <>
         <Card className="p-2 m-2">
@@ -190,6 +249,8 @@ class Graficafael extends Component {
 				<Card className="m-1">
 					<CardBody>
 						{ (dropdownValue==='Barras Verticales') && <Bar data={this.state.data} options={options}> </Bar> }
+						{ (dropdownValue==='Barras Horizontales') && <Bar data={this.state.data} options={options}> </Bar> }
+						{ (dropdownValue==='Dona') && <Doughnut data={this.state.data} options={options}> </Doughnut> }
 					</CardBody>
 				</Card>
                          }
