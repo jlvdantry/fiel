@@ -6,7 +6,7 @@ import {Doughnut,HorizontalBar,Bar,Pie,Line} from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { exportToExcel } from "react-json-to-excel";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,BarElement,LineController,DoughnutController,ArcElement } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,BarElement,LineController,DoughnutController,ArcElement,PieController } from 'chart.js';
 
 const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',' Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -21,6 +21,7 @@ ChartJS.register(
   ,LineController
   ,PointElement
   ,DoughnutController
+  ,PieController
   ,ArcElement
 );
 
@@ -100,11 +101,20 @@ class Graficafael extends Component {
         that.setState({data:{}});
         leefacturas().then(function(cuantas) {
                     var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
+                    let usedColors = new Set();
 		    var dynamicColors = function() {
-			var r = Math.floor(Math.random() * 255); var g = Math.floor(Math.random() * 255); var b = Math.floor(Math.random() * 255);
-			return "rgb(" + r + "," + g + "," + b + ")";
+			    var r = Math.floor(Math.random() * 255); var g = Math.floor(Math.random() * 255); var b = Math.floor(Math.random() * 255);
+			    let color = "rgb(" + r + "," + g + "," + b + ")";
+			    if (!usedColors.has(color)) {
+				usedColors.add(color);
+                                console.log('actuaFacturas coolor='+color);
+				return color;
+			    } else {
+				return dynamicColors();
+			    }
 		    };
-			const colors = [dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()];
+		    const colors = [dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()];
+                    console.log('actuaFacturas colors='+colors);
 
                     cuantas.map((x) => {
                        var ingreso=0, egreso=0;
@@ -135,17 +145,17 @@ class Graficafael extends Component {
                     var colori=dynamicColors();
                     var colore=dynamicColors();
                     var colorn=dynamicColors();
-                    console.log('Graficafael actuaFacturas that.state.dropdownValue='+JSON.stringify(that.state.dropdownValue));
-                    if (that.state.dropdownValue==="Dona") {
+                    //console.log('Graficafael actuaFacturas that.state.dropdownValue='+JSON.stringify(that.state.dropdownValue));
+                    if (that.state.dropdownValue==="Dona" || that.state.dropdownValue==="Pie") {
                             that.setState({
                                     data:{labels : labels
                                          ,datasets: [
                                                 {data:datai,label:'Ingreso'
-                                              ,backgroundColor:[colors[1],colors[2],colors,[3],colors[4],colors[5],colors[6],colors[7],colors,[8],colors[9],colors[10],colors[11],colors[12]]}
+                                              ,backgroundColor:[colors[0],colors[1],colors[2],colors[3],colors[4],colors[5],colors[6],colors[7],colors[8],colors[9],colors[10],colors[11]]}
                                                 ,{data:datae,label:'Egreso'
-                                              ,backgroundColor:[colors[1],colors[2],colors,[3],colors[4],colors[5],colors[6],colors[7],colors,[8],colors[9],colors[10],colors[11],colors[12]]}
+                                              ,backgroundColor:[colors[0],colors[1],colors[2],colors[3],colors[4],colors[5],colors[6],colors[7],colors[8],colors[9],colors[10],colors[11]]}
                                                 ,{data:datan,label:'Neto'
-                                              ,backgroundColor:[colors[1],colors[2],colors,[3],colors[4],colors[5],colors[6],colors[7],colors,[8],colors[9],colors[10],colors[11],colors[12]]}
+                                              ,backgroundColor:[colors[0],colors[1],colors[2],colors[3],colors[4],colors[5],colors[6],colors[7],colors[8],colors[9],colors[10],colors[11]]}
                                          ]
                                          },
                             });
@@ -171,7 +181,7 @@ class Graficafael extends Component {
     const datosExcel = this.state.datosExcel
     var options={};
     if (dropdownValue==='Barras Horizontales') {
-       options={ indexAxis: 'y',
+       options={    indexAxis: 'y',
 		    elements: {
 			    bar: {
 			      borderWidth: 2,
@@ -186,8 +196,9 @@ class Graficafael extends Component {
 			      display: true,
 			      text: 'Ingresos y Egresos',
 			    },
-		   }
-                   }
+		   },
+                   locale: 'es-MX'
+                }
     }
     if (dropdownValue==='Barras Verticales') {
        options={ 
@@ -205,13 +216,13 @@ class Graficafael extends Component {
                               display: true,
                               text: 'Ingresos y Egresos',
                             },
-                   }
-                   }
+                   },
+                   locale: 'es-MX'
+              }
     }
-    if (dropdownValue==='Dona') {
+    if (dropdownValue==='Dona' || dropdownValue==='Pie') {
        options={ 
          elements: {
-              
               center: {
                 legend: { display: true, position: "right" },
                 text: "Red is 2/3 the total numbers",
@@ -221,7 +232,8 @@ class Graficafael extends Component {
                 minFontSize: 20, // Default is 20 (in px), set to false and text will not wrap.
                 lineHeight: 25 // Default is 25 (in px), used for when text wraps
               }
-            }
+            },
+         locale: 'es-MX'
        }
     }
 
@@ -251,6 +263,7 @@ class Graficafael extends Component {
 						{ (dropdownValue==='Barras Verticales') && <Bar data={this.state.data} options={options}> </Bar> }
 						{ (dropdownValue==='Barras Horizontales') && <Bar data={this.state.data} options={options}> </Bar> }
 						{ (dropdownValue==='Dona') && <Doughnut data={this.state.data} options={options}> </Doughnut> }
+						{ (dropdownValue==='Pie') && <Pie data={this.state.data} options={options}> </Pie> }
 					</CardBody>
 				</Card>
                          }
