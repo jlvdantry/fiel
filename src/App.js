@@ -13,7 +13,8 @@ import Validafael from './componente/Validafael';
 import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
-import './fontawesome';;
+import ChecaFirmasPDF from './componente/ChecaFirmasPDF';
+import './fontawesome';
 
 
 class App extends Component {
@@ -31,6 +32,7 @@ class App extends Component {
 	  <Route path="/validarfael" component={Validafael}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>
+	  <Route path="/checafirmaspdf" component={ChecaFirmasPDF}/>
           <Redirect to="/"/>
         </Route>
       </Router>

@@ -8,6 +8,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
+    "@react-pdf-viewer/core": "^3.12.0",
     "@react-pdf/renderer": "^1.6.11",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -17,10 +18,10 @@
     "bootstrap": "^4.5.2",
     "chart.js": "^4.4.0",
     "file-saver": "^2.0.5",
-    "js-base64": "^3.5.2",
     "js-html2pdf": "^1.1.4",
-    "jspdf": "^2.1.1",
+    "jspdf": "^2.5.1",
     "node-forge": ">=0.10.0",
+    "pdfjs-dist": "^4.0.379",
     "react": "^18.2.0",
     "react-autocomplete": "^1.8.1",
     "react-chartjs-2": "^5.2.0",
@@ -36,7 +37,6 @@
     "react-tooltip": "^5.21.5",
     "reactstrap": "^8.6.0",
     "reactstrap-date-picker": "^1.0.5",
-    "uuid": "^9.0.0",
     "xlsx": "^0.18.5"
   },
   "scripts": {
@@ -45,7 +45,7 @@
     "eject": "react-scripts eject",
     "build-sw": "node ./src/sw-build.js",
     "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
-    "build": "react-scripts --max_old_space_size=32768 build --no-minify && npm run build-sw && npm run clean-cra-sw",
+    "build": "react-scripts --max_old_space_size=16384 build --no-minify && npm run build-sw && npm run clean-cra-sw",
     "dev": "react-scripts dev && npm run build-sw && npm run clean-cra-sw"
   },
   "eslintConfig": {

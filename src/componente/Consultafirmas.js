@@ -32,11 +32,9 @@ class Consultafirmas extends Component {
                                           'width'   : 330,
                                           pagesplit : true
 					};
-                                        console.log('antes de export');
 
 					// Create instance of html2pdf class
 					var exporter = new Html2Pdf(element, options);
-                                        console.log('despues de export');
 
 					// Download the PDF or...
 					exporter.getPdf(true).then((pdf) => {

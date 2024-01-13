@@ -112,6 +112,34 @@ const fiel = function()
      console.log('leefiel paso'+evt.target.files[0]);
   }
 
+  this.leearchivolocal = function (evt,ext)
+  {
+     console.log('leearchivo empezo'+JSON.stringify(evt.target.files[0]));
+     var reader = new FileReader();
+     reader.onload = (function(theFile) {
+          return function(e) {
+                  console.log('empezo onload'+theFile.name);
+                  var namelen='';
+                  if (theFile.name.indexOf("."+ext)!==-1) {
+                     localStorage.setItem(ext,e.target.result);
+                     namelen=theFile.name.length;
+                     localStorage.setItem(ext+"_name",(namelen>20 ? theFile.name.substring(namelen-20,namelen) : theFile.name));
+                  } else {
+                     alert('el archivo no tiene extension '+ext);
+                     return false;
+                  };
+                  console.log('leearchivotermino onload '+theFile.name);
+        };
+      })(evt.target.files[0]);
+
+      reader.onloadend = function () {
+          console.log('leearchivo termino de cargar');
+      }
+      reader.readAsDataURL(evt.target.files[0]);
+      console.log('leearchivo paso'+evt.target.files[0]);
+  }
+
+
   this.leefielkey = function (evt)
   {
      console.log('leefielkey empezo'+JSON.stringify(evt.target.files[0]));
@@ -363,6 +391,17 @@ const fiel = function()
          return resultDocument.documentElement.innerText.trim();
       }
     }
+  }
+
+  /* funcion para cargar un archivo localmente */
+  this.cargaarchivolocal = async function (ext)
+  {
+     console.log('cargaarchivolocal empezo ');
+     var x = this.creainputfile("."+ext);
+     x.addEventListener('change',(event) => { this.leearchivolocal(event,ext) });
+     await x.click();
+     console.log('cargaarchivolocal termino');
+     return {file:x};
   }
 
   this.cargafiellocal = async function (ext)
