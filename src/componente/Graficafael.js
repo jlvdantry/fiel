@@ -29,9 +29,11 @@ ChartJS.register(
 class Graficafael extends Component {
   constructor(props){
     super(props);
-    this.state = { data:{},dropdownOpen:false,dropdownValue:'Barras Horizontales', refresca:true, exportaExcel:false, datosExcel:null}
+    this.state = { data:{},dropdownOpenYear:false,dropdownOpen:false,dropdownValueYear:'Año Actual',dropdownValue:'Barras Horizontales', refresca:true, exportaExcel:false, datosExcel:null, filtroYearValue:0}
     this.toggle =  this.toggle.bind(this)
+    this.toggleYear =  this.toggleYear.bind(this)
     this.changeValue = this.changeValue.bind(this);
+    this.changeValueYear = this.changeValueYear.bind(this);
     this.actuaFacturas = this.actuaFacturas.bind(this);
     this.exportaExcel = this.exportaExcel.bind(this);
   }
@@ -43,15 +45,27 @@ class Graficafael extends Component {
         });
     }
 
+    toggleYear(event) {
+        this.setState({
+            dropdownOpenYear: !this.state.dropdownOpenYear
+        });
+    }
+
+
     changeValue(e) {
-        this.setState({dropdownValue: e.currentTarget.textContent});
+       this.setState({dropdownValue: e.currentTarget.textContent});
        this.actuaFacturas();
     }
 
-  componentWillMount(){
-       console.log('Graficafael labels='+labels);
+    changeValueYear(e) {
+       this.setState({dropdownValueYear: e.currentTarget.textContent});
        this.actuaFacturas();
-  }
+    }
+
+    componentWillMount(){
+       //console.log('Graficafael labels='+labels);
+       this.actuaFacturas();
+    }
 
   exportaExcel(){
         var datosFactura=[];
@@ -99,7 +113,7 @@ class Graficafael extends Component {
   actuaFacturas(){
         var that=this;
         that.setState({data:{}});
-        leefacturas().then(function(cuantas) {
+        leefacturas(this.state.dropdownValueYear).then(function(cuantas) {
                     var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
                     let usedColors = new Set();
 		    var dynamicColors = function() {
@@ -107,14 +121,15 @@ class Graficafael extends Component {
 			    let color = "rgb(" + r + "," + g + "," + b + ")";
 			    if (!usedColors.has(color)) {
 				usedColors.add(color);
-                                console.log('actuaFacturas coolor='+color);
+                                //console.log('actuaFacturas coolor='+color);
 				return color;
 			    } else {
 				return dynamicColors();
 			    }
 		    };
-		    const colors = [dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()];
-                    console.log('actuaFacturas colors='+colors);
+		    const colors = [dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()
+                                   ,dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()];
+                    //console.log('actuaFacturas colors='+colors);
 
                     cuantas.map((x) => {
                        var ingreso=0, egreso=0;
@@ -253,6 +268,16 @@ class Graficafael extends Component {
 					<DropdownItem onClick={this.changeValue} >Dona</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
+                                <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear}  className="d-flex justify-content-center " >
+                                      <DropdownToggle caret color="primary">
+                                                 Filtrar por  {this.state.dropdownValueYear}
+                                      </DropdownToggle>
+                                      <DropdownMenu>
+                                        <DropdownItem onClick={this.changeValueYear} >Año Actual</DropdownItem>
+                                        <DropdownItem onClick={this.changeValueYear} >Año Anterior</DropdownItem>
+                                      </DropdownMenu>
+                                </Dropdown>
+
                                 <button className="border-0" onClick={this.exportaExcel} >
 					<FontAwesomeIcon size="3x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
                                 </button>

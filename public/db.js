@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='11';
+var DBVERSION='15';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -85,6 +85,12 @@ var creadb = function(db) {
                         objectStore.createIndex('url_fecha', 'url_fecha', { unique: false });
                         objectStore.createIndex('url_fechaC', ['url','fecha'], { unique: false });
                         objectStore.createIndex('sello', 'sello', { unique: false });
+                        objectStore.createIndex('fechaEmision', 'fechaEmision', { unique: false });
+                        objectStore.createIndex('yearEmision', 'yearEmision', { unique: false });
+                        objectStore.createIndex('fechaPago', 'fechaPago', { unique: false });
+                        objectStore.createIndex('yearPago', 'yearPago', { unique: false });
+                        objectStore.createIndex('url_yearEmision', ['url','yearEmision'], { unique: false });
+                        objectStore.createIndex('url_yearPago', ['url','yearPago'], { unique: false });
                     };
 
                    if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propios del aplicativo */
@@ -421,6 +427,11 @@ function inserta_factura(faeljson)
                 json.idmenu=0;
                 json=datos_comunes(json);
                 json.sello=faeljson["cfdi:Comprobante"]["@attributes"].Sello;
+                json.fechaEmision=faeljson["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10);
+                if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
+                   fechaPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
+                }
+                json.fechaPago=fechaPago;
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
@@ -462,7 +473,7 @@ function inserta_firma(faeljson)
 }
 
 
-function leefacturas()
+function leefacturas(filtro='')
 {
         console.log('[db.js leefacturas] entro');
         return new Promise(function (resolve, reject) {
