@@ -2,48 +2,53 @@ import React, {Component} from 'react';
 import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter,InputGroup,InputGroupAddon} from 'reactstrap';
 import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-//import pdfjsLib from 'pdfjs-dist/build/pdf';
-const pdfjs = require('pdfjs-dist');
-
+import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker";
+import * as PDFJS from 'pdfjs-dist/build/pdf';
+//import PdfViewer from './PdfViewer';
+window.PDFJS = PDFJS;
 class ValidaFirmaPDF extends Component {
   constructor(props){
     super(props);
     this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye',pdfText:''}
     this.validafirma = this.validafirma.bind(this)
     this.showHide = this.showHide.bind(this)
+    this.ordenapaginas = this.ordenapaginas.bind(this)
   }
 
   validafirma(){
-/*
-    var x = new fiel();
-    var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
-    if (res.ok===true) {
-       this.setState({ ok: true, nook:false,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta });
-    }
-    if (res.ok===false) {
-       this.setState({ ok: false, nook:true,msg:res.msg  });
-    }
-*/
+    PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker;
     var pdfData = atob(localStorage.getItem('pdf').substring(localStorage.getItem('pdf').indexOf('base64,')+7));
-    var loadingTask = pdfjs.getDocument({data: pdfData});
-    loadingTask.promise.then(function(pdf) {
-                console.log('PDF loaded');
-	      let text = '';
-	      for (let i = 1; i <= pdf.numPages; i++) {
-		  pdf.getPage(i).then( (page) => {
-		      page.getTextContent().then( (pageText) => {
-		           text += pageText.items.map((item) => item.str).join(' ');
-                           })
-                      })
-	      }
-              this.setState({ pdfText: text} );
-
+    var loadingTask = PDFJS.getDocument({data: pdfData});
+    loadingTask.promise.then( (pdf)=>{
+              console.log('PDF loaded');
+              this.ordenapaginas(pdf).then( (paginas) => {
+                    console.log('paginas:'+JSON.stringify(paginas));
+              })
                 
     }, function (reason) {
-       // PDF loading error
        console.error(reason);
     });
   }
+
+  ordenapaginas(pdf) {
+         
+      return new Promise(async (resolve) => {
+              var lineas = [];
+              var paginas = [];
+              for (let i = 1; i <= pdf.numPages; i++) {
+                  await pdf.getPage(i).then( async (page) => {
+                      await page.getTextContent().then( (pageText) => {
+                               //console.log('pageText:'+JSON.stringify(pageText));
+                               var pagina=pageText.items[pageText.items.length-1].str.substr(7,1)
+                               console.log('pagina:'+pagina);
+                               paginas[pagina]=pageText.items;
+                           })
+                      })
+               }
+               resolve(paginas);
+     });
+  }
+
 
   showHide(e){
     this.setState({
@@ -54,6 +59,7 @@ class ValidaFirmaPDF extends Component {
 
   render() {
     const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta,type,ojos } = this.state;
+    const pdfUrl = 'path/to/your/pdf/file.pdf';
     return  (
         <Card id="validafiel" className="p-2 m-2">
 	      <h2 className="text-center" >Validar firma electrónica</h2>
