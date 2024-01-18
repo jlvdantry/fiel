@@ -9,20 +9,32 @@ window.PDFJS = PDFJS;
 class ValidaFirmaPDF extends Component {
   constructor(props){
     super(props);
-    this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye',pdfText:''}
+    this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye',pdfText:'hola'}
     this.validafirma = this.validafirma.bind(this)
     this.showHide = this.showHide.bind(this)
     this.ordenapaginas = this.ordenapaginas.bind(this)
   }
 
-  validafirma(){
+  validafirma = () => {
     PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker;
     var pdfData = atob(localStorage.getItem('pdf').substring(localStorage.getItem('pdf').indexOf('base64,')+7));
     var loadingTask = PDFJS.getDocument({data: pdfData});
+    var textContent = '';
+    this.setState({ pdfText:'Cargando documento' });
     loadingTask.promise.then( (pdf)=>{
               console.log('PDF loaded');
               this.ordenapaginas(pdf).then( (paginas) => {
                     console.log('paginas:'+JSON.stringify(paginas));
+                     for (let i = 0; i < paginas.length; i++) {
+			textContent += paginas[i].map(function (item) {
+				    return item.str;
+				  }).join('\n');
+                         textContent += '\n';
+                     }
+                     console.log('textContent='+textContent);
+                     this.setState({ pdfText:textContent }, () => {
+                                            console.log('actualiza pdfText='+JSON.stringify(this.state,true));
+                                     });
               })
                 
     }, function (reason) {
@@ -41,7 +53,7 @@ class ValidaFirmaPDF extends Component {
                                //console.log('pageText:'+JSON.stringify(pageText));
                                var pagina=pageText.items[pageText.items.length-1].str.substr(7,1)
                                console.log('pagina:'+pagina);
-                               paginas[pagina]=pageText.items;
+                               paginas[pagina-1]=pageText.items;
                            })
                       })
                }
@@ -58,8 +70,7 @@ class ValidaFirmaPDF extends Component {
   }
 
   render() {
-    const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta,type,ojos } = this.state;
-    const pdfUrl = 'path/to/your/pdf/file.pdf';
+    const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta,type,ojos,pdfText } = this.state;
     return  (
         <Card id="validafiel" className="p-2 m-2">
 	      <h2 className="text-center" >Validar firma electrónica</h2>
@@ -77,10 +88,7 @@ class ValidaFirmaPDF extends Component {
 		           <Button color="primary" onClick={this.validafirma}>Validar</Button>
                       </div>
               </Container>
-      <div>
-        <h2>Extracted Text:</h2>
-        <pre>{this.state.pdfText}</pre>
-      </div>
+              <div> <h2>Extracted Text:</h2> <pre id="pdfText">{pdfText}</pre> </div>
               { ok && <Container id="ok" className="border p-2 mb-3">
                      <Alert color="success" className="text-center d-flex justify-content-between align-items-center" ><FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Felicidades tu llave pública y privada corresponden entre si y tu contraseña corresponde a tu llave privada</Alert>
                      <Card>
