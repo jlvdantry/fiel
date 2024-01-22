@@ -13,6 +13,7 @@ import Validafael from './componente/Validafael';
 import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
+import About from './componente/About';
 import './fontawesome';;
 
 
@@ -31,6 +32,7 @@ class App extends Component {
 	  <Route path="/validarfael" component={Validafael}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>
+	  <Route path="/about" component={About}/>
           <Redirect to="/"/>
         </Route>
       </Router>

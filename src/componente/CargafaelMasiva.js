@@ -275,6 +275,12 @@ class CargafaelMasiva extends Component {
 	    'width': '100%',        // Adjust width as needed
 	    'z-index': '1000'
 	  };
+	 const wrapperStyle1 = {
+	    'position': 'relative', // Adjust position as needed
+	    'width': '100%',        // Adjust width as needed
+	    'z-index': '999'
+	  };
+
           const onBlurRFCEmisor = (e) => {
                 if (this.state.RFCEmisorIsValid===true) {
                     console.log('rfc correcto='+e.target.value);
@@ -306,7 +312,7 @@ class CargafaelMasiva extends Component {
                         <FormGroup className="container col-lg-12 justify-content-around">
                           <div className="col-lg-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
-				      <DropdownToggle caret color="primary" size="lg">
+				      <DropdownToggle caret color="primary" >
 						   Solicitud {this.state.dropdownValue} 
 				      </DropdownToggle>
 				      <DropdownMenu>
@@ -318,7 +324,7 @@ class CargafaelMasiva extends Component {
 
                           <div className="col-lg-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpenC} toggle={this.toggleC}  className="d-flex justify-content-center mb-2" >
-				      <DropdownToggle caret color="primary" size="lg">
+				      <DropdownToggle caret color="primary" >
 						   Solicitud de {this.state.TipoSolicitud}
 				      </DropdownToggle>
 				      <DropdownMenu>
@@ -391,7 +397,7 @@ class CargafaelMasiva extends Component {
                                                 value={this.state.RFCReceptor}
                                                 onChange={this.cambioRFCReceptor}
                                                 onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
-                                                wrapperStyle={wrapperStyle}
+                                                wrapperStyle={wrapperStyle1}
                                               />
                                 </div>
 

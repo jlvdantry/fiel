@@ -101,11 +101,13 @@ class Menumi extends Component {
               <Link to='/ayuda' id='ayuda' className='rounded mr-1' onClick={this.closeNavbar} activeClassName="active" onlyActiveOnIndex><FontAwesomeIcon icon={['fas', 'question']} /> AYUDA</Link>
               <Link to='/mifiel' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex><FontAwesomeIcon icon={['fas' , 'pen-fancy']} /> MI FIEL</Link>
               <Link to='/cargafaelMasiva' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'receipt']} /> DESCARGA MASIVA</Link>
+                           <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA</Link>
               <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
                            <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
               <Link to='/misfirmas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
                            <FontAwesomeIcon icon={['fas' , 'signature']} /> MIS FIRMAS</Link>
+              <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+                           <FontAwesomeIcon icon={['fas' , 'info-circle']} /> ACERCA DE</Link>
             </Nav>
           </Collapse>
         </Navbar>
