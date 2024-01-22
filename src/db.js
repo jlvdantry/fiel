@@ -517,14 +517,14 @@ function inserta_firma(faeljson)
 }
 
 
-function leefacturas(filtro='')
+function leefacturas(filtro={dato:'url',valor:'factura'})
 {
-        console.log('[db.js leefacturas] entro');
+        console.log('[db.js leefacturas] filtro='+filtro);
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                selObjects(objectStore,'url','factura').then(function(requests) {
+                                selObjects(objectStore,filtro.dato,filtro.valor).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {

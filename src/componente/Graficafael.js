@@ -29,13 +29,15 @@ ChartJS.register(
 class Graficafael extends Component {
   constructor(props){
     super(props);
-    this.state = { data:{},dropdownOpenYear:false,dropdownOpen:false,dropdownValueYear:'Año Actual',dropdownValue:'Barras Horizontales', refresca:true, exportaExcel:false, datosExcel:null, filtroYearValue:0}
+    this.state = { data:{},dropdownOpenYear:false,dropdownOpen:false,dropdownValueYear:'Año Emisión Actual',dropdownValue:'Barras Horizontales'
+                   ,refresca:true, exportaExcel:false, datosExcel:null, filtroYearValue:0, filtro:''}
     this.toggle =  this.toggle.bind(this)
     this.toggleYear =  this.toggleYear.bind(this)
     this.changeValue = this.changeValue.bind(this);
     this.changeValueYear = this.changeValueYear.bind(this);
     this.actuaFacturas = this.actuaFacturas.bind(this);
     this.exportaExcel = this.exportaExcel.bind(this);
+    this.queYear = this.queYear.bind(this);
   }
 
     toggle(event) {
@@ -58,13 +60,46 @@ class Graficafael extends Component {
     }
 
     changeValueYear(e) {
-       this.setState({dropdownValueYear: e.currentTarget.textContent});
-       this.actuaFacturas();
+       this.setState({dropdownValueYear: e.currentTarget.textContent},() => {
+                       console.log('actualizo el año');
+                       this.queYear();
+             });
     }
 
     componentWillMount(){
-       //console.log('Graficafael labels='+labels);
-       this.actuaFacturas();
+       this.queYear();
+	const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+	console.log('Viewport Width:', viewportWidth);
+	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+	console.log('Viewport Height', viewportHeight);
+    }
+
+    queYear() {
+                       if (this.state.dropdownValueYear=='Año Emisión Actual') {
+                           const currentDate = new Date();
+                           const currentYear = currentDate.getFullYear().toString();
+                           this.setState({ filtro : { dato: 'url_yearEmision',valor : ['factura',currentYear]}}
+                                           ,() => this.actuaFacturas());
+                       }
+                       if (this.state.dropdownValueYear=='Año Emisión Anterior') {
+                           const currentDate = new Date();
+                           const currentYear = (currentDate.getFullYear()-1).toString();
+                           this.setState({ filtro : { dato: 'url_yearEmision',valor : ['factura',currentYear]}}
+                                           ,() => this.actuaFacturas());
+                       }
+                       if (this.state.dropdownValueYear=='Año Pago Actual') {
+                           const currentDate = new Date();
+                           const currentYear = currentDate.getFullYear().toString();
+                           this.setState({ filtro : { dato: 'url_yearPago',valor : ['factura',currentYear]}}
+                                           ,() => this.actuaFacturas());
+                       }
+                       if (this.state.dropdownValueYear=='Año Pago Anterior') {
+                           const currentDate = new Date();
+                           const currentYear = (currentDate.getFullYear()-1).toString();
+                           this.setState({ filtro : { dato: 'url_yearPago',valor : ['factura',currentYear]}}
+                                           ,() => this.actuaFacturas());
+                       }
+
     }
 
   exportaExcel(){
@@ -113,7 +148,7 @@ class Graficafael extends Component {
   actuaFacturas(){
         var that=this;
         that.setState({data:{}});
-        leefacturas(this.state.dropdownValueYear).then(function(cuantas) {
+        leefacturas(this.state.filtro).then(function(cuantas) {
                     var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
                     let usedColors = new Set();
 		    var dynamicColors = function() {
@@ -257,7 +292,7 @@ class Graficafael extends Component {
         <Card className="p-2 m-2">
 			<h2 className="text-center mb-3">Grafica de Ingresos y Egresos por el total de la factura </h2>
                         <div className="d-flex justify-content-around align-content-end flex-wrap mb-2">
-				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center " >
+				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mt-2" >
 				      <DropdownToggle caret color="primary">
 						   Grafica {dropdownValue}
 				      </DropdownToggle>
@@ -268,17 +303,19 @@ class Graficafael extends Component {
 					<DropdownItem onClick={this.changeValue} >Dona</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
-                                <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear}  className="d-flex justify-content-center " >
+                                <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear}  className="d-flex justify-content-center mt-2" >
                                       <DropdownToggle caret color="primary">
                                                  Filtrar por  {this.state.dropdownValueYear}
                                       </DropdownToggle>
                                       <DropdownMenu>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Actual</DropdownItem>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Anterior</DropdownItem>
+                                        <DropdownItem onClick={this.changeValueYear} >Año Emisión Actual</DropdownItem>
+                                        <DropdownItem onClick={this.changeValueYear} >Año Emisión Anterior</DropdownItem>
+                                        <DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
+                                        <DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
                                       </DropdownMenu>
                                 </Dropdown>
 
-                                <button className="border-0" onClick={this.exportaExcel} >
+                                <button className="border-0 mt-2" onClick={this.exportaExcel} >
 					<FontAwesomeIcon size="3x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
                                 </button>
                         </div>
