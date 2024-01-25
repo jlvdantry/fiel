@@ -9,7 +9,7 @@ class About extends Component {
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
-   state={ collapseID: "toggler", windowWidth : window.innerWidth || document.documentElement.clientWidth , windowHeigth : window.innerHeight || document.documentElement.clientHeight}
+   state={ collapseID: "toggler", windowWidth : window.innerWidth || document.documentElement.clientWidth , windowHeight : window.innerHeight || document.documentElement.clientHeight}
    toggle = collapseID => () => {
           console.log('si dio click');
 	  this.setState(prevState => ({
