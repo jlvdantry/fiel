@@ -431,12 +431,14 @@ function inserta_factura(faeljson)
                 json.sello=faeljson["cfdi:Comprobante"]["@attributes"].Sello;
                 json.fechaEmision=faeljson["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10);
                 json.yearEmision=faeljson["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,4);
-                if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
-                   fechaPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
-                   yearPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago.substring(0,4);
+                if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
+			if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
+			   fechaPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
+			   yearPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago.substring(0,4);
+			}
+                        json.fechaPago=fechaPago;
+                        json.yearPago=yearPago
                 }
-                json.fechaPago=fechaPago;
-                json.yearPago=yearPago
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {

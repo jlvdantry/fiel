@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Card,CardBody,CardHeader,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
+import { Card,CardBody,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { leefacturas } from '../db';
-import {Doughnut,HorizontalBar,Bar,Pie,Line} from 'react-chartjs-2';
+import {Doughnut,Bar,Pie} from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { exportToExcel } from "react-json-to-excel";
@@ -75,25 +75,25 @@ class Graficafael extends Component {
     }
 
     queYear() {
-                       if (this.state.dropdownValueYear=='Año Emisión Actual') {
+                       if (this.state.dropdownValueYear==='Año Emisión Actual') {
                            const currentDate = new Date();
                            const currentYear = currentDate.getFullYear().toString();
                            this.setState({ filtro : { dato: 'url_yearEmision',valor : ['factura',currentYear]}}
                                            ,() => this.actuaFacturas());
                        }
-                       if (this.state.dropdownValueYear=='Año Emisión Anterior') {
+                       if (this.state.dropdownValueYear==='Año Emisión Anterior') {
                            const currentDate = new Date();
                            const currentYear = (currentDate.getFullYear()-1).toString();
                            this.setState({ filtro : { dato: 'url_yearEmision',valor : ['factura',currentYear]}}
                                            ,() => this.actuaFacturas());
                        }
-                       if (this.state.dropdownValueYear=='Año Pago Actual') {
+                       if (this.state.dropdownValueYear==='Año Pago Actual') {
                            const currentDate = new Date();
                            const currentYear = currentDate.getFullYear().toString();
                            this.setState({ filtro : { dato: 'url_yearPago',valor : ['factura',currentYear]}}
                                            ,() => this.actuaFacturas());
                        }
-                       if (this.state.dropdownValueYear=='Año Pago Anterior') {
+                       if (this.state.dropdownValueYear==='Año Pago Anterior') {
                            const currentDate = new Date();
                            const currentYear = (currentDate.getFullYear()-1).toString();
                            this.setState({ filtro : { dato: 'url_yearPago',valor : ['factura',currentYear]}}
@@ -105,13 +105,15 @@ class Graficafael extends Component {
   exportaExcel(){
         var datosFactura=[];
         leefacturas().then( (cuantas) => {
-                cuantas.map( (x) => {
+                datosFactura=cuantas.map( (x) => {
+                       var datoFactura={};
                        var descripcion='';
                        var ingreso='desconocido', egreso='desconocido';
                        var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
                        var rfcEmisor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
                        var rfcReceptor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
                        var total=Number(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
+                       var fechaPago=null;
                        if ( x.valor.passdata["cfdi:Comprobante"]["cfdi:Conceptos"].length===1 ) {
                           descripcion=x.valor.passdata["cfdi:Comprobante"]["cfdi:Conceptos"]["cfdi:Concepto"]["@attributes"].Descripcion;
                        } else { descripcion='Varios conceptos' }
@@ -125,10 +127,12 @@ class Graficafael extends Component {
                           if (tc==='I') { ingreso=total; egreso=0; }
                           if (tc==='N') { ingreso=0; egreso=total; }
                        }
-                       if ( x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
-                          var fechaPago=x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
+                       if (x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
+			       if ( x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
+				  fechaPago=x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
+			       }
                        }
-                       datosFactura.push( {  "Emisor" : rfcEmisor
+                       datoFactura={  "Emisor" : rfcEmisor
                                             ,"Nombre Emisor" : x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
                                             ,"Receptor": rfcReceptor
                                             ,"Fecha Emision" : x.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
@@ -138,8 +142,9 @@ class Graficafael extends Component {
                                             ,"Tipo de Comprobante": x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
                                             ,"Ingreso": ingreso
                                             ,"Egreso": egreso 
-                                          }
-                                        );
+                                          };
+                                       
+                      return datoFactura;
                 });
                 exportToExcel(datosFactura,'MisFacturas')
         });
@@ -228,7 +233,6 @@ class Graficafael extends Component {
   render() {
     console.log('Graficafael render data='+JSON.stringify(this.state.data));
     const dropdownValue = this.state.dropdownValue
-    const datosExcel = this.state.datosExcel
     var options={};
     if (dropdownValue==='Barras Horizontales') {
        options={    indexAxis: 'y',

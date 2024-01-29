@@ -1,6 +1,6 @@
 var DBNAME='fiel_menus';
 var DBVERSION='15';
-var DBNAME=DBNAME;
+var APPVERSION='1';
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
 
@@ -467,19 +467,22 @@ function inserta_factura(faeljson)
                 json.sello=faeljson["cfdi:Comprobante"]["@attributes"].Sello;
                 json.fechaEmision=faeljson["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10);
                 json.yearEmision=faeljson["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,4);
-	        if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
-		   fechaPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago;
-		   yearPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago.substring(0,4);
-	        }
-                json.fechaPago=fechaPago;
-                json.yearPago=yearPago;
+                if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
+                        if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
+                           fechaPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
+                           yearPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago.substring(0,4);
+                        }
+                        json.fechaPago=fechaPago;
+                        json.yearPago=yearPago
+                }
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(objectStore => {
                                 console.log('[inserta_factura] menu a requesitar=');
                                 selObjects(objectStore,'sello',json.sello).then( x => {
                                        if (x.length===0)   { /* no esta registrado el sello y lo da de alta */
-					  addObject(objectStore, json).then(key => { resolve('Guardo factura con id='+key) ; }).catch(function(err) {  reject(err) });
+					  addObject(objectStore, json).then(key => { resolve('Guardo factura con id='+key) ; }).catch(function(err) 
+                                               {  console.log('[inserta_factura] error al insertar la factura '+err); reject(err) });
                                        } else { resolve('factura duplicada');
                                        }
                                 })
@@ -707,4 +710,4 @@ function bajafirmas(key)
 
 
 
-export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey,inserta_catalogo,leeRFCS } ;
+export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey,inserta_catalogo,leeRFCS,APPVERSION } ;

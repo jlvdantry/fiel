@@ -207,9 +207,9 @@ var DescargaMasivaSat = function()
                 var res=this.mifiel.validaprivada(pwd);
                 if (res.ok) {
                    var cer=this.mifiel.damecertificadofiel();
+                   var mifirmaString=this.mifiel.toString();
                    var cerRecortado= { certificado:cer.certificado, issuer:cer.issuer.attributes[1].value, serialNumber:cer.serialNumber,nombre:cer.subject.attributes[0].value,rfc:cer.subject.attributes[5].value, mifirma:mifirmaString }
                    this.armaBodyAut();
-                   var mifirmaString=this.mifiel.toString();
                    return { ok:true, msg :'Fiel correcta', soap:this.xmltoken, cer:cerRecortado , mifirma:mifirmaString}
                 } else {
                    return { ok:false , msg : res.msg };
@@ -274,11 +274,13 @@ var DescargaMasivaSat = function()
 			const entries =  await reader.getEntries();
 			if (entries.length) {
                                 var x = new fiel();
+                                var vJson = null;
+                                var stx=null;
 				for (let i = 0; i < entries.length; i++) {
 			             const text = await entries[i].getData( new window.zip.TextWriter(), { onprogress: (index, max) => { } } );
-                                     var stx=x.StringToXMLDom(text);
-                                     var vJson=x.xmlToJson(stx);
-                                     await openDatabasex(DBNAME,DBVERSION).then(function() {
+                                     stx=x.StringToXMLDom(text);
+                                     vJson=x.xmlToJson(stx);
+                                     await openDatabasex(DBNAME,DBVERSION).then( () => {
                                                             inserta_factura(vJson).then( msg =>  {
                                                                     console.log('leezip msg='+msg);
                                                             }).catch(function(err)  {
@@ -333,7 +335,7 @@ var DescargaMasivaSat = function()
 
    this.solicita_armasoa = function (estado) {
                 this.mifiel = new fiel();
-                var res=this.mifiel.validafiellocal(estado.pwdfiel);
+                this.mifiel.validafiellocal(estado.pwdfiel);
                 this.cer = this.mifiel.damecertificadofiel();
                 this.estaAutenticado().then( (res) => {
                    if (res.autenticado) { 
@@ -398,8 +400,7 @@ var DescargaMasivaSat = function()
                      } else {
                          console.log('estaAutenticado token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expires);
                          resolve({ autenticado:false }); }
-                     }).
-                     catch( e=> { resolve({autenticado:false}) });
+                     })
                 });
    }
 }

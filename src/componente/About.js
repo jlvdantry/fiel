@@ -1,7 +1,7 @@
 import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
 import { Card,CardBody } from 'reactstrap';
-import { DBVERSION } from '../db.js'
+import { DBVERSION,APPVERSION } from '../db.js'
 class About extends Component {
 
   constructor(props) {
@@ -36,9 +36,6 @@ class About extends Component {
 
 
   render() {
-     const { collapseID } = this.state;
-     //const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-     //const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
      return  (
         <div id="ayuda" data-role="dialog" data-url="ayuda" data-theme="d">
@@ -52,6 +49,7 @@ class About extends Component {
 				  <p className="text-justify">Versión de la base de datos <b>{DBVERSION}</b></p>
 				  <p className="text-justify">Alto de la pantalla <b>{this.state.windowHeight}px</b></p>
 				  <p className="text-justify">Ancho de la pantalla <b>{this.state.windowWidth}px</b></p>
+				  <p className="text-justify">Versión del aplicativo pantalla <b>{APPVERSION}</b></p>
 			  </CardBody>
 			</Card>
                   </div>
