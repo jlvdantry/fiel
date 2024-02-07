@@ -47,7 +47,6 @@ class Ayuda extends Component {
                           <CardBody>
                   <p className="text-justify"><b className="text-info">1.</b> Este aplicativo le permite validar la llave privada y pública generada por el <b>SAT</b>. Teniendo como principal virtud que la llave privada y pública <b>no</b> viajan por internet. Esto incrementa la seguridad de sus datos confidencianciales, previniendo ser víctima de un ciber crimen al no exponer sus llaves y evitar que su firma electrónica pueda ser <b className="text-alert">hackeada</b></p>
                   <p className="text-justify"><b className="text-info">2.</b> Poder validar las facturas electrónicas emitidas con los formatos establecido por el SAT. En caso contrario indicará que la factura no es válida.</p>
-                  <p className="text-justify"><b className="text-info">3.</b> Firmar electrónicamente cualquier conjunto de datos. A este aplicativo se le pueden adaptar servicios de datos externos para obtener información, firmarlos electrónicamente y generar el sello electrónico.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
@@ -74,7 +73,6 @@ class Ayuda extends Component {
                   <p className="text-justify"><b className="text-info">2.</b> Dar clic en el boton <b className="text-info">"Ubicar llave pública"</b>. Aquí el aplicativo le solicitará la ubicación del certificado que es un archivo con extensión cer .</p>
                   <p className="text-justify"><b className="text-info">3.</b> Dar clic en el boton <b className="text-info">"Ubicar llave privada"</b>. Aquí el aplicativo le solicitará la ubicación de la llave privada que es un archivo con extensión key .</p>
                   <p className="text-justify"><b className="text-info">4.</b> Una vez que ya cargo la <b>FIEL</b>, se debe de teclear la contraseña de la llave privada y posteriormente dar clic en el botón <b className="text-info">"Validar"</b>. Si todo esta correcto el aplicativo le indicara que la <b>FIEL</b> y la contraseña checan entre si, caso contrario indicara que no checa la <b>FIEL</b>.</p>
-                  <p className="text-justify"><b className="text-info">Nota</b> Si la <b>FIEL</b> es correcta, se esta en la posibilidad de generar sellos electrónicos no solo de factura electrónicas si no de cualquier conjunto  de datos como por ejemplo contratos.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
@@ -95,7 +93,7 @@ class Ayuda extends Component {
                   </div>
 
                  <div className="mb-2">
-                  <button className="link-button text-info text-left" id="toggler5" onTouchEnd={this.toggle('toggler5')}  onClick={this.toggle('toggler5')} style={{ marginBottom: '1rem' }}><h5>¿Cómo firmar un conjunto de datos con la <b>FIEL</b>?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler5" onTouchEnd={this.toggle('toggler5')}  onClick={this.toggle('toggler5')} style={{ marginBottom: '1rem' }}><h5>¿Como Descargar masivamente  facturas Electronicas?</h5></button>
                       <UncontrolledCollapse toggler="#toggler5" isOpen={collapseID==='toggler5' ? true : false}>
                         <Card>
                           <CardBody>

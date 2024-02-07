@@ -49,7 +49,7 @@ class About extends Component {
 				  <p className="text-justify">Versión de la base de datos <b>{DBVERSION}</b></p>
 				  <p className="text-justify">Alto de la pantalla <b>{this.state.windowHeight}px</b></p>
 				  <p className="text-justify">Ancho de la pantalla <b>{this.state.windowWidth}px</b></p>
-				  <p className="text-justify">Versión del aplicativo pantalla <b>{APPVERSION}</b></p>
+				  <p className="text-justify">Versión del aplicativo <b>{APPVERSION}</b></p>
 			  </CardBody>
 			</Card>
                   </div>
