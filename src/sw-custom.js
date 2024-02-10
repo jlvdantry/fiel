@@ -69,6 +69,13 @@ self.addEventListener("sync", event => {
        }
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
     };
+    if (event.tag.substring(0,8)=== "autLocal") {
+       if (event.tag.substring(9)!=='') {
+                     PWDFIEL=event.tag.substring(10);
+                     console.log('[sync] PWDFIEL='+PWDFIEL);;
+       }
+       //event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
+    }
     if (event.tag === "verifica") {
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
        event.waitUntil(syncRequest(ESTADOREQ.ACEPTADO));
@@ -155,9 +162,9 @@ var postRequestUpd = function(request,accion,respuesta) {
 var enviaContra = () => {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
+                        console.log('[enviaContra] envia mensaje al cliente id='+client.id+' accion=contra');
                         client.postMessage(
-                                {contra: PWDFIEL}
+                                {action: 'contra',contra: PWDFIEL}
                         );
                 });
         });

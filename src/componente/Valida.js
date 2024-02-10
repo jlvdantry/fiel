@@ -3,20 +3,28 @@ import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSub
 import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-
 class Valida extends Component {
   constructor(props){
     super(props);
-    this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye'}
+    this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye',mifiel : new fiel()}
     this.validafirma = this.validafirma.bind(this)
     this.showHide = this.showHide.bind(this)
   }
 
+  componentDidMount(){
+    //var xx = new fiel();
+    //var pwd = xx.decriptPWD();
+    console.log('pwd='+this.state.mifiel.decryptPWD());
+    this.validafirma();
+
+  }
+
   validafirma(){
     var x = new fiel();
-    var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
+    var res=x.validafiellocal(this.state.mifiel.decryptPWD() || document.querySelector('#pwdfiel').value);
     if (res.ok===true) {
        this.setState({ ok: true, nook:false,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta });
+       x.encryptPWD(this.state.mifiel.decryptPWD() || document.querySelector('#pwdfiel').value);
     }
     if (res.ok===false) {
        this.setState({ ok: false, nook:true,msg:res.msg  });
@@ -35,7 +43,7 @@ class Valida extends Component {
     return  (
         <Card id="validafiel" className="p-2 m-2">
 	      <h2 className="text-center" >Validar firma electrónica</h2>
-              <Container className="border p-2 mb-3">
+              { !ok && <Container className="border p-2 mb-3">
 		      <FormGroup className="container">
 			<Label for="pwdfiel">Contraseña de la llave privada</Label>
                         <InputGroup>
@@ -48,7 +56,7 @@ class Valida extends Component {
                       <div className="flex-col d-flex justify-content-center">
 		           <Button color="primary" onClick={this.validafirma}>Validar</Button>
                       </div>
-              </Container>
+              </Container> }
               { ok && <Container id="ok" className="border p-2 mb-3">
                      <Alert color="success" className="text-center d-flex justify-content-between align-items-center" ><FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Felicidades tu llave pública y privada corresponden entre si y tu contraseña corresponde a tu llave privada</Alert>
                      <Card>

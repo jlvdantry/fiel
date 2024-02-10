@@ -486,6 +486,63 @@ const fiel = function()
 		return obj;
         };
 
+        this.encryptData= function(data, key, iv) {
+		  const cipher = window.forge.cipher.createCipher('AES-GCM', key);
+		  cipher.start({
+		    iv: window.forge.util.hexToBytes(iv)
+		  });
+		  cipher.update(window.forge.util.createBuffer(data));
+		  cipher.finish();
 
+		  const encryptedData = cipher.output.getBytes();
+		  const tag = cipher.mode.tag.getBytes();
+                  localStorage.setItem("kkk",key);
+                  localStorage.setItem("iv",iv);
+                  localStorage.setItem("data",encryptedData);
+                  localStorage.setItem("tag",tag);
+
+		  return {
+		    iv: iv,
+		    data: encryptedData,
+		    tag: tag,
+		  };
+	}
+
+	this.decryptData= function (encryptedData, key, iv, tag) {
+		  const decipher = window.forge.cipher.createDecipher('AES-GCM', key);
+		  decipher.start({
+		    iv: window.forge.util.hexToBytes(iv),
+		    tag: tag
+		  });
+		  decipher.update(window.forge.util.createBuffer(encryptedData));
+		  decipher.finish();
+		  return decipher.output.getBytes();
+	}
+
+        this.encryptPWD = function (pwd) {
+		  const key = window.forge.random.getBytesSync(32);
+
+		  // Generate a random IV
+		  const iv = this.generateRandomIV();
+
+		  // Encrypt the data
+		  const encryptedData = this.encryptData(pwd, key, iv);
+                  return encryptedData;
+
+        }
+
+        this.decryptPWD = function () {
+                  var kkk=localStorage.getItem("kkk");
+                  var iv=localStorage.getItem("iv");
+                  var encryptedData=localStorage.getItem("data");
+                  var tag=localStorage.getItem("tag");
+                  var decryptData=this.decryptData(encryptedData,kkk,iv,tag);
+                  return decryptData;
+        }
+
+        this.generateRandomIV = function() {
+		  const bytes = window.forge.random.getBytesSync(12);
+		  return window.forge.util.bytesToHex(bytes);
+        }
 }
 export default fiel;

@@ -9,6 +9,7 @@ import { leeSolicitudesCorrectas,inserta_catalogo,leeRFCS } from '../db.js';
 import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Autocomplete from "react-autocomplete";
+import fiel from '../fiel';
 
 let handleMessage = null;
 let estaAutenticado = null;
@@ -25,7 +26,7 @@ class CargafaelMasiva extends Component {
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
-                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false,RFCS:[]
+                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false,RFCS:[],mifiel: new fiel()
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -123,14 +124,14 @@ class CargafaelMasiva extends Component {
               console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
               var x = null;
               if (event.data.request.value.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
-                 this.setState({ token: event.data.respuesta,pwdfiel: document.querySelector('#pwdfiel').value});
+                 this.setState({ token: event.data.respuesta,pwdfiel: this.state.mifiel.decryptPWD()});
                  x = new DMS();
                          x.solicita_armasoa(this.state);
               }
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
                  leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  var token = { created: event.data.request.value.header.token_created,expired:event.data.request.value.header.token_expired,value:event.data.request.value.header.token_value }
-                 this.setState(state => ({ token:token,pwdfiel:document.querySelector('#pwdfiel').value, folioReq:event.data.request.value.folioReq}));
+                 this.setState(state => ({ token:token,pwdfiel:this.state.mifiel.decryptPWD(), folioReq:event.data.request.value.folioReq}));
                  x = new DMS();
                  x.verificando(	this.state,event.data.request.key);
               } else { leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) }); }
@@ -161,12 +162,6 @@ class CargafaelMasiva extends Component {
 
   cargar() {
 
-    if (document.querySelector('#pwdfiel').value==='') {
-       this.setState({ ok: false, nook:true,msg:'La contraseña es obligatoria'  });
-       return;
-    } else {
-       this.setState({ ok: true, nook:false });
-    }
 
     if (this.state.dropdownValue==='por folio') {
        this.setState({folio:document.querySelector('#folio').value});
@@ -229,10 +224,10 @@ class CargafaelMasiva extends Component {
 
 
     var x = new DMS(); 
-    var res=x.autenticate_armasoa(document.querySelector('#pwdfiel').value);
+    var res=x.autenticate_armasoa(this.state.mifiel.decryptPWD());
     if (res.ok===true) {
               this.setState({ ok: true, nook:false });
-              x.autenticate_enviasoa(res,document.querySelector('#pwdfiel').value)
+              x.autenticate_enviasoa(res,this.state.mifiel.decryptPWD())
     } else {
        this.setState({ ok: false, nook:true,msg:res.msg  });
     }
@@ -335,23 +330,6 @@ class CargafaelMasiva extends Component {
                           </div>
                       </FormGroup>
 
-		      <FormGroup className="container">
-				<Label>Contraseña de la llave privada</Label>
-				<InputGroup>
-					<Input type={this.state.type} name="password_" id="pwdfiel" placeholder="contraseña" disabled={this.state.estaAutenticado}/>
-					<InputGroupAddon addonType="append">
-						<Button onClick={this.showHide} ><FontAwesomeIcon icon={['fas' , this.state.ojos]} /></Button>
-					</InputGroupAddon>
-                                        <div className="d-flex align-content-center flex-wrap">
-                                             <FontAwesomeIcon id="miayuda" icon={['fas' , 'question']} className="ml-1" data-tooltip-id="my-tooltip-1" />
-                                        </div>
-				</InputGroup> 
-				{ this.state.nook && <div id="nook" className="mt-1">
-					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {this.state.msg} </Alert>
-					</div> 
-				}
-		      </FormGroup>
 
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
