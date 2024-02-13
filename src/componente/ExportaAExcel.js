@@ -61,7 +61,7 @@ class ExportaAExcel extends Component {
 	<button className="border-0 mt-2" onClick={this.exportaExcel} >
 		<FontAwesomeIcon size="3x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
 	</button>
-        <ReactTooltip id="my-tooltip-1" className="text-center border border-info" place="bottom" variant="info" html="<div >Exporta las facturas electrónicas a excel</div>" />
+        <ReactTooltip id="my-tooltip-1" style={{ zIndex:9999 }} className="text-center border border-info z-9999 " place="bottom" variant="info" html="<div >Exporta las <br>facturas electrónicas a excel</div>" />
       </>
     )
   }

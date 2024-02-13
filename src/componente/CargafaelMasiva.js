@@ -304,8 +304,8 @@ class CargafaelMasiva extends Component {
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
-                        <FormGroup className="container col-lg-12 justify-content-around">
-                          <div className="col-lg-12 d-flex justify-content-center">
+                        <FormGroup className="container col-lg-12 justify-content-around d-flex flex-wrap">
+                          <div className="col-lg-6 col-sm-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" >
 						   Solicitud {this.state.dropdownValue} 
@@ -317,7 +317,7 @@ class CargafaelMasiva extends Component {
 				</Dropdown>
                           </div>
 
-                          <div className="col-lg-12 d-flex justify-content-center">
+                          <div className="col-lg-6 col-sm-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpenC} toggle={this.toggleC}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" >
 						   Solicitud de {this.state.TipoSolicitud}

@@ -83,25 +83,25 @@ class Filtros extends Component {
   render() {
     return  (
       <>
-                        <div className="d-flex justify-content-around align-content-end flex-wrap mb-2">
+                        <div className="d-flex justify-content-around align-content-end flex-wrap mb-2 ">
                                 <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mt-2" >
-                                      <DropdownToggle caret color="primary">
+                                      <DropdownToggle caret color="primary" className="text-wrap">
                                                    Grafica {this.state.dropdownValue}
                                       </DropdownToggle>
                                       <DropdownMenu>
-                                        <DropdownItem onClick={this.changeValue} >Barras Horizontales</DropdownItem>
-                                        <DropdownItem onClick={this.changeValue} >Barras Verticales</DropdownItem>
-                                        <DropdownItem onClick={this.changeValue} >Pie</DropdownItem>
-                                        <DropdownItem onClick={this.changeValue} >Dona</DropdownItem>
+                                        <DropdownItem onClick={this.changeValue}  >Barras Horizontales</DropdownItem>
+                                        <DropdownItem onClick={this.changeValue}  >Barras Verticales</DropdownItem>
+                                        <DropdownItem onClick={this.changeValue}  >Pie</DropdownItem>
+                                        <DropdownItem onClick={this.changeValue}  >Dona</DropdownItem>
                                       </DropdownMenu>
                                 </Dropdown>
                                 <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear}  className="d-flex justify-content-center mt-2" >
-                                      <DropdownToggle caret color="primary">
+                                      <DropdownToggle caret color="primary" className="text-wrap">
                                                  Filtrar por  {this.state.dropdownValueYear}
                                       </DropdownToggle>
                                       <DropdownMenu>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Emisión Actual</DropdownItem>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Emisión Anterior</DropdownItem>
+                                        <DropdownItem onClick={this.changeValueYear}  >Año Emisión Actual</DropdownItem>
+                                        <DropdownItem onClick={this.changeValueYear}  >Año Emisión Anterior</DropdownItem>
                                         <DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
                                         <DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
                                       </DropdownMenu>
