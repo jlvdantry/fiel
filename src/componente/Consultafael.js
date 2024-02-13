@@ -22,7 +22,7 @@ class Consultafael extends Component {
 
   totalFacturas() {
         var that=this;
-        cuantasfacturas().then(function(cuantas) {
+        cuantasfacturas(this.props.filtro).then(function(cuantas) {
                                                             that.setState({totalfacturas:cuantas});
                                                     }).catch(function(err)  {
                                                             that.setState({totalfacturas:0});
@@ -45,7 +45,7 @@ class Consultafael extends Component {
   consulta(){
         console.log('[Consultafael.js] consulta entro');
         var that=this;
-        leefacturas().then(function(facturas) {
+        leefacturas(this.props.filtro).then(function(facturas) {
                                                             console.log('[Consultafael.js] consulta='+facturas.length);
                                                             that.setState({facturas:facturas});
                                                     }).catch(function(err)  {
@@ -71,7 +71,7 @@ class Consultafael extends Component {
                      <Card>
 			<CardHeader color="success" className="text-center" >Comprobante</CardHeader>
 			<CardBody>
-			  <CardSubtitle className="text-center">Fecha: {data.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
+			  <CardSubtitle className="text-center">Fecha: {data.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,16)}</CardSubtitle>
 			  <CardSubtitle className="text-center">Tipo de comprobante: {TC[data.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
 			  <CardSubtitle className="text-center">SubTotal: <CurrencyFormat value={data.valor.passdata["cfdi:Comprobante"]["@attributes"].SubTotal} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
 			  <CardSubtitle className="text-center">Total: <CurrencyFormat value={data.valor.passdata["cfdi:Comprobante"]["@attributes"].Total} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>

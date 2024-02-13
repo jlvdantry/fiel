@@ -627,13 +627,13 @@ function leefirma(key)
 
 
 
-function cuantasfacturas()
+function cuantasfacturas(filtro={dato:'url',valor:'factura'})
 {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                selObjects(objectStore,'url','factura').then(function(requests) {
+                                selObjects(objectStore,filtro.dato,filtro.valor).then(function(requests) {
                                                                resolve(requests.length) ;
                                                             }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {

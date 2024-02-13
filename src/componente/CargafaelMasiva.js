@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,InputGroupAddon,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
+import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
