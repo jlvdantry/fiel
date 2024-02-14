@@ -8,10 +8,8 @@ import Carga from './componente/Carga';
 import Mifiel from './componente/Mifiel';
 import Misfacturas from './componente/Misfacturas';
 import Valida from './componente/Valida';
-import Cargafael from './componente/Cargafael';
-import Validafael from './componente/Validafael';
+import Validarfael from './componente/Validarfael';
 import Graficafael from './componente/Graficafael';
-import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
 import About from './componente/About';
 import './fontawesome';;
@@ -27,11 +25,9 @@ class App extends Component {
 	  <Route path="/validar" component={Valida}/>
 	  <Route path="/mifiel" component={Mifiel}/>
 	  <Route path="/misfacturas" component={Misfacturas}/>
-	  <Route path="/cargafael" component={Cargafael}/>
 	  <Route path="/cargafaelMasiva" component={CargafaelMasiva}/>
-	  <Route path="/validarfael" component={Validafael}/>
+	  <Route path="/validarfael" component={Validarfael}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
-	  <Route path="/misfirmas" component={MisFirmas}/>
 	  <Route path="/about" component={About}/>
           <Redirect to="/"/>
         </Route>

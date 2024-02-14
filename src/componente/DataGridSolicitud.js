@@ -14,7 +14,15 @@ const columns = [
       return <div className="text-success">Estado Descarga</div>;
     }}
 ];
+const customTheme = {
+  row: {
+    backgroundColor: 'white', // Set the desired background color
+  },
+  cell: {
+    borderBottom: '1px solid #e0e0e0',
+  },
+};
 
 export function MiDataGrid(props) {
-  return <DG columns={columns} rows={props.filas} />;
+  return <DG columns={columns} rows={props.filas} theme={customTheme}/>;
 }

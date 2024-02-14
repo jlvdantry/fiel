@@ -45,15 +45,19 @@ class Ayuda extends Component {
 		      <UncontrolledCollapse toggler="#toggler1"  isOpen={collapseID==='toggler1' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Este aplicativo le permite validar la llave privada y pública generada por el <b>SAT</b>. Teniendo como principal virtud que la llave privada y pública <b>no</b> viajan por internet. Esto incrementa la seguridad de sus datos confidencianciales, previniendo ser víctima de un ciber crimen al no exponer sus llaves y evitar que su firma electrónica pueda ser <b className="text-alert">hackeada</b></p>
-                  <p className="text-justify"><b className="text-info">2.</b> Poder validar las facturas electrónicas emitidas con los formatos establecido por el SAT. En caso contrario indicará que la factura no es válida.</p>
+                  <p className="text-justify">
+                      <b className="text-info">1.</b> Este aplicativo le permite validar la llave privada y pública generada por el <b>SAT</b>. Teniendo como principal virtud que la llave privada y pública <b>no</b> viajan por internet. Esto incrementa la seguridad de sus datos confidencianciales, previniendo ser víctima de un ciber crimen al no exponer sus llaves y evitar que su firma electrónica pueda ser <b className="text-alert">hackeada</b></p>
+                  <p className="text-justify"> <b className="text-info">2.</b> Poder validar las facturas electrónicas emitidas con los formatos establecido por el SAT. En caso contrario indicará que la factura no es válida.</p>
+                  <p className="text-justify"> <b className="text-info">3.</b> Le permite extraer las facturas electrónicas emitidas o recibidas del SAT</p>
+                  <p className="text-justify"> <b className="text-info">4.</b> Le permite exportar a Excel las facturas electrónicas emitidas o recibidas del SAT</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
                   </div>
 
                  <div className="mb-2">
-                  <button className="link-button text-info text-left" id="toggler2" onTouchEnd={this.toggle('toggler2')}  onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}><h5>¿Cuales son los requisitos?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler2" onTouchEnd={this.toggle('toggler2')}  onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}>
+                          <h5>¿Cuales son los requisitos?</h5></button>
                       <UncontrolledCollapse toggler="#toggler2" isOpen={collapseID==='toggler2' ? true : false}>
                         <Card>
                           <CardBody>
@@ -65,7 +69,8 @@ class Ayuda extends Component {
                   </div>
 
                  <div className="mb-2">
-                   <button className="link-button text-info text-left" id="toggler3" onTouchEnd={this.toggle('toggler3')} onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar la <b>FIEL</b>?</h5></button>
+                   <button className="link-button text-info text-left" id="toggler3" onTouchEnd={this.toggle('toggler3')} onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}>
+                       <h5>¿Cómo validar la <b>FIEL</b>?</h5></button>
                       <UncontrolledCollapse toggler="#toggler3" isOpen={collapseID==='toggler3' ? true : false}>
                         <Card>
                           <CardBody>

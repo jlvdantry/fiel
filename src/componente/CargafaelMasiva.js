@@ -7,7 +7,6 @@ import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
 import { leeSolicitudesCorrectas,inserta_catalogo,leeRFCS } from '../db.js';
 import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import Autocomplete from "react-autocomplete";
 import fiel from '../fiel';
 
@@ -435,7 +434,6 @@ class CargafaelMasiva extends Component {
                            <Button color="primary" onClick={this.cargar}>Solicitar</Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
-                      <ReactTooltip id="my-tooltip-1" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div >En el caso de que este protegido la contraseña, quiere decir que ya esta identificado ante el <b>SAT</b>, esto tiene una duración de cinco minutos, cuando se termine este tiempo se debe de volver a teclear la contraseña.</div>" />
       <style>
         {`
           /* Media query for screens smaller than 600px */

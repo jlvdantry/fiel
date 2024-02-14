@@ -3,6 +3,7 @@ import {  Link } from 'react-router';
 import { Collapse, Navbar, NavbarToggler, Nav, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { browserHistory  } from 'react-router';
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 let timer = null;
 class Menumi extends Component {
@@ -104,11 +105,18 @@ class Menumi extends Component {
                            <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA</Link>
               <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
                            <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
-              <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'info-circle']} /> ACERCA DE</Link>
+              <Link to='/validarfael'  data-tooltip-id="validarfael" className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+                           <FontAwesomeIcon icon={['fas' , 'check-double']} /></Link>
+              <Link to='/about' data-tooltip-id="acercade" className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+                           <FontAwesomeIcon icon={['fas' , 'info-circle']} /></Link>
+              <Link to='/cog' data-tooltip-id="config" className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+                           <FontAwesomeIcon  icon={['fas' , 'cog']} /></Link>
             </Nav>
           </Collapse>
         </Navbar>
+        <ReactTooltip id="validarfael" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Checa que una factura no sea falsa, esta debe esta en formato XML</div>" />
+        <ReactTooltip id="acercade" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Muestra información relacionada con el aplicativo</div>" />
+        <ReactTooltip id="config" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Configuración de opciones del aplicativo</div>" />
         { !this.state.online && <Alert color="danger">Aplicativo sin internet</Alert> }
         { this.state.showInstallMessage && <div  className='fixed-bottom d-flex text-justify justify-content-center' id="instalar">
           <Alert className='d-flex align-items-center justify-content-between' > 

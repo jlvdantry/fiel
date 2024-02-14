@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Cargafael from './Cargafael';
-import Validafael from './Validafael';
 import Consultafael from './Consultafael';
 import Graficafael from './Graficafael';
 import Filtros from './Filtros';
@@ -37,8 +35,6 @@ class Misfacturas extends Component {
 	      <Filtros cambiaGrafica={this.cambiaGrafica} cambiaFiltro={this.cambiaFiltro} onRefresca={this.onRefresca}/>
 	      <Graficafael ref={this.changeGrafica} filtro={this.state.filtro} tipoGrafica={this.state.tipoGrafica}/>
 	      <Consultafael ref={this.changeConsulta} onRefresca={this.onRefresca} filtro={this.state.filtro}/>
-	      <Cargafael />
-	      <Validafael onRefresca={this.onRefresca}/>
       </div> 
     );
   }

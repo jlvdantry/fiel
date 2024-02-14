@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CurrencyFormat from 'react-currency-format';
 
 
-class Validafael extends Component {
+class Checafael extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
@@ -134,12 +134,12 @@ class Validafael extends Component {
   }
 };
 
-Validafael.propTypes = {
+Checafael.propTypes = {
   onRefresca: PropTypes.func.isRequired
 };
 
-Validafael.defaultProps = {
+Checafael.defaultProps = {
   onRefresca: () => null
 }
 
-export default Validafael;
+export default Checafael;

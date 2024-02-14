@@ -14,7 +14,7 @@ class Valida extends Component {
   componentDidMount(){
     //var xx = new fiel();
     //var pwd = xx.decriptPWD();
-    console.log('pwd='+this.state.mifiel.decryptPWD());
+    //console.log('pwd='+this.state.mifiel.decryptPWD());
     this.validafirma();
 
   }

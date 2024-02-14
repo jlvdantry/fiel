@@ -533,6 +533,7 @@ const fiel = function()
 
         this.decryptPWD = function () {
                   var kkk=localStorage.getItem("kkk");
+                  if (kkk===null) return null;
                   var iv=localStorage.getItem("iv");
                   var encryptedData=localStorage.getItem("data");
                   var tag=localStorage.getItem("tag");
