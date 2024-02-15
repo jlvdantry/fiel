@@ -1,6 +1,7 @@
 import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
 import { Card,CardBody,UncontrolledCollapse } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Ayuda extends Component {
 
@@ -88,10 +89,10 @@ class Ayuda extends Component {
                       <UncontrolledCollapse toggler="#toggler4" isOpen={collapseID==='toggler4' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"MIS FACTURAS"</b>. Aquí el aplicativo le mostrará tres botones que son <b className="text-info">"Ubicar factura"</b> , <b className="text-info">"Validar factura"</b> y pór último  <b className="text-info">"Consultar factura"</b></p>
-                  <p className="text-justify"><b className="text-info">2.</b> Ubicar la factura electrónica dando un clic en el botón <b className="text-info">"Ubicar factura"</b> este tipo de archivo deben de tener extensión xml.</p>
-                  <p className="text-justify"><b className="text-info">3.</b> Dar clic en el botón <b className="text-info">"Validar factura"</b> , si la factura electrónica es válida desplegara el contenido de este caso y teniendo la opción de poder agregarla a un historico de facturas para posteriormente consultarla o consolidar la información en caso contrario enviara el mensaje de que la factura electrónica no es valida.</p>
-                  <p className="text-justify"><b className="text-info">4.</b> Para consultar el historial solo hay que dar un clic en el botón <b className="text-info">"Consultar historial"</b> El cual le mostrara todas las factura que fueron agregadas al historial.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en el icono <b className="text-info"><FontAwesomeIcon icon={['fas' , 'check-double']} /></b>. Aquí el aplicativo le mostrará dos botones que son <b className="text-info">"Ubicar factura"</b> y <b className="text-info">"Validar factura"</b></p>
+                  <p className="text-justify"><b className="text-info">2.</b> Dar un clic en el botón <b className="text-info">"Ubicar factura"</b> para seleccionar el archivo que contiene una factura electrónica, este archivo deben de tener extensión xml.</p>
+                  <p className="text-justify"><b className="text-info">3.</b> Dar clic en el botón <b className="text-info">"Validar factura"</b> , si la factura electrónica es válida desplegara el contenido de este, teniendo la opción de poder agregarla a un historico de facturas para posteriormente consultarla o consolidar la información en caso de que el arhivo sea invalido 
+mostrara mensaje de que la factura electrónica no es valida.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
