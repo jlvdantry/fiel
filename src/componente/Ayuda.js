@@ -103,9 +103,15 @@ mostrara mensaje de que la factura electrónica no es valida.</p>
                       <UncontrolledCollapse toggler="#toggler5" isOpen={collapseID==='toggler5' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Para poder firmar electrónicamente un conjunto de datos la <b>FIEL</b> debio de haber sido validada previamente.</p>
-                  <p className="text-justify">Este aplicativo puede adaptarse para comunicarse con otros sistemas, con el objetivo de obtener el conjunto de datos a firmar electrónicamente. Y una vez generado el sello digital correspondiente, este se puede enviar al sistema que solicito el <b>firmado electrónico</b>.</p>
-                  <p className="text-justify">Se recomienda que los datos a firmar se encuentren en formato JSON.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dar clic en el icono <b className="text-info"><FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /></b>. Para utilizar esta opción previamente debio de haber cargado la fiel.</p>
+                  <p className="text-justify"><b className="text-info">2.</b> Aqui se va a poder descargar por un rango de fecha o por el folio de la factura.</p>
+                  <p className="text-justify"><b className="text-info">3.</b> Cuenta con la opción de descargar los CFDI o los metadasta</p>
+                  <p className="text-justify"><b className="text-info">4.</b> si elige por rango de fechas le solicitara los siguientes datos</p>
+                  <p className="text-justify"><b className="text-info"></b> RFC Emisor</p>
+                  <p className="text-justify"><b className="text-info"></b> RFC Receptor</p>
+                  <p className="text-justify"><b className="text-info"></b> Fecha Inicial</p>
+                  <p className="text-justify"><b className="text-info"></b> Fecha Final</p>
+                  <p className="text-justify"><b className="text-info">5.</b> si elige por folio solo le solicitara el folio de la factura.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>

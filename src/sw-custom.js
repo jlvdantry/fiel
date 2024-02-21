@@ -249,7 +249,13 @@ var updSolicitudDownload = (mensaje,idKey) => {
 }
 
 self.addEventListener('activate', function(event) {
-  console.log('[sw.js] va a activar el intervalor para revisar requerimentos iniciales o aceptados');
+  console.log('[sw.js] va a activar el intervalo para revisar requerimentos iniciales o aceptados');
+  selObjectUlt('configuracion',undefined,undefined,'prev').then( d => {
+     console.log('[sw.js activate] dias_token='+JSON.stringify(d));
+  }).
+  catch( error => {
+     inserta_dias_token();
+  });
 });
  
   setInterval(function() {

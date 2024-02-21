@@ -1,3 +1,4 @@
+import { selObjectUlt } from "./db.js";
 const fiel = function()
 {
 
@@ -487,7 +488,21 @@ const fiel = function()
         };
 
         this.encryptData= function(data, key, iv) {
+                  var dias=1;
 		  const cipher = window.forge.cipher.createCipher('AES-GCM', key);
+		  selObjectUlt('configuracion',undefined,undefined,'prev').then( d => {
+		     console.log('[fiel.js activate] dias_token='+JSON.stringify(d));
+                     dias=d.valor.dias_token;
+                     const currentUtcDate = new Date().toISOString();
+                     const minutos = (60*24)*dias;
+                     console.log('[db.js encryptData] minutos='+minutos);
+                     const f=this.addMinutesToISODate(currentUtcDate,minutos);
+                     localStorage.setItem("f",f);
+                     localStorage.setItem("i",currentUtcDate);
+		  }).catch( error => {
+                      console.log('no encontro dias_token');
+		  });
+
 		  cipher.start({
 		    iv: window.forge.util.hexToBytes(iv)
 		  });
@@ -500,7 +515,6 @@ const fiel = function()
                   localStorage.setItem("iv",iv);
                   localStorage.setItem("data",encryptedData);
                   localStorage.setItem("tag",tag);
-
 		  return {
 		    iv: iv,
 		    data: encryptedData,
@@ -533,11 +547,21 @@ const fiel = function()
 
         this.decryptPWD = function () {
                   var kkk=localStorage.getItem("kkk");
-                  if (kkk===null) return null;
+                  if (kkk===null) return '';
                   var iv=localStorage.getItem("iv");
                   var encryptedData=localStorage.getItem("data");
                   var tag=localStorage.getItem("tag");
+                  var f=localStorage.getItem("f");
                   var decryptData=this.decryptData(encryptedData,kkk,iv,tag);
+                  const currentUtcDate = new Date().toISOString();
+                  console.log('f='+f+' currentUtcDate='+currentUtcDate);
+                  if (currentUtcDate>f) {
+			  localStorage.removeItem("kkk");
+			  localStorage.removeItem("iv");
+			  localStorage.removeItem("data");
+			  localStorage.removeItem("tag");
+                          return '';
+                  }
                   return decryptData;
         }
 
@@ -545,5 +569,14 @@ const fiel = function()
 		  const bytes = window.forge.random.getBytesSync(12);
 		  return window.forge.util.bytesToHex(bytes);
         }
+
+	this.addMinutesToISODate = function(isoDateString, minutesToAdd) {
+	  const currentDate = new Date(isoDateString);
+	  const newDate = new Date(currentDate);
+	  newDate.setMinutes(currentDate.getMinutes() + minutesToAdd);
+	  const newIsoDateString = newDate.toISOString();
+	  return newIsoDateString;
+	}
+
 }
 export default fiel;

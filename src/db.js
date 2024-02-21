@@ -1,7 +1,6 @@
 var DBNAME='fiel_menus';
-var DBVERSION='15';
+var DBVERSION='20';
 var APPVERSION='1';
-var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
 
 var openDatabasex = function(dbName, dbVersion) {
@@ -11,21 +10,18 @@ var openDatabasex = function(dbName, dbVersion) {
                 reject('IndexedDB not supported');
                 }
                 /* eslint-disable-next-line no-restricted-globals */
-                var request = self.indexedDB.open(dbName, dbVersion);
+                var request = self.indexedDB.open(dbName, DBVERSION);
 
                 request.onerror = function(event) {
                     reject('[db.js] Database error: ' + event.target.error);
                 };
 
                 request.onupgradeneeded = function(event) {
+                   console.log('[db.js] entro en actualizar la bd');
                    var db = event.target.result;
                    if (dbName===DBNAME) {
                       creadb(db);
                       var wlusuario= {}; wlusuario['wl_groname']=PERFIL; 
-                      //inserta_request(SYNCDB,wlusuario,0,'','ss');                     
-                   }
-                   if (dbName===DBNAMEM) {
-                      creadbm(db);
                    }
                };
 
@@ -35,22 +31,6 @@ var openDatabasex = function(dbName, dbVersion) {
         });
 };
  
-var creadbm = function(db) {
-                   var wlobjeto='menus';
-                   if(!db.objectStoreNames.contains(wlobjeto)) {
-                        console.log('[db.js] va a crear el objeto request');
-                        var objectStore = db.createObjectStore(wlobjeto, { autoIncrement : true });
-                        objectStore.createIndex('hora', 'hora', { unique: false });
-                        objectStore.createIndex('minuto', 'minuto', { unique: false });
-                        objectStore.createIndex('dia', 'dia', { unique: false });
-                        objectStore.createIndex('mes', 'mes', { unique: false });
-                        objectStore.createIndex('ano', 'ano', { unique: false });
-                        objectStore.createIndex('estado', 'estado', { unique: false });
-                        objectStore.createIndex('idmenu', 'idmenu', { unique: false });
-                        objectStore.createIndex('usename', 'usename', { unique: false });
-                        objectStore.createIndex('fecha', 'fecha', { unique: false });
-                    };
-}
 
 var creadb = function(db) {
                    var objectStore='';
@@ -234,15 +214,14 @@ var selObjects = function(objectStore, indexname, indexvalue, direccion='next') 
 var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next') {
         return new Promise(function (resolve, reject) {
         openDatabasex(DBNAME, DBVERSION).then(function(db) {
-          return openObjectStore(db, 'request', "readonly");
+          return openObjectStore(db, objectStore, "readonly");
         }).then(function(oS) {
-        var objects = [];
         var cursor;
         console.log('[db.js] objectStore='+objectStore+' indexname='+indexname+' indexvalue='+indexvalue);
         if (indexname!==undefined && indexvalue!==undefined) {
            cursor  = oS.index(indexname).openCursor(indexvalue,direction);
         } else {
-           resolve(objects);
+           cursor = oS.openCursor(null,direction);
         }
 
         cursor.onerror = function(event) {
@@ -705,9 +684,27 @@ function bajafirmas(key)
         })
 };
 
+function inserta_dias_token(dias=1)
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'configuracion', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[inserta_dias_token]');
+                                var json={};
+                                json.dias_token=dias;
+                                addObject(objectStore, json).then( (key) => {
+                                    json.key=key;
+                                    resolve(json) ; } );
+                        }).catch(function(err) {
+                                console.log("[inserta_t] Database error: "+err.message);
+                });
+        })
+}
 
 
 
 
 
-export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey,inserta_catalogo,leeRFCS,APPVERSION } ;
+export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey,inserta_catalogo,leeRFCS,APPVERSION,inserta_dias_token } ;
+

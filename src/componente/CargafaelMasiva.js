@@ -221,8 +221,11 @@ class CargafaelMasiva extends Component {
        }
     }
 
-
+    
     var x = new DMS(); 
+    if (this.state.mifiel.decryptPWD()==='') {
+        return;
+    }
     var res=x.autenticate_armasoa(this.state.mifiel.decryptPWD());
     if (res.ok===true) {
               this.setState({ ok: true, nook:false });
@@ -267,7 +270,7 @@ class CargafaelMasiva extends Component {
 	 const wrapperStyle = {
 	    'position': 'relative', // Adjust position as needed
 	    'width': '100%',        // Adjust width as needed
-	    'z-index': '1000'
+	    'z-index': '999'
 	  };
 	 const wrapperStyle1 = {
 	    'position': 'relative', // Adjust position as needed
@@ -302,6 +305,10 @@ class CargafaelMasiva extends Component {
 
     return  (
         <Card id="cargafael" className="p-2 m-2">
+                  { this.state.mifiel.decryptPWD()==='' &&
+                                               <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                                  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Lo sentimos debe de teclear el password de la llave privada en la opción de "Mi Fiel" </Alert>
+                  }
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
                         <FormGroup className="container col-lg-12 justify-content-around d-flex flex-wrap">
                           <div className="col-lg-6 col-sm-12 d-flex justify-content-center">
