@@ -1,5 +1,5 @@
 import React, {Component }  from 'react';
-import { Alert,Card,CardBody,Input,FormGroup,Label,Button } from 'reactstrap';
+import { Alert,Card,CardBody,Input,Label,Button } from 'reactstrap';
 import { selObjectUlt,inserta_dias_token } from "./../db.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class About extends Component {
@@ -53,7 +53,7 @@ class About extends Component {
                                 { this.state.actualizo===true &&
                                 <div id="nook" className="mt-1">
                                        <Alert color="success" className="text-center  d-flex justify-content-between align-items-center">
-                                          <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Se actualizo el dia de duración del token </Alert>
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-up']} /> Se actualizo el día de duración del token </Alert>
                                 </div> }
 
 			<Card >
