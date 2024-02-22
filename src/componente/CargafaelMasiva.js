@@ -25,7 +25,7 @@ class CargafaelMasiva extends Component {
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
-                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false,RFCS:[],mifiel: new fiel()
+                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false,RFCS:[],mifiel: new fiel(),btn_disable:false
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -161,11 +161,12 @@ class CargafaelMasiva extends Component {
 
   cargar() {
 
-
+    this.setState({btn_disable:true},() => { 
+    //this.forceUpdate();
     if (this.state.dropdownValue==='por folio') {
        this.setState({folio:document.querySelector('#folio').value});
        if (this.state.folio==='') {
-           this.setState({okfolio:false});
+           this.setState({okfolio:false,btn_disable:false});
            return;
        } else {
            this.setState({okfolio:true});
@@ -178,7 +179,7 @@ class CargafaelMasiva extends Component {
 
        this.setState({start:document.querySelector('#fechainicial').value});
        if (this.state.start===null || this.state.start==='') {
-           this.setState({okfechai:false});
+           this.setState({okfechai:false,btn_disable:false});
            return;
        } else {
            this.setState({okfechai:true});
@@ -186,34 +187,34 @@ class CargafaelMasiva extends Component {
 
        this.setState({end:document.querySelector('#fechafinal').value});
        if (this.state.end===null || this.state.end==='') {
-           this.setState({okfechaf:false,msgfecha:'La fecha final es obligatoria' });
+           this.setState({okfechaf:false,msgfecha:'La fecha final es obligatoria',btn_disable:false });
            return;
        } else {
            this.setState({okfechaf:true});
        }
 
        if (this.state.end<this.state.start) {
-           this.setState({okfechaf:false,msgfecha:'La fecha final no puede ser menor a la inicial'});
+           this.setState({okfechaf:false,msgfecha:'La fecha final no puede ser menor a la inicial',btn_disable:false});
            return;
        } else {
            this.setState({okfechaf:true});
        }
        this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
        if (this.state.RFCEmisor===null || this.state.RFCEmisor==='') {
-           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio' });
+           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio',btn_disable:false });
            return;
        } else {
            this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
        }
        this.setState({RFCReceptor:document.querySelector('#RFCReceptor').value});
        if (this.state.RFCReceptor===null || this.state.RFCReceptors==='') {
-           this.setState({okRFCReceptor:false,msgRFCReceptor:'El RFC del receptor es obligatoria' });
+           this.setState({okRFCReceptor:false,msgRFCReceptor:'El RFC del receptor es obligatoria',btn_disable:false });
            return;
        } else {
            this.setState({okRFCReceptor:true,msgRFCReceptor:'' });
        }
        if (this.state.RFCReceptor===this.state.RFCEmisor) {
-           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor y del receptor no pueden ser iguales' });
+           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor y del receptor no pueden ser iguales',btn_disable:false });
            return;
        }
        if (this.state.RFCEmisorIsValid===false || this.state.RFCReceptorIsValid===false) {
@@ -224,15 +225,17 @@ class CargafaelMasiva extends Component {
     
     var x = new DMS(); 
     if (this.state.mifiel.decryptPWD()==='') {
+        this.setState({btn_disable:false});
         return;
     }
     var res=x.autenticate_armasoa(this.state.mifiel.decryptPWD());
     if (res.ok===true) {
-              this.setState({ ok: true, nook:false });
               x.autenticate_enviasoa(res,this.state.mifiel.decryptPWD())
+              this.setState({ ok: true, nook:false,btn_disable:false });
     } else {
-       this.setState({ ok: false, nook:true,msg:res.msg  });
+       this.setState({ ok: false, nook:true,msg:res.msg,btn_disable:false  });
     }
+    });
 
   }
 
@@ -267,6 +270,7 @@ class CargafaelMasiva extends Component {
 
 
   render() {
+         console.log('rendereo btn_disable='+this.state.btn_disable);
 	 const wrapperStyle = {
 	    'position': 'relative', // Adjust position as needed
 	    'width': '100%',        // Adjust width as needed
@@ -438,7 +442,7 @@ class CargafaelMasiva extends Component {
                       </FormGroup> }
 
                       <div className="flex-col d-flex justify-content-center mb-2">
-                           <Button color="primary" onClick={this.cargar}>Solicitar</Button>
+                           <Button id="btn_solicitar" color="primary" onClick={this.cargar} disabled={this.state.btn_disable} >Solicitar</Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
       <style>
