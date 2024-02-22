@@ -114,9 +114,9 @@ class Menumi extends Component {
             </Nav>
           </Collapse>
         </Navbar>
-        <ReactTooltip id="validarfael" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Checa que una factura no sea falsa, esta debe esta en formato XML</div>" />
-        <ReactTooltip id="acercade" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Muestra información relacionada con el aplicativo</div>" />
-        <ReactTooltip id="config" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Configuración de opciones del aplicativo</div>" />
+        <ReactTooltip style={{ zIndex:9999 }} id="validarfael" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Checa que una factura no sea falsa, esta debe esta en formato XML</div>" />
+        <ReactTooltip style={{ zIndex:9999 }} id="acercade" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Muestra información relacionada con el aplicativo</div>" />
+        <ReactTooltip style={{ zIndex:9999 }} id="config" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div>Configuración de opciones del aplicativo</div>" />
         { !this.state.online && <Alert color="danger">Aplicativo sin internet</Alert> }
         { this.state.showInstallMessage && <div  className='fixed-bottom d-flex text-justify justify-content-center' id="instalar">
           <Alert className='d-flex align-items-center justify-content-between' > 
