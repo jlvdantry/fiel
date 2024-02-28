@@ -554,7 +554,7 @@ const fiel = function()
                   var f=localStorage.getItem("f");
                   var decryptData=this.decryptData(encryptedData,kkk,iv,tag);
                   const currentUtcDate = new Date().toISOString();
-                  console.log('f='+f+' currentUtcDate='+currentUtcDate);
+                  //console.log('f='+f+' currentUtcDate='+currentUtcDate);
                   if (currentUtcDate>f) {
 			  localStorage.removeItem("kkk");
 			  localStorage.removeItem("iv");

@@ -87,7 +87,7 @@ self.addEventListener("sync", event => {
 });
 
 var syncRequest = estado => {
-    console.log('[syncRequest] estado='+estado);
+    //console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
@@ -233,10 +233,17 @@ var updSolicitud = (respuesta,idKey) => {
         return new Promise( (resolve, reject) => {
 		      selObjectByKey('request',idKey).then( obj => {
 				var mensaje = respuesta.statusRequest.message!=="Terminada" ?  respuesta.statusRequest.message : 'Facturas '+respuesta.numberCfdis ;
+                                mensaje = mensaje.indexOf("En proceso")!==-1 ? cuantosproceso(mensaje) : mensaje ;
 				obj.passdata.msg_v=mensaje;
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });
         });
+}
+ 
+var cuantosproceso = (m) => {
+    e=m.split(':');
+    if (e.length==1) return 'En proceso : 1' ;
+    return 'En proceso :'+e[1]+1;
 }
 
 var updSolicitudDownload = (mensaje,idKey) => {

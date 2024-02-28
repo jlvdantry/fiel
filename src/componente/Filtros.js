@@ -102,8 +102,10 @@ class Filtros extends Component {
                                       <DropdownMenu>
                                         <DropdownItem onClick={this.changeValueYear}  >Año Emisión Actual</DropdownItem>
                                         <DropdownItem onClick={this.changeValueYear}  >Año Emisión Anterior</DropdownItem>
+                                        {/*
                                         <DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
                                         <DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
+                                        */}
                                       </DropdownMenu>
                                 </Dropdown>
 

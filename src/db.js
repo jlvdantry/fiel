@@ -182,7 +182,7 @@ var selObjects = function(objectStore, indexname, indexvalue, direccion='next') 
            let range = IDBKeyRange.only(indexvalue);
            myIndex=objectStore.index(indexname);  
            cursor  = myIndex.openCursor(range,direccion);
-           console.log('[selObjects] cursor='+JSON.stringify(cursor));
+           //console.log('[selObjects] cursor='+JSON.stringify(cursor));
         } else {
            cursor = objectStore.openCursor();
         }

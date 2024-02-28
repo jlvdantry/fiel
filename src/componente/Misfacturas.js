@@ -31,7 +31,7 @@ class Misfacturas extends Component {
 
   render() {
     return (
-      <div>
+      <div >
 	      <Filtros cambiaGrafica={this.cambiaGrafica} cambiaFiltro={this.cambiaFiltro} onRefresca={this.onRefresca}/>
 	      <Graficafael ref={this.changeGrafica} filtro={this.state.filtro} tipoGrafica={this.state.tipoGrafica}/>
 	      <Consultafael ref={this.changeConsulta} onRefresca={this.onRefresca} filtro={this.state.filtro}/>

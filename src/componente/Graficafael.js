@@ -4,6 +4,7 @@ import { Card,CardBody } from 'reactstrap';
 import { leefacturas } from '../db';
 import {Doughnut,Bar,Pie} from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,BarElement,LineController,DoughnutController,ArcElement,PieController } from 'chart.js';
+//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',' Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -40,7 +41,7 @@ class Graficafael extends Component {
   }
 
   actuaFacturas(){
-        console.log('orale entro en actuaFacturas this.props.filtro='+JSON.stringify(this.props.filtro));
+        //console.log('orale entro en actuaFacturas this.props.filtro='+JSON.stringify(this.props.filtro));
         var that=this;
         var tipoGrafica=this.props.tipoGrafica;
         that.setState({data:{}});
@@ -122,7 +123,7 @@ class Graficafael extends Component {
   }
 
   render() {
-    console.log('Graficafael render data='+JSON.stringify(this.state.data)+' tipo de grafica='+this.props.tipoGrafica);
+    //console.log('Graficafael render data='+JSON.stringify(this.state.data)+' tipo de grafica='+this.props.tipoGrafica);
     const dropdownValue = this.props.tipoGrafica
     var options={};
     if (dropdownValue==='Barras Horizontales') {
@@ -183,24 +184,27 @@ class Graficafael extends Component {
     }
 
     return  (
-      <>
-        <Card className="p-2 m-2">
+      <div >
+        <Card className="p-2 m-2 ">
 			<h2 className="text-center mb-3">Grafica de Ingresos y Egresos por el total de la factura </h2>
                         <div className="d-flex justify-content-around align-content-end flex-wrap mb-2">
 
                         </div>
                         { this.state.data.labels && this.state.data.labels.length>0 &&
 				<Card className="m-1">
-					<CardBody>
+					<CardBody >
 						{ (dropdownValue==='Barras Verticales') && <Bar data={this.state.data} options={options}> </Bar> }
 						{ (dropdownValue==='Barras Horizontales') && <Bar data={this.state.data} options={options}> </Bar> }
 						{ (dropdownValue==='Dona') && <Doughnut data={this.state.data} options={options}> </Doughnut> }
 						{ (dropdownValue==='Pie') && <Pie data={this.state.data} options={options}> </Pie> }
+				      <div className="chart-icon">
+					{ /* <FontAwesomeIcon icon={['fas' , 'expand-arrows-alt']} size="3x" /> */}
+				      </div>
 					</CardBody>
 				</Card>
                          }
         </Card>
-      </>
+      </div>
     )
   }
 };

@@ -3,7 +3,7 @@ import 'react-data-grid/lib/styles.css';
 
 import DG from 'react-data-grid';
 const columns = [
-  { key: 'fechaini',  name: 'Fecha Inicial', backgroundColor:'yellow'},
+  { key: 'fechaini',  name: 'Fecha Inicial', },
   { key: 'fechafin',  name: 'Fecha Final' },
   { key: 'RFCEmisor', name: 'RFC Emisor' },
   { key: 'RFCReceptor', name: 'RFC Receptor' },
@@ -11,7 +11,7 @@ const columns = [
   { key: 'msg_v', name: 'Estado Verificacion' },
   { key: 'msg_d', name: 'Estado Descarga',
     renderHeaderCell: (props) => {
-      return <div className="text-success">Estado Descarga</div>;
+      return <div >Estado Descarga</div>;
     }}
 ];
 const customTheme = {

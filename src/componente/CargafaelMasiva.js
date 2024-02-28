@@ -120,12 +120,12 @@ class CargafaelMasiva extends Component {
       leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
       leeRFCS().then( a => { this.setState({ RFCS: a }) });
       handleMessage = (event) => {
-              console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
+              //console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
               var x = null;
               if (event.data.request.value.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel: this.state.mifiel.decryptPWD()});
                  x = new DMS();
-                         x.solicita_armasoa(this.state);
+                         x.solicita_armasoa(this.state).then( a => { this.setState({ RFCEmisor:'',RFCReceptor:'',btn_disable:false}) }).catch((er)=>{this.setState({ btn_disable:false})});
               }
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
                  leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
@@ -172,8 +172,6 @@ class CargafaelMasiva extends Component {
            this.setState({okfolio:true});
        }
     }
-
-
 
     if (this.state.dropdownValue==='por rango de fechas') {
 
@@ -228,15 +226,14 @@ class CargafaelMasiva extends Component {
         this.setState({btn_disable:false});
         return;
     }
-    var res=x.autenticate_armasoa(this.state.mifiel.decryptPWD());
-    if (res.ok===true) {
-              x.autenticate_enviasoa(res,this.state.mifiel.decryptPWD())
-              this.setState({ ok: true, nook:false,btn_disable:false });
-    } else {
-       this.setState({ ok: false, nook:true,msg:res.msg,btn_disable:false  });
-    }
-    });
 
+    x.autenticate_armasoa(this.state.mifiel.decryptPWD()).then( res => {
+         if (res.ok===true) {
+              x.autenticate_enviasoa(res,this.state.mifiel.decryptPWD()).then( () => { this.setState({ ok: true, nook:false}); });
+        }
+        else { this.setState({ ok: false, nook:true,msg:res.msg,btn_disable:false  }) };
+    });
+    }); //end setstate
   }
 
   showHide(e){
@@ -270,7 +267,7 @@ class CargafaelMasiva extends Component {
 
 
   render() {
-         console.log('rendereo btn_disable='+this.state.btn_disable);
+         //console.log('rendereo btn_disable='+this.state.btn_disable);
 	 const wrapperStyle = {
 	    'position': 'relative', // Adjust position as needed
 	    'width': '100%',        // Adjust width as needed

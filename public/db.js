@@ -5,7 +5,7 @@ var PERFIL='inven_agn'
 
 var openDatabasex = function(dbName, dbVersion) {
         return new Promise(function (resolve, reject) {
-                console.log('[public/db.js openDatabasex] DBNAME='+DBNAME+' VERSION='+DBVERSION);
+                //console.log('[public/db.js openDatabasex] DBNAME='+DBNAME+' VERSION='+DBVERSION);
                 if (!self.indexedDB) {
                     reject('IndexedDB not supported');
                 }
