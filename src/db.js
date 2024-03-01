@@ -576,6 +576,7 @@ function leeSolicitudesCorrectas()
                leeSolicitudes('prev').then( a  => {
                     a.forEach( 
                           e => { if (e.valor.passdata!==null) { 
+                                         e.valor.passdata.fecha=e.valor.fecha+' '+e.valor.hora+':'+e.valor.minutos;
                                          solicitudesCorrectas.push(e.valor.passdata) 
                           } }
                     );

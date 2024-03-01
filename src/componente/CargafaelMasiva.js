@@ -4,7 +4,7 @@ import { browserHistory  } from 'react-router';
 import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
-import { MiDataGrid } from './DataGridSolicitud';
+import MiDataGrid  from './DataGridSolicitud';
 import { leeSolicitudesCorrectas,inserta_catalogo,leeRFCS } from '../db.js';
 import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
 import Autocomplete from "react-autocomplete";
@@ -116,9 +116,12 @@ class CargafaelMasiva extends Component {
   }
 
   componentDidMount(){
+      console.log('componentDidMount empezo');
       estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (REVISA.VIGENCIATOKEN * 1000));
-      leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-      leeRFCS().then( a => { this.setState({ RFCS: a }) });
+      leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }, () => 
+                             { console.log('termino leer solicitudes')}) }
+                 );
+      leeRFCS().then( a => { this.setState({ RFCS: a }, () => { console.log('termino leer rfc')}) });
       handleMessage = (event) => {
               //console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
               var x = null;
@@ -267,7 +270,7 @@ class CargafaelMasiva extends Component {
 
 
   render() {
-         //console.log('rendereo btn_disable='+this.state.btn_disable);
+         console.log('[CargafaelMasiva] filas='+this.state.solicitudes);
 	 const wrapperStyle = {
 	    'position': 'relative', // Adjust position as needed
 	    'width': '100%',        // Adjust width as needed

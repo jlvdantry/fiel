@@ -63,3 +63,40 @@
     top: 76%;
     left: 49%;
 }
+
+/* Add responsive styles */
+.table-container {
+  overflow-x: auto;
+}
+
+/* Define media query for smaller screens */
+@media (max-width: 768px) {
+  .responsive-table {
+    width: 100%;
+    display: block;
+  }
+
+  .responsive-table thead {
+    display: none; /* Hide the header at smaller screens */
+  }
+
+  .responsive-table tbody {
+    display: block;
+  }
+
+  .responsive-table tr {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .responsive-table td {
+    display: block;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+    text-align: left;
+  }
+}

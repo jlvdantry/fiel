@@ -191,7 +191,8 @@ var querespuesta = (request,respuesta) => {
                if (request.value.url=='/solicita.php') {
 		       updestado(request,respuesta.status.code,respuesta.status.message)
                        .then( (r) => { 
-		                 request.value.passdata.msg=respuesta.status.message;
+                                 request.value.passdata.msgs=[];
+		                 request.value.passdata.msgs.push(respuesta.status.message);
 		                 "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
 		                 updObjectByKey("request",request.value,request.key); /* actualiza el folio del requerimiento de la solicitud */
                               })
@@ -233,8 +234,9 @@ var updSolicitud = (respuesta,idKey) => {
         return new Promise( (resolve, reject) => {
 		      selObjectByKey('request',idKey).then( obj => {
 				var mensaje = respuesta.statusRequest.message!=="Terminada" ?  respuesta.statusRequest.message : 'Facturas '+respuesta.numberCfdis ;
+                                mensaje = respuesta.codeRequest.value=='5004' ? respuesta.codeRequest.message :  mensaje;
                                 mensaje = mensaje.indexOf("En proceso")!==-1 ? cuantosproceso(mensaje) : mensaje ;
-				obj.passdata.msg_v=mensaje;
+				obj.passdata.msgs.push(mensaje);
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });
         });
@@ -249,7 +251,7 @@ var cuantosproceso = (m) => {
 var updSolicitudDownload = (mensaje,idKey) => {
         return new Promise( (resolve, reject) => {
                       selObjectByKey('request',idKey).then( obj => {
-                                obj.passdata.msg_d=mensaje;
+                                obj.passdata.msgs.push(mensaje);
                                 updObjectByKey('request',obj,idKey);
                       }).then( () => { resolve() });
         });

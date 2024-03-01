@@ -32,6 +32,8 @@
     "react-rte": "^0.16.3",
     "react-scripts": "^5.0.1",
     "react-show-more-text": "^1.4.4",
+    "react-table": "^7.8.0",
+    "react-table-6": "^6.11.0",
     "react-tappable": "^1.0.4",
     "react-tooltip": "^5.21.5",
     "reactstrap": "^8.6.0",
@@ -46,7 +48,7 @@
     "build-sw": "node ./src/sw-build.js",
     "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
     "build": "react-scripts --max_old_space_size=32768 build --no-minify && npm run build-sw && npm run clean-cra-sw",
-    "dev": "react-scripts dev && npm run build-sw && npm run clean-cra-sw"
+    "dev": "npm run build-sw && npm run clean-cra-sw"
   },
   "eslintConfig": {
     "extends": "react-app"
