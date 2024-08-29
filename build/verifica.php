@@ -9,7 +9,7 @@ use PhpCfdi\SatWsDescargaMasiva\Service;
 use PhpCfdi\SatWsDescargaMasiva\WebClient\GuzzleWebClient;
 use PhpCfdi\SatWsDescargaMasiva\Shared\Token;
 use PhpCfdi\SatWsDescargaMasiva\Shared\DateTime;
-## probando
+
 $webClient = new GuzzleWebClient();
 
 $service = new Service(null, $webClient);

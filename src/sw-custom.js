@@ -192,7 +192,7 @@ var querespuesta = (request,respuesta) => {
                              });
 		       return;
                }
-               if (request.value.url=='/verifica.php' & respuesta.status.code=5000) {
+               if (request.value.url=='/verifica.php' & respuesta.status.code==5000) {
 		       request.value.passdata.msg_v=respuesta.statusRequest.message;
 		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
 		       updestado(request,respuesta.status.code,respuesta.statusRequest.message).then( () => {
@@ -204,7 +204,7 @@ var querespuesta = (request,respuesta) => {
                        });
 		       return;
                }
-               if (request.value.url=='/verifica.php' & respuesta.status.code=300) {  // token invalido seguramente porque ya expiro
+               if (request.value.url=='/verifica.php' & respuesta.status.code==300) {  // token invalido seguramente porque ya expiro
                        updestado(request,ESTADOREQ.TOKENINVALIDO,respuesta.status.message);
 		       return;
                }
