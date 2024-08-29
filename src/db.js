@@ -1,6 +1,6 @@
 var DBNAME='fiel_menus';
 var DBVERSION='15';
-var APPVERSION='1';
+var APPVERSION='2';
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
 

@@ -1,5 +1,5 @@
 const workboxBuild = require("workbox-build");
-const version='v1'
+const version='v2'
 const buildSW = () => {
   // The build is expected to fail if the
   // sw install rules couldn't be generated.
