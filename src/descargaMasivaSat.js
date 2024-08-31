@@ -50,6 +50,9 @@ var DescargaMasivaSat = function()
        return arma;
    } 
 
+   /*
+    * arma el body para solicita facturas
+    */
    this.armaBodySol = function (estado) {
           var solicitud = { 'RfcSolicitante' : estado.certificado.rfc, 'TipoSolicitud' : estado.TipoSolicitud,'FechaInicial':estado.start,'FechaFinal': estado.end,'RfcEmisor' : estado.RFCEmisor 
                ,'RFCReceptor': estado.RFCReceptor
@@ -87,6 +90,9 @@ var DescargaMasivaSat = function()
 
    }
 
+	/* 
+	 * arma el body para verificar una solicitud de facturas
+	 */
    this.armaBodyVer = function (datos) {
           var xmlRequestId =  datos.folioReq;
           var xmlRfc = datos.firma.rfc;
@@ -116,6 +122,8 @@ var DescargaMasivaSat = function()
            this.urlproxy='/verifica.php';
    }
 
+	/* Arma el body para descargar las facturas 
+	 */
    this.armaBodyDownload = function (datos,packageId) {
           var IdPaquete =  packageId;
           var xmlRfc = datos.firma.rfc;
@@ -147,6 +155,8 @@ var DescargaMasivaSat = function()
 
 
 
+	/* arma el body para autenticarse ante el SAT
+	 */
    this.armaBodyAut = function () {
 	  var x = new fiel();
 	  this.cer = x.damecertificadofiel();
@@ -395,10 +405,10 @@ var DescargaMasivaSat = function()
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {
                      var actual=Math.floor(Date.now() / 1000);
                      if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expires) {
-                         console.log('estaAutenticado token activo');
+                         console.log('[estaAutenticado] token activo');
                          resolve({ autenticado:true,certificado:obj.valor.passdata })
                      } else {
-                         console.log('estaAutenticado token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expires);
+                         console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expires);
                          resolve({ autenticado:false }); }
                      })
                 });
