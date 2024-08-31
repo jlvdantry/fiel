@@ -1,7 +1,7 @@
 import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
 import { Card,CardBody } from 'reactstrap';
-import { DBVERSION,APPVERSION } from '../db.js'
+//import { DBVERSION,APPVERSION } from '../db.js'
 class About extends Component {
 
   constructor(props) {
@@ -46,10 +46,10 @@ class About extends Component {
                  <div className="mb-2" >
 			<Card >
 			  <CardBody>
-				  <p className="text-justify">Versión de la base de datos <b>{DBVERSION}</b></p>
+				  <p className="text-justify">Versión de la base de datos <b>{window.DBVERSION}</b></p>
 				  <p className="text-justify">Alto de la pantalla <b>{this.state.windowHeight}px</b></p>
 				  <p className="text-justify">Ancho de la pantalla <b>{this.state.windowWidth}px</b></p>
-				  <p className="text-justify">Versión del aplicativo pantalla <b>{APPVERSION}</b></p>
+				  <p className="text-justify">Versión del aplicativo pantalla <b>{window.APPVERSION}</b></p>
 			  </CardBody>
 			</Card>
                   </div>

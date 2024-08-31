@@ -193,7 +193,7 @@ var selObjectByKey = function(objectStore,key) {
    indexvalue   valor del indice a buscar
    si llegan valida indexname e indexvalue se regresan todos los valores del objeto
    */ 
-var selObjects = function(objectStore, indexname, indexvalue, direction='next') {
+var selObjects = function(objectStore, indexname, indexvalue, direccion='next') {
         var regs  = [];
         var cursor = {};
         var myIndex = null;
@@ -201,7 +201,7 @@ var selObjects = function(objectStore, indexname, indexvalue, direction='next') 
         if (indexname!==undefined && indexvalue!==undefined) {
            let range = IDBKeyRange.only(indexvalue);
            myIndex=objectStore.index(indexname);  
-           cursor  = myIndex.openCursor(range);
+           cursor  = myIndex.openCursor(range,direccion);
            //console.log('[selObjects] cursor='+JSON.stringify(cursor));
         } else {
            cursor = objectStore.openCursor();
@@ -247,7 +247,11 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
         }
 
         cursor.onerror = function(event) {
-               reject();
+               console.log('[db.js] selObjectUlt error ');
+               var json = { };
+               json.valor=0;
+               json.key  =0;
+               resolve(json);
         }
 
         cursor.onsuccess = function(event,indexname,indexvalue) {
@@ -360,6 +364,18 @@ var updObject = function(objectStore, object, idmenu, estado) {
         });
 };
 
+function datos_comunesCat(json) {
+      var fecha = new Date();
+      json.ano=fecha.getFullYear();
+      json.mes=fecha.getMonth()+1;
+      json.mes=json.mes < 10 ? '0' + json.mes : '' + json.mes;
+      json.dia=fecha.getDate();
+      json.dia=json.dia < 10 ? '0' + json.dia : '' + json.dia;
+      json.hora=fecha.getHours();
+      json.minutos=fecha.getMinutes();
+      return json;
+}
+
 function datos_comunes(json) {
       var fecha = new Date();
       json.ano=fecha.getFullYear();
@@ -384,6 +400,27 @@ var wl_fecha = function () {
       dia=dia < 10 ? '0' + dia : '' + dia;
       fecha=fecha.getFullYear()+'-'+mes+'-'+dia;
       return fecha;
+}
+
+function inserta_catalogo(catalogo,label)
+{
+        return new Promise(function (resolve, reject) {
+                console.log('[inserta_catalogo] va a grabar en catalogo ='+catalogo);
+                var json= { };
+                json.catalogo=catalogo;
+                json.label=label;
+                json=datos_comunesCat(json);
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'catalogos', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[inserta_catalogos] ='+catalogo);
+                                addObject(objectStore, json).then( (key) => {
+                                    json.key=key;
+                                    resolve(json) ; } );
+                        }).catch(function(err) {
+                                console.log("[inserta_catalogos] Database error: "+err.message);
+                });
+        })
 }
 
 /* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
@@ -443,9 +480,13 @@ function inserta_factura(faeljson)
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
                                 console.log('[inserta_factura] menu a requesitar=');
-                                addObject(objectStore, json).then(function(key) {
-                                                               resolve(key) ; 
-                                                            }).catch(function(err) {  reject(err) });
+                                selObjects(objectStore,'sello',json.sello).then( x => {
+                                       if (x.length===0)   { /* no esta registrado el sello y lo da de alta */
+                                          addObject(objectStore, json).then(key => { resolve('Guardo factura con id='+key) ; }).catch(function(err)
+                                               {  console.log('[inserta_factura] error al insertar la factura '+err); reject(err) });
+                                       } else { resolve('factura duplicada');
+                                       }
+                                })
                         }).catch(function(err) {
                                 console.log("[inserta_request] Database error: "+err.message);
                 });
@@ -480,17 +521,37 @@ function inserta_firma(faeljson)
 }
 
 
-function leefacturas(filtro='')
+function leefacturas(filtro={dato:'url',valor:'factura'})
 {
         console.log('[db.js leefacturas] entro');
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[db.js leefacturas] va a seleccionar ');
-                                selObjects(objectStore,'url','factura').then(function(requests) {
+                                selObjects(objectStore,filtro.dato,filtro.valor).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[db.js leefacturas] Database error: "+err.message);
+                });
+        })
+}
+
+function leeRFCS()
+{
+        console.log('[db.js leeRFCS] entro');
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'catalogos', "readwrite");
+                        }).then(function(objectStore) {
+                                console.log('[db.js leeRFCS] va a seleccionar ');
+                                selObjects(objectStore,'catalogo','rfcs').then(function(requests) {
+                                    var rfcs=[];
+                                    requests.forEach(
+                                          e => { rfcs.push({label : e.valor.label})  }
+                                    );
+                                    resolve(rfcs);
+                                }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {
                                 console.log("[db.js leefacturas] Database error: "+err.message);
                 });
@@ -537,10 +598,8 @@ function leeSolicitudesCorrectas()
         return new Promise(function (resolve, reject) {
                leeSolicitudes('prev').then( a  => {
                     a.forEach( 
-                          e => { if (e.valor.passdata!==null) { 
-                                //if  (e.valor.passdata.msg=='Solicitud correcta')  { 
-                                         solicitudesCorrectas.push(e.valor.passdata) 
-                                //    } 
+                          e => { if (e.value.passdata!==null) { 
+                                         solicitudesCorrectas.push(e.value.passdata) 
                           } }
                     );
                     resolve(solicitudesCorrectas);
@@ -652,5 +711,3 @@ function bajafirmas(key)
 
 
 
-
-//export  { openDatabasex,DBNAME,DBVERSION,inserta_factura,selObjectUlt,delObject,updObject_01,updObject ,inserta_request,selObject,leefacturas,cuantasfacturas,wl_fecha,bajafacturas,inserta_firma,bajafirmas,cuantasfirmas,leefirmas,leefirma,openObjectStore,selObjects,leeSolicitudesCorrectas,selObjectByKey,updObjectByKey } ;

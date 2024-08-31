@@ -5,8 +5,8 @@ import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
-import { leeSolicitudesCorrectas,inserta_catalogo,leeRFCS } from '../db.js';
-import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
+//import { leeSolicitudesCorrectas,inserta_catalogo,leeRFCS } from '../db.js';
+//import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Autocomplete from "react-autocomplete";
 
@@ -116,33 +116,33 @@ class CargafaelMasiva extends Component {
   }
 
   componentDidMount(){
-      estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (REVISA.VIGENCIATOKEN * 1000));
-      leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-      leeRFCS().then( a => { this.setState({ RFCS: a }) });
+      estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+      window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
       handleMessage = (event) => {
               console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
               var x = null;
-              if (event.data.request.value.estado===ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
+              if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel: document.querySelector('#pwdfiel').value});
                  x = new DMS();
                          x.solicita_armasoa(this.state);
               }
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
-                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  var token = { created: event.data.request.value.header.token_created,expired:event.data.request.value.header.token_expired,value:event.data.request.value.header.token_value }
                  this.setState(state => ({ token:token,pwdfiel:document.querySelector('#pwdfiel').value, folioReq:event.data.request.value.folioReq}));
                  x = new DMS();
                  x.verificando(	this.state,event.data.request.key);
-              } else { leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) }); }
+              } else { window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) }); }
               if (event.data.request.value.url==="/verifica.php" & event.data.request.value.respuesta==='Terminada') {
-                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  x = new DMS();
                  x.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
               } else {
-                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
               }
               if (event.data.request.value.url==="/download.php") {
-                 leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  x = new DMS();
                  x.leezip(event.data.respuesta.xml);
               }
@@ -262,8 +262,8 @@ class CargafaelMasiva extends Component {
   }
 
   handle_inserta_catalogo(catalogo,rfc) {
-       inserta_catalogo('rfcs',this.state.RFCEmisor).then( r  => {
-                leeRFCS().then( a => { this.setState({ RFCS: a }) });
+       window.inserta_catalogo('rfcs',this.state.RFCEmisor).then( r  => {
+                window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
        });
   }
 

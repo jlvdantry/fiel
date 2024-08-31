@@ -1,6 +1,6 @@
 import fiel from './fiel';
 import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,selObjectUlt} from './db';
-import {MENUS,FORMA,MOVIMIENTO} from './componente/Constantes';
+//import {window.MENUS,window.FORMA,window.MOVIMIENTO} from './componente/Constantes';
 var DescargaMasivaSat = function()
 {
    this.mifiel = '';
@@ -218,7 +218,7 @@ var DescargaMasivaSat = function()
 
    this.autenticate_enviasoa= function (res,pwd,url='/autentica.php') {
                 var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Autentica'};
-                inserta_request(url,res.cer,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.AUTENTICA,hs1,res.soap).then( key => {
+                inserta_request(url,res.cer,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.AUTENTICA,hs1,res.soap).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("autentica_"+pwd);
@@ -233,7 +233,7 @@ var DescargaMasivaSat = function()
    this.solicita_enviasoa= async function (soa,token,passdata) {
         var url=this.urlproxy;
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expires};
-                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITA,hs1,soa).then( key => {
+                inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("autentica");
@@ -249,7 +249,7 @@ var DescargaMasivaSat = function()
         var url=this.urlproxy;
         var passdata = { keySolicitud : keySolicitud }
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Descargar','token_value':token.value,'token_created':token.created,'token_expired':token.expired,'packageId':packageId};
-                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
+                inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("autentica");
@@ -320,7 +320,7 @@ var DescargaMasivaSat = function()
         var url=this.urlproxy;
         var passdata={ keySolicitud:idKey };
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'VerificaSolicitudDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
-                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
+                inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("verifica");

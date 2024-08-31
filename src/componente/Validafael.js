@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { browserHistory  } from 'react-router';
 import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
 import fiel from '../fiel';
-import { TC } from './Constantes';
+//import { TC } from './Constantes';
 import {openDatabasex,DBNAME,DBVERSION,inserta_factura} from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CurrencyFormat from 'react-currency-format';
@@ -84,7 +84,7 @@ class Validafael extends Component {
                         <CardHeader color="success" className="text-center" >Factura electrónica</CardHeader>
                         <CardBody>
                           <CardSubtitle className="text-center">Fecha: {x.faeljson["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
-                          <CardSubtitle className="text-center">Tipo de comprobante: {TC[x.faeljson["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
+                          <CardSubtitle className="text-center">Tipo de comprobante: {window.TC[x.faeljson["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
                           <CardSubtitle className="text-center">SubTotal: <CurrencyFormat value={x.faeljson["cfdi:Comprobante"]["@attributes"].SubTotal} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
                           <CardSubtitle className="text-center">Total: <CurrencyFormat value={x.faeljson["cfdi:Comprobante"]["@attributes"].Total} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
                         </CardBody>
