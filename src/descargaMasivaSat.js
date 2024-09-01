@@ -400,6 +400,7 @@ var DescargaMasivaSat = function()
                 }
    }
 
+	/* revisa que el token este caducado */
    this.estaAutenticado = () => {
                 return new Promise(function (resolve, reject) {
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {

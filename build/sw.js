@@ -20,7 +20,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v2/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v2/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v2/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v2/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v2/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v2/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v2/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v2/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v2/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v2/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v2/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v2/apple-launch-828x1792.png"},{"revision":"f6009bb1ae79e92aae7639849841b86f","url":"static/v2/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v2/cadenaoriginal_3_3.js"},{"revision":"6305c17a7fa865f730ba6511bf2970d0","url":"static/v2/Constantes.js"},{"revision":"aa3455d3647fedabb7544e802376cfc6","url":"static/v2/db.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v2/favicon.ico"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v2/forge.min.js"},{"revision":"82348aa30f78adaf8ccc53c067e08917","url":"static/v2/index.html"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v2/manifest.json"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v2/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v2/pluma512x512m.png"},{"revision":"a49ab6790e56f3fd90ef6558324763cb","url":"static/v2/static/css/main.b2a7cc15.css"},{"revision":"7211a548504d26b8e19473d47eaee803","url":"static/v2/static/js/main.89c8eb9b.js"},{"revision":"76a4e1b67cc50d497523f90cb3d505b2","url":"static/v2/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v2/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v2/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v2/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v2/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v2/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v2/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v2/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v2/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v2/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v2/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v2/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v2/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v2/apple-launch-828x1792.png"},{"revision":"5a833ae34ff8387c5f9526bcbada6969","url":"static/v2/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v2/cadenaoriginal_3_3.js"},{"revision":"9d8649f83f1e3469cdbf748bddbf793d","url":"static/v2/Constantes.js"},{"revision":"17053acec5ad688b2cc1ab8fa1540e12","url":"static/v2/db.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v2/favicon.ico"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v2/forge.min.js"},{"revision":"709a16d1901158e273c58b490759ddfd","url":"static/v2/index.html"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v2/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v2/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v2/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v2/pluma512x512m.png"},{"revision":"a49ab6790e56f3fd90ef6558324763cb","url":"static/v2/static/css/main.b2a7cc15.css"},{"revision":"a562350a4551b7174f0e4ec30ebe3acc","url":"static/v2/static/js/main.4b5fa965.js"},{"revision":"76a4e1b67cc50d497523f90cb3d505b2","url":"static/v2/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v2/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -79,7 +79,6 @@ self.addEventListener("sync", event => {
 });
 
 var syncRequest = estado => {
-    console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
@@ -97,7 +96,7 @@ var syncRequest = estado => {
                                 if (request.value.url=='factura') {
                                      return;
                                 }
-                                console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
+                                //console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
                                 await updestado(request,ESTADOREQ.REQUIRIENDO, null);
@@ -131,7 +130,7 @@ var updestado = (request,esta,respuesta) => {
                    }).then( objectStore => {
                            return updObject_01(objectStore, request.value, request.key);
                    }).then( objectStore => {
-                           console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
+                           //console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
                            resolve(request);
                    }).catch(function(err)  {
                            return Promise.reject(err);
@@ -143,7 +142,7 @@ var updestado = (request,esta,respuesta) => {
 var postRequestUpd = function(request,accion,respuesta) {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
+                        //console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
                                 {action: accion, request: request, respuesta: respuesta, PWDFIEL:PWDFIEL}
                         );
@@ -154,7 +153,7 @@ var postRequestUpd = function(request,accion,respuesta) {
 var enviaContra = () => {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
+                        //console.log('[enviaContra] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
                                 {contra: PWDFIEL}
                         );
@@ -170,7 +169,7 @@ var querespuesta = (request,respuesta) => {
             return;
          }
 
-         if("created" in respuesta) {
+         if("created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autentica y que se cuenta con un token */
             respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
             respuesta.expiresLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
@@ -249,6 +248,7 @@ self.addEventListener('activate', function(event) {
 });
  
   setInterval(function() {
+       console.log('[setInterval] empezo sincronizacion de requerimientos');
        syncRequest(ESTADOREQ.INICIAL);
        syncRequest(ESTADOREQ.ACEPTADO);
   }, REVISA.ESTADOREQ * 1000);

@@ -79,7 +79,6 @@ self.addEventListener("sync", event => {
 });
 
 var syncRequest = estado => {
-    console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
@@ -97,7 +96,7 @@ var syncRequest = estado => {
                                 if (request.value.url=='factura') {
                                      return;
                                 }
-                                console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
+                                //console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
                                 await updestado(request,ESTADOREQ.REQUIRIENDO, null);
@@ -131,7 +130,7 @@ var updestado = (request,esta,respuesta) => {
                    }).then( objectStore => {
                            return updObject_01(objectStore, request.value, request.key);
                    }).then( objectStore => {
-                           console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
+                           //console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
                            resolve(request);
                    }).catch(function(err)  {
                            return Promise.reject(err);
@@ -143,7 +142,7 @@ var updestado = (request,esta,respuesta) => {
 var postRequestUpd = function(request,accion,respuesta) {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
+                        //console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
                                 {action: accion, request: request, respuesta: respuesta, PWDFIEL:PWDFIEL}
                         );
@@ -154,7 +153,7 @@ var postRequestUpd = function(request,accion,respuesta) {
 var enviaContra = () => {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
+                        //console.log('[enviaContra] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
                                 {contra: PWDFIEL}
                         );
@@ -164,13 +163,13 @@ var enviaContra = () => {
 }
 
 var querespuesta = (request,respuesta) => {
-         console.log('[querespuesta] respuesta recibida del servidor id='+request.key+' url='+request.value.url);
+         console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
             updestado(request,5,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
             return;
          }
 
-         if("created" in respuesta) {
+         if("created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autentica y que se cuenta con un token */
             respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
             respuesta.expiresLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 

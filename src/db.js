@@ -142,11 +142,11 @@ var addObject = function(objectStore, object) {
         return new Promise( (resolve, reject) => {
         var request = objectStore.add(object);
         request.onsuccess = (event) => {
-                console.log('[addObject] inserto el objeto='+event.target.result);
+                //console.log('[addObject] inserto el objeto='+event.target.result);
                 resolve(event.target.result,object);
              }
         request.onerror = (event) => {
-                console.log('[addObject] error al agregar el objeto='+event.target.error);
+                //console.log('[addObject] error al agregar el objeto='+event.target.error);
                 reject(event);
              }
 
@@ -202,7 +202,7 @@ var selObjects = function(objectStore, indexname, indexvalue, direccion='next') 
            let range = IDBKeyRange.only(indexvalue);
            myIndex=objectStore.index(indexname);  
            cursor  = myIndex.openCursor(range,direccion);
-           console.log('[selObjects] cursor='+JSON.stringify(cursor));
+           //console.log('[selObjects] cursor='+JSON.stringify(cursor));
         } else {
            cursor = objectStore.openCursor();
         }
@@ -238,7 +238,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
         }).then(function(oS) {
         var objects = [];
         var cursor;
-        console.log('[db.js] objectStore='+objectStore+' indexname='+indexname+' indexvalue='+indexvalue);
+        //console.log('[db.js] objectStore='+objectStore+' indexname='+indexname+' indexvalue='+indexvalue);
         if (indexname!==undefined && indexvalue!==undefined) {
            cursor  = oS.index(indexname).openCursor(indexvalue,direction);
         } else {
@@ -257,7 +257,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
             var cursor1 = event.target.result;
             var json = { };
             if (cursor1) {
-               console.log('[db.js] selObjectUlt key='+cursor1.primaryKey+' value='+cursor1.value);
+               //console.log('[db.js] selObjectUlt key='+cursor1.primaryKey+' value='+cursor1.value);
                json.valor=cursor1.value;
                json.key  =cursor1.primaryKey;
                resolve(json);
@@ -278,7 +278,7 @@ var delObject = function(objectStore, idmenu, estado) {
             var cursor = pdestroy.result;
             if (cursor) {
                 objectStore.delete(cursor.primaryKey);
-                console.log('[db.js] borro='+cursor.primaryKey);
+                //console.log('[db.js] borro='+cursor.primaryKey);
                 cursor.continue();
             }
             resolve();
@@ -294,9 +294,9 @@ var delObject = function(objectStore, idmenu, estado) {
    */
 var updObject_01 = function(objectStore, object, id) {
         return new Promise(function (resolve, reject) {
-		console.log('[db.js] updObject_01 va a actualizar registro con id='+id);
+		//console.log('[db.js] updObject_01 va a actualizar registro con id='+id);
 		var upd=objectStore.put(object,id);
-		upd.onsuccess = function () { console.log('[db.js] updObject_01 actualizo registro con id='+id); resolve(); };
+		upd.onsuccess = function () { /*console.log('[db.js] updObject_01 actualizo registro con id='+id); */ resolve(); };
 		upd.onerror = function () { console.log('[db.js] updObject_01 error al actualizar el registro con id='+id); reject(); }
 	});
 };
@@ -311,9 +311,9 @@ var updObjectByKey = function(objectStore, object, id) {
 		openDatabasex(DBNAME, DBVERSION).then(function(db) {
 		  return openObjectStore(db, objectStore, "readwrite");
 		}).then(function(oS) {
-				console.log('[db.js] updObjectByKey va a actualizar registro con id='+id);
+				//console.log('[db.js] updObjectByKey va a actualizar registro con id='+id);
 				var upd=oS.put(object,id);
-				upd.onsuccess = function () { console.log('[db.js] updObjectByKey actualizo registro con id='+id); resolve(); };
+				upd.onsuccess = function () { /*console.log('[db.js] updObjectByKey actualizo registro con id='+id);*/ resolve(); };
 				upd.onerror = function () { console.log('[db.js] updObjectByKey error al actualizar el registro con id='+id); reject(); }
 		});
         });
@@ -335,14 +335,12 @@ var updObject = function(objectStore, object, idmenu, estado) {
 
         request.onsuccess = function(event) {
                var data=object;
-               console.log('[db.js]  va a actualizar='+idmenu+' data='+JSON.stringify(data));
                var requestput = objectStore.put(data,idmenu); 
                requestput.onerror = function (event) {
                  console.log('[db.js] error no pudo actualizar');
                  reject(event);
                }
                requestput.onsuccess = function (event) {
-                 console.log('[db.js] objecto actualizado'+event.target.result);
                  resolve(event);
                }
             //} else { console.log('no actualizo '); reject; }
@@ -355,7 +353,6 @@ var updObject = function(objectStore, object, idmenu, estado) {
                  requestadd.onsuccess = reject;
             }
             requestadd.onsuccess = function (event) {
-                 console.log('[db.js] objecto agregado al no existir');
                  requestadd.onsuccess = resolve;
             }
         };
@@ -404,7 +401,6 @@ var wl_fecha = function () {
 function inserta_catalogo(catalogo,label)
 {
         return new Promise(function (resolve, reject) {
-                console.log('[inserta_catalogo] va a grabar en catalogo ='+catalogo);
                 var json= { };
                 json.catalogo=catalogo;
                 json.label=label;
@@ -412,7 +408,6 @@ function inserta_catalogo(catalogo,label)
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'catalogos', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[inserta_catalogos] ='+catalogo);
                                 addObject(objectStore, json).then( (key) => {
                                     json.key=key;
                                     resolve(json) ; } );
@@ -427,7 +422,6 @@ function inserta_catalogo(catalogo,label)
 function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
 {
         return new Promise(function (resolve, reject) {
-                console.log('[inserta_request] va a grabar un request de la opcion ='+idmenu);
                 var json= { };
                 json.estado=0;
                 json.url=wlurl;
@@ -440,7 +434,6 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[inserta_request] menu a requesitar='+idmenu);
                                 addObject(objectStore, json).then( (key) => { 
                                     json.key=key;
                                     resolve(json) ; } );
@@ -478,7 +471,6 @@ function inserta_factura(faeljson)
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(objectStore => {
-                                console.log('[inserta_factura] menu a requesitar=');
                                 selObjects(objectStore,'sello',json.sello).then( x => {
                                        if (x.length===0)   { /* no esta registrado el sello y lo da de alta */
 					  addObject(objectStore, json).then(key => { resolve('Guardo factura con id='+key) ; }).catch(function(err) 
@@ -509,7 +501,6 @@ function inserta_firma(faeljson)
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[inserta_firma] menu a requesitar=');
                                 addObject(objectStore, json).then(function(key) {
                                                                resolve(key) ;
                                                             }).catch(function(err) {  reject(err) });
@@ -522,7 +513,6 @@ function inserta_firma(faeljson)
 
 function leefacturas(filtro={dato:'url',valor:'factura'})
 {
-        console.log('[db.js leefacturas] filtro='+filtro);
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
@@ -538,12 +528,10 @@ function leefacturas(filtro={dato:'url',valor:'factura'})
 
 function leeRFCS()
 {
-        console.log('[db.js leeRFCS] entro');
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'catalogos', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[db.js leeRFCS] va a seleccionar ');
                                 selObjects(objectStore,'catalogo','rfcs').then(function(requests) {
                                     var rfcs=[];
 				    requests.forEach(
@@ -559,12 +547,10 @@ function leeRFCS()
 
 function leefirmas()
 {
-        console.log('[db.js leefirmas] entro');
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[db.js leefirmas] va a seleccionar ');
                                 selObjects(objectStore,'url','firma').then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
@@ -580,7 +566,6 @@ function leeSolicitudes(direccion='next')
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                //console.log('[src/db.js leeSolicitudes] va a seleccionar ');
                                 selObjects(objectStore,'url','/solicita.php',direccion).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
@@ -605,17 +590,14 @@ function leeSolicitudesCorrectas()
         })
                    
 }
-        console.log('[db.js leefirmas] entro');
 
 
 function leefirma(key)
 {
-        console.log('[db.js leefirmas] entro');
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('[db.js leefirmas] va a seleccionar ');
                                 selObjects(objectStore,'sello',key).then(function(requests) {
                                                                resolve(requests) ;
                                                             }).catch(function(err) {  reject(err) });
@@ -648,7 +630,6 @@ function cuantasfirmas()
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {
-                                console.log('cuantasfirmas, leyo');
                                 selObjects(objectStore,'url','firma').then(function(requests) {
                                                                console.log('cuantasfirmas, leyo');
                                                                resolve(requests.length) ;

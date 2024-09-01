@@ -120,7 +120,8 @@ class CargafaelMasiva extends Component {
       window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
       window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
       handleMessage = (event) => {
-              console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
+              //console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
+	      window.PWDFIEL=event.data.PWDFIEL;
               var x = null;
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel: document.querySelector('#pwdfiel').value});
