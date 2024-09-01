@@ -41,24 +41,25 @@ class Ayuda extends Component {
 		      </UncontrolledCollapse>
                   </div>
                  <div className="mb-2">
-                  <button className="link-button text-info text-left" id="toggler1" onTouchEnd={this.toggle('toggler1')} onClick={this.toggle('toggler1')} style={{ marginBottom: '1rem' }}><h5>¿En que le ayuda este aplicativo?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler1" onTouchEnd={this.toggle('toggler1')} onClick={this.toggle('toggler1')} style={{ marginBottom: '1rem' }}>
+	               <h5>¿En que le ayuda este aplicativo?</h5></button>
 		      <UncontrolledCollapse toggler="#toggler1"  isOpen={collapseID==='toggler1' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Este aplicativo le permite validar la llave privada y pública generada por el <b>SAT</b>. Teniendo como principal virtud que la llave privada y pública <b>no</b> viajan por internet. Esto incrementa la seguridad de sus datos confidencianciales, previniendo ser víctima de un ciber crimen al no exponer sus llaves y evitar que su firma electrónica pueda ser <b className="text-alert">hackeada</b></p>
-                  <p className="text-justify"><b className="text-info">2.</b> Poder validar las facturas electrónicas emitidas con los formatos establecido por el SAT. En caso contrario indicará que la factura no es válida.</p>
-                  <p className="text-justify"><b className="text-info">3.</b> Firmar electrónicamente cualquier conjunto de datos. A este aplicativo se le pueden adaptar servicios de datos externos para obtener información, firmarlos electrónicamente y generar el sello electrónico.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Este aplicativo le permite validar la llave privada y pública generada por el <b>SAT</b>. Teniendo como principal virtud que la llave privada y pública <b>no</b> viajan por internet. Esto incrementa la seguridad de sus datos confidenciales, previniendo ser víctima de un ciber crimen al no exponer sus llaves y evitar que su firma electrónica pueda ser <b className="text-alert">hackeada</b></p>
+                  <p className="text-justify"><b className="text-info">2.</b> Solicitar las facturas electrónicas emitidas y/o recibidas y poder exportarlas EXCEL.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
                   </div>
 
                  <div className="mb-2">
-                  <button className="link-button text-info text-left" id="toggler2" onTouchEnd={this.toggle('toggler2')}  onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}><h5>¿Cuales son los requisitos?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler2" onTouchEnd={this.toggle('toggler2')}  onClick={this.toggle('toggler2')} style={{ marginBottom: '1rem' }}>
+	                       <h5>¿Cuales son los requisitos?</h5></button>
                       <UncontrolledCollapse toggler="#toggler2" isOpen={collapseID==='toggler2' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Contar con la llave privada y pública las cuales deberán de estar almacenadas en el móvil o computador.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Contar con la llave privada y pública las cuales deberán de estar almacenadas en el móvil o computador o en la NUBE.</p>
                   <p className="text-justify"><b className="text-info">2.</b> Conocer la contraseña de la llave privada.</p>
                           </CardBody>
                         </Card>
@@ -66,29 +67,34 @@ class Ayuda extends Component {
                   </div>
 
                  <div className="mb-2">
-                   <button className="link-button text-info text-left" id="toggler3" onTouchEnd={this.toggle('toggler3')} onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar la <b>FIEL</b>?</h5></button>
+                   <button className="link-button text-info text-left" id="toggler3" onTouchEnd={this.toggle('toggler3')} onClick={this.toggle('toggler3')} style={{ marginBottom: '1rem' }}>
+	                     <h5>¿Cómo validar la <b>FIEL</b>?</h5></button>
                       <UncontrolledCollapse toggler="#toggler3" isOpen={collapseID==='toggler3' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"MI <b>FIEL</b>"</b>. Aquí el aplicativo le mostrará tres botones dos de ellos son para ubicar la <b>FIEL</b> y el tercero para validar la llave privada contra su contraseña.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"MI FIEL"</b>. Aquí el aplicativo le mostrará tres botones dos de ellos son para ubicar la <b>FIEL</b> y el tercero para validar la llave privada contra su contraseña.</p>
                   <p className="text-justify"><b className="text-info">2.</b> Dar clic en el boton <b className="text-info">"Ubicar llave pública"</b>. Aquí el aplicativo le solicitará la ubicación del certificado que es un archivo con extensión cer .</p>
                   <p className="text-justify"><b className="text-info">3.</b> Dar clic en el boton <b className="text-info">"Ubicar llave privada"</b>. Aquí el aplicativo le solicitará la ubicación de la llave privada que es un archivo con extensión key .</p>
                   <p className="text-justify"><b className="text-info">4.</b> Una vez que ya cargo la <b>FIEL</b>, se debe de teclear la contraseña de la llave privada y posteriormente dar clic en el botón <b className="text-info">"Validar"</b>. Si todo esta correcto el aplicativo le indicara que la <b>FIEL</b> y la contraseña checan entre si, caso contrario indicara que no checa la <b>FIEL</b>.</p>
-                  <p className="text-justify"><b className="text-info">Nota</b> Si la <b>FIEL</b> es correcta, se esta en la posibilidad de generar sellos electrónicos no solo de factura electrónicas si no de cualquier conjunto  de datos como por ejemplo contratos.</p>
+                  <p className="text-justify"><b className="text-info">Nota</b> Si la <b>FIEL</b> es correcta, se podrá solicitar las facturas electrónicas emitidas y/o recibidas y exportarlas a EXCEL.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
                   </div>
 
                  <div className="mb-2">
-                  <button className="link-button text-info text-left" id="toggler4" onTouchEnd={this.toggle('toggler4')}  onClick={this.toggle('toggler4')} style={{ marginBottom: '1rem' }}><h5>¿Cómo validar una factura electrónica firmada con la <b>FIEL</b>?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler4" onTouchEnd={this.toggle('toggler4')}  onClick={this.toggle('toggler4')} style={{ marginBottom: '1rem' }}>
+	             <h5>¿Cómo solicitar las facturas electrónicas emitidas o recibidas ?</h5></button>
                       <UncontrolledCollapse toggler="#toggler4" isOpen={collapseID==='toggler4' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"MIS FACTURAS"</b>. Aquí el aplicativo le mostrará tres botones que son <b className="text-info">"Ubicar factura"</b> , <b className="text-info">"Validar factura"</b> y pór último  <b className="text-info">"Consultar factura"</b></p>
-                  <p className="text-justify"><b className="text-info">2.</b> Ubicar la factura electrónica dando un clic en el botón <b className="text-info">"Ubicar factura"</b> este tipo de archivo deben de tener extensión xml.</p>
-                  <p className="text-justify"><b className="text-info">3.</b> Dar clic en el botón <b className="text-info">"Validar factura"</b> , si la factura electrónica es válida desplegara el contenido de este caso y teniendo la opción de poder agregarla a un historico de facturas para posteriormente consultarla o consolidar la información en caso contrario enviara el mensaje de que la factura electrónica no es valida.</p>
-                  <p className="text-justify"><b className="text-info">4.</b> Para consultar el historial solo hay que dar un clic en el botón <b className="text-info">"Consultar historial"</b> El cual le mostrara todas las factura que fueron agregadas al historial.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Previamente se debio de haber validado la  <b className="text-info">"FIEL"</b></p>
+                  <p className="text-justify"><b className="text-info">2.</b> El aplicativo le mostrará que el RFC que contiene la FIEL.</p>
+                  <p className="text-justify"><b className="text-info">3.</b> El aplicativo le mostrará que esta autenticado ante el SAT. </p>
+                  <p className="text-justify"><b className="text-info">4.</b> El aplicativo le solicitará el RFC o RFCS que le emitierón un factura o usted le emitio un factura.</p>
+                  <p className="text-justify"><b className="text-info">5.</b> El aplicativo le solicitará la fecha inicial y final en que la expidio la factura</p>
+                  <p className="text-justify"><b className="text-info">6.</b> Una vez tecleado los datos solicitados deberá de dar click en en el botón solicitar</p>
+                  <p className="text-justify"><b className="text-info">6.</b> Si todo esta correcto le mostrará una tabla con el registro de la solicitud donde podra ver el estado desde que fue aceptada hasta que se decarga las factura o hubo un error. </p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
