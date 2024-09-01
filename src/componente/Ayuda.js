@@ -1,6 +1,7 @@
 import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
 import { Card,CardBody,UncontrolledCollapse } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Ayuda extends Component {
 
@@ -72,9 +73,9 @@ class Ayuda extends Component {
                       <UncontrolledCollapse toggler="#toggler3" isOpen={collapseID==='toggler3' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"MI FIEL"</b>. Aquí el aplicativo le mostrará tres botones dos de ellos son para ubicar la <b>FIEL</b> y el tercero para validar la llave privada contra su contraseña.</p>
-                  <p className="text-justify"><b className="text-info">2.</b> Dar clic en el boton <b className="text-info">"Ubicar llave pública"</b>. Aquí el aplicativo le solicitará la ubicación del certificado que es un archivo con extensión cer .</p>
-                  <p className="text-justify"><b className="text-info">3.</b> Dar clic en el boton <b className="text-info">"Ubicar llave privada"</b>. Aquí el aplicativo le solicitará la ubicación de la llave privada que es un archivo con extensión key .</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'pen-fancy']} /> MI FIEL"</b>. Aquí el aplicativo le mostrará tres botones dos de ellos son para ubicar la <b>FIEL</b> y el tercero para validar la llave privada contra su contraseña.</p>
+                  <p className="text-justify"><b className="text-info">2.</b> Dar clic en el boton <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'certificate']} className="mr-2"/>Ubicar llave pública"</b>. Aquí el aplicativo le solicitará la ubicación del certificado que es un archivo con extensión cer .</p>
+                  <p className="text-justify"><b className="text-info">3.</b> Dar clic en el boton <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'key']} className="mr-2"/>Ubicar llave privada"</b>. Aquí el aplicativo le solicitará la ubicación de la llave privada que es un archivo con extensión key .</p>
                   <p className="text-justify"><b className="text-info">4.</b> Una vez que ya cargo la <b>FIEL</b>, se debe de teclear la contraseña de la llave privada y posteriormente dar clic en el botón <b className="text-info">"Validar"</b>. Si todo esta correcto el aplicativo le indicara que la <b>FIEL</b> y la contraseña checan entre si, caso contrario indicara que no checa la <b>FIEL</b>.</p>
                   <p className="text-justify"><b className="text-info">Nota</b> Si la <b>FIEL</b> es correcta, se podrá solicitar las facturas electrónicas emitidas y/o recibidas y exportarlas a EXCEL.</p>
                           </CardBody>
@@ -88,26 +89,29 @@ class Ayuda extends Component {
                       <UncontrolledCollapse toggler="#toggler4" isOpen={collapseID==='toggler4' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Previamente se debio de haber validado la  <b className="text-info">"FIEL"</b></p>
-                  <p className="text-justify"><b className="text-info">2.</b> El aplicativo le mostrará que el RFC que contiene la FIEL.</p>
-                  <p className="text-justify"><b className="text-info">3.</b> El aplicativo le mostrará que esta autenticado ante el SAT. </p>
-                  <p className="text-justify"><b className="text-info">4.</b> El aplicativo le solicitará el RFC o RFCS que le emitierón un factura o usted le emitio un factura.</p>
-                  <p className="text-justify"><b className="text-info">5.</b> El aplicativo le solicitará la fecha inicial y final en que la expidio la factura</p>
-                  <p className="text-justify"><b className="text-info">6.</b> Una vez tecleado los datos solicitados deberá de dar click en en el botón solicitar</p>
-                  <p className="text-justify"><b className="text-info">6.</b> Si todo esta correcto le mostrará una tabla con el registro de la solicitud donde podra ver el estado desde que fue aceptada hasta que se decarga las factura o hubo un error. </p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA"</b>. Aquí el aplicativo le mostrará y/o solicitara las siguiente información.</p>
+                  <p className="text-justify"><b className="text-info">2.</b> Previamente se debio de haber validado la  <b className="text-info">"FIEL"</b></p>
+                  <p className="text-justify"><b className="text-info">3.</b> El aplicativo le mostrará que el RFC que contiene la FIEL.</p>
+                  <p className="text-justify"><b className="text-info">4.</b> El aplicativo le mostrará que esta autenticado ante el SAT. </p>
+                  <p className="text-justify"><b className="text-info">5.</b> El aplicativo le solicitará el RFC o RFCS que le emitierón un factura o que usted emitio un factura.</p>
+                  <p className="text-justify"><b className="text-info">6.</b> El aplicativo le solicitará la fecha inicial y final en que la expidio la factura</p>
+                  <p className="text-justify"><b className="text-info">7.</b> Una vez tecleado los datos solicitados deberá de dar click en en el botón solicitar</p>
+                  <p className="text-justify"><b className="text-info">8.</b> Si todo esta correcto le mostrará una tabla con el registro de la solicitud donde podra ver el estado desde que fue aceptada hasta que se decarga las factura o hubo un error. </p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
                   </div>
 
                  <div className="mb-2">
-                  <button className="link-button text-info text-left" id="toggler5" onTouchEnd={this.toggle('toggler5')}  onClick={this.toggle('toggler5')} style={{ marginBottom: '1rem' }}><h5>¿Cómo firmar un conjunto de datos con la <b>FIEL</b>?</h5></button>
+                  <button className="link-button text-info text-left" id="toggler5" onTouchEnd={this.toggle('toggler5')}  onClick={this.toggle('toggler5')} style={{ marginBottom: '1rem' }}><h5>¿Cómo consultar o exportar a EXCEL la facturas electronicas ?</h5></button>
                       <UncontrolledCollapse toggler="#toggler5" isOpen={collapseID==='toggler5' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Para poder firmar electrónicamente un conjunto de datos la <b>FIEL</b> debio de haber sido validada previamente.</p>
-                  <p className="text-justify">Este aplicativo puede adaptarse para comunicarse con otros sistemas, con el objetivo de obtener el conjunto de datos a firmar electrónicamente. Y una vez generado el sello digital correspondiente, este se puede enviar al sistema que solicito el <b>firmado electrónico</b>.</p>
-                  <p className="text-justify">Se recomienda que los datos a firmar se encuentren en formato JSON.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS"</b>.</p>
+                  <p className="text-justify"><b className="text-info">2.</b> Si no se han descargado facturas, le enviar un mensaje que aun no hay facturas descargadas.</p>
+                  <p className="text-justify"><b className="text-info">3.</b> Si hay facturas le mostrara un grafica de los ingresos y/o egresos del año de emisión actual o anterior.</p>
+                  <p className="text-justify"><b className="text-info">4.</b> Se podra consultar en forma detallada las facturas dando click en el boton <b className="text-info"><FontAwesomeIcon icon={['fas' , 'search']} className='mr-2' />"Consultar historial"</b>.</p>
+                  <p className="text-justify"><b className="text-info">4.</b> Se podra exportar a excel las facturas al icono con el logo de <b className="text-info">"Excel"</b>.</p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>

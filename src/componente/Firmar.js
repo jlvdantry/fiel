@@ -4,7 +4,6 @@ import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import ShowMoreText from 'react-show-more-text';
-import {openDatabasex,DBNAME,DBVERSION,inserta_firma} from '../db';
 
 
 class Firmar extends Component {
@@ -20,8 +19,8 @@ class Firmar extends Component {
   insertafirma(){
         const firmajson={ sellogen: this.state.sellogen, cadena : this.props.value, cer: this.state.cer };
         var that=this;
-        openDatabasex(DBNAME,DBVERSION).then(function() {
-                             inserta_firma(firmajson).then(function() {
+        window.openDatabasex(window.DBNAME,window.DBVERSION).then(function() {
+                             window.inserta_firma(firmajson).then(function() {
                                                             that.setState({seintegro:1});
                                                             that.props.onRefresca();
                                                     }).catch(function(err)  {

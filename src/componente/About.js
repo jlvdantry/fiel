@@ -1,7 +1,6 @@
 import React, {Component}  from 'react';
 import ReactDOM from 'react-dom';
 import { Card,CardBody } from 'reactstrap';
-//import { DBVERSION,APPVERSION } from '../db.js'
 class About extends Component {
 
   constructor(props) {

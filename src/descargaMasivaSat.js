@@ -1,6 +1,4 @@
 import fiel from './fiel';
-import {openDatabasex,DBNAME,DBVERSION,inserta_factura,inserta_request,selObjectUlt} from './db';
-//import {window.MENUS,window.FORMA,window.MOVIMIENTO} from './componente/Constantes';
 var DescargaMasivaSat = function()
 {
    this.mifiel = '';
@@ -228,7 +226,7 @@ var DescargaMasivaSat = function()
 
    this.autenticate_enviasoa= function (res,pwd,url='/autentica.php') {
                 var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Autentica'};
-                inserta_request(url,res.cer,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.AUTENTICA,hs1,res.soap).then( key => {
+                window.inserta_request(url,res.cer,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.AUTENTICA,hs1,res.soap).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("autentica_"+pwd);
@@ -243,7 +241,7 @@ var DescargaMasivaSat = function()
    this.solicita_enviasoa= async function (soa,token,passdata) {
         var url=this.urlproxy;
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expires};
-                inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITA,hs1,soa).then( key => {
+                window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("autentica");
@@ -259,7 +257,7 @@ var DescargaMasivaSat = function()
         var url=this.urlproxy;
         var passdata = { keySolicitud : keySolicitud }
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Descargar','token_value':token.value,'token_created':token.created,'token_expired':token.expired,'packageId':packageId};
-                inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
+                window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("autentica");
@@ -290,8 +288,8 @@ var DescargaMasivaSat = function()
 			             const text = await entries[i].getData( new window.zip.TextWriter(), { onprogress: (index, max) => { } } );
                                      stx=x.StringToXMLDom(text);
                                      vJson=x.xmlToJson(stx);
-                                     await openDatabasex(DBNAME,DBVERSION).then( () => {
-                                                            inserta_factura(vJson).then( msg =>  {
+                                     await window.openDatabasex(window.DBNAME,window.DBVERSION).then( () => {
+                                                            window.inserta_factura(vJson).then( msg =>  {
                                                                     console.log('leezip msg='+msg);
                                                             }).catch(function(err)  {
                                                                     console.log('error al guardar la factura');
@@ -330,7 +328,7 @@ var DescargaMasivaSat = function()
         var url=this.urlproxy;
         var passdata={ keySolicitud:idKey };
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'VerificaSolicitudDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
-                inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
+                window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("verifica");
@@ -403,7 +401,7 @@ var DescargaMasivaSat = function()
 	/* revisa que el token este caducado */
    this.estaAutenticado = () => {
                 return new Promise(function (resolve, reject) {
-                     selObjectUlt('request','url','/autentica.php','prev').then( obj => {
+                     window.selObjectUlt('request','url','/autentica.php','prev').then( obj => {
                      var actual=Math.floor(Date.now() / 1000);
                      if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expires) {
                          console.log('[estaAutenticado] token activo');

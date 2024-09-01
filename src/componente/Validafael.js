@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { browserHistory  } from 'react-router';
 import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
 import fiel from '../fiel';
-//import { TC } from './Constantes';
-import {openDatabasex,DBNAME,DBVERSION,inserta_factura} from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CurrencyFormat from 'react-currency-format';
 
@@ -32,8 +30,8 @@ class Validafael extends Component {
         {
 		var that=this;
                 console.log('x='+x+' ind='+ind);
-		await openDatabasex(DBNAME,DBVERSION).then(function() {
-				     inserta_factura(x.faeljson).then(function() {
+		await window.openDatabasex(window.DBNAME,window.DBVERSION).then(function() {
+				     window.inserta_factura(x.faeljson).then(function() {
                                                                     console.log('puso 1');
 								    //x.seintegro=1;
                                                                     archi1[ind].seintegro=1;
@@ -47,7 +45,6 @@ class Validafael extends Component {
 							    });
 			  });
         });
-        //this.setState ({ archi : archi });
         console.log('paso map  insertafael');
   }
 

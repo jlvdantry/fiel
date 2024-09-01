@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Card,CardBody,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
-import { leefacturas } from '../db';
 import {Doughnut,Bar,Pie} from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip as ReactTooltip } from "react-tooltip";
@@ -104,7 +103,7 @@ class Graficafael extends Component {
 
   exportaExcel(){
         var datosFactura=[];
-        leefacturas().then( (cuantas) => {
+        window.leefacturas().then( (cuantas) => {
                 datosFactura=cuantas.map( (x) => {
                        var datoFactura={};
                        var descripcion='';
@@ -153,7 +152,7 @@ class Graficafael extends Component {
   actuaFacturas(){
         var that=this;
         that.setState({data:{}});
-        leefacturas(this.state.filtro).then(function(cuantas) {
+        window.leefacturas(this.state.filtro).then(function(cuantas) {
                     var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
                     let usedColors = new Set();
 		    var dynamicColors = function() {

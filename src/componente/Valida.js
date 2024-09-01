@@ -17,6 +17,7 @@ class Valida extends Component {
     var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
     if (res.ok===true) {
        this.setState({ ok: true, nook:false,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta });
+       window.PWDFIEL=document.querySelector('#pwdfiel').value;
     }
     if (res.ok===false) {
        this.setState({ ok: false, nook:true,msg:res.msg  });

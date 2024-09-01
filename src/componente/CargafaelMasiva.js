@@ -5,8 +5,6 @@ import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
-//import { leeSolicitudesCorrectas,inserta_catalogo,leeRFCS } from '../db.js';
-//import { ESTADOREQ,REVISA } from '../componente/Constantes.js';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Autocomplete from "react-autocomplete";
 
@@ -40,6 +38,7 @@ class CargafaelMasiva extends Component {
     this.cambioRFCReceptor = this.cambioRFCReceptor.bind(this);
     this.revisaSiEstaAutenticado = this.revisaSiEstaAutenticado.bind(this);
     this.handle_inserta_catalogo = this.handle_inserta_catalogo.bind(this);
+    this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
   };
 
     
@@ -113,6 +112,17 @@ class CargafaelMasiva extends Component {
                    this.setState({ estaAutenticado : res.autenticado });
                }
       });
+  }
+
+  autenticaContraSAT () {
+    var x = new DMS();
+    var res=x.autenticate_armasoa(PWDFIEL);
+    if (res.ok===true) {
+              this.setState({ ok: true, nook:false });
+              x.autenticate_enviasoa(res,PWDFIEL)
+    } else {
+       this.setState({ ok: false, nook:true,msg:res.msg  });
+    }
   }
 
   componentDidMount(){
@@ -226,16 +236,6 @@ class CargafaelMasiva extends Component {
        if (this.state.RFCEmisorIsValid===false || this.state.RFCReceptorIsValid===false) {
            return;
        }
-    }
-
-
-    var x = new DMS(); 
-    var res=x.autenticate_armasoa(document.querySelector('#pwdfiel').value);
-    if (res.ok===true) {
-              this.setState({ ok: true, nook:false });
-              x.autenticate_enviasoa(res,document.querySelector('#pwdfiel').value)
-    } else {
-       this.setState({ ok: false, nook:true,msg:res.msg  });
     }
 
   }

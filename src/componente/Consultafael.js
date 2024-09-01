@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import { Button, Container, Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck, Badge} from 'reactstrap';
-import { leefacturas, cuantasfacturas,bajafacturas } from '../db';
-//import { TC } from './Constantes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CurrencyFormat from 'react-currency-format';
 
@@ -22,7 +20,7 @@ class Consultafael extends Component {
 
   totalFacturas() {
         var that=this;
-        cuantasfacturas().then(function(cuantas) {
+        window.cuantasfacturas().then(function(cuantas) {
                                                             that.setState({totalfacturas:cuantas});
                                                     }).catch(function(err)  {
                                                             that.setState({totalfacturas:0});
@@ -32,7 +30,7 @@ class Consultafael extends Component {
   bajaFactura(event){
         console.log('[Consultafael.js] bajaFactura '+event.currentTarget.dataset.id);
         var that=this;
-        bajafacturas(event.currentTarget.dataset.id).then(function() {
+        window.bajafacturas(event.currentTarget.dataset.id).then(function() {
               that.setState({facturas:[]});
               that.totalFacturas();
               that.consulta();
@@ -45,7 +43,7 @@ class Consultafael extends Component {
   consulta(){
         console.log('[Consultafael.js] consulta entro');
         var that=this;
-        leefacturas().then(function(facturas) {
+        window.leefacturas().then(function(facturas) {
                                                             console.log('[Consultafael.js] consulta='+facturas.length);
                                                             that.setState({facturas:facturas});
                                                     }).catch(function(err)  {

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import { Button, Container, Card,CardBody,CardSubtitle,CardText, Badge} from 'reactstrap';
-import { leefirmas, cuantasfirmas,bajafirmas} from '../db';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ShowMoreText from 'react-show-more-text';
 import  Html2Pdf   from "js-html2pdf";
@@ -47,7 +46,7 @@ class Consultafirmas extends Component {
   totalFirmas() {
         var that=this;
         //console.log('va a contar el total de firmas');
-        cuantasfirmas().then(function(cuantas) {
+        window.cuantasfirmas().then(function(cuantas) {
                                                             //console.log('Cuantas firmas='+cuantas);
                                                             that.setState({totalfirmas:cuantas});
                                                             that.consulta();
@@ -60,7 +59,7 @@ class Consultafirmas extends Component {
 
   bajaFirma(event){
         var that=this;
-        bajafirmas(event.currentTarget.dataset.id).then(function() {
+        window.bajafirmas(event.currentTarget.dataset.id).then(function() {
               that.setState({firmas:[]});
               that.totalFirmas();
               //that.consulta();
@@ -73,7 +72,7 @@ class Consultafirmas extends Component {
   consulta(){
         //console.log('[Consultafirmas] consulta entro');
         var that=this;
-        leefirmas().then(function(firmas) {
+        window.leefirmas().then(function(firmas) {
                                                             //console.log('[Consultafael.js] consulta='+firmas.length);
                                                             that.setState({firmas:firmas});
                                                     }).catch(function(err)  {
