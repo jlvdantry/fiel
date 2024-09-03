@@ -61,7 +61,6 @@ if ("function" === typeof importScripts) {
 }
 
 self.addEventListener("sync", event => {
-    console.log('[sync] sync '+event.tag);
     if (event.tag.substring(0,9)=== "autentica") {
        if (event.tag.substring(10)!=='') {
                      PWDFIEL=event.tag.substring(10);
@@ -78,7 +77,8 @@ self.addEventListener("sync", event => {
 
 });
 
-var syncRequest = estado => {
+var syncRequest = estado => { 
+    console.log('[syncRequest] Sincronizando lo reques estado='+estado)
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
@@ -86,17 +86,22 @@ var syncRequest = estado => {
     }).then( requests => {
                   return Promise.all(
                          requests.map( async (request) => {
+
                                 if (request.value.url=='/verifica.php' & (request.value.respuesta=="Terminada" || request.value.respuesta=="Rechazada")) {  
-                                                 // no procesa las verificaciones ya terminadas 
                                      return;
                                 }
+
                                 if (request.value.url=='/solicita.php' & (estado==ESTADOREQ.ACEPTADO || estado==ESTADOREQ.REQUIRIENDO)) {  // no procesa las verificaciones ya terminadas 
-                                     return;
+                                     await updestado(request,ESTADOREQ.VERIFICANDO, 'Verificando')
+				     postRequestUpd(request,"update-request","");   /* hay que checar que no genere mucho registros de verificacion */
+                                     return; //si fue aceptada la solicitud deberia de mandar la verificacion
                                 }
+
                                 if (request.value.url=='factura') {
                                      return;
                                 }
-                                //console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
+
+                                console.log('[syncRequest] syncRequest antes de hacer fetch url='+request.value.url+' llave='+request.key);
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
                                 await updestado(request,ESTADOREQ.REQUIRIENDO, null);
@@ -177,6 +182,7 @@ var querespuesta = (request,respuesta) => {
             );
             return;
          }
+
          if("status" in respuesta) {
             if ("code" in respuesta.status) {
                if (request.value.url=='/solicita.php') {
@@ -192,9 +198,10 @@ var querespuesta = (request,respuesta) => {
 		       return;
                }
                if (request.value.url=='/verifica.php' & respuesta.status.code==5000) {
-		       request.value.passdata.msg_v=respuesta.statusRequest.message;
+		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
+		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
 		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
-		       updestado(request,respuesta.status.code,respuesta.statusRequest.message).then( () => {
+		       updestado(request,respuesta.status.code,request.value.passdata.msg_v).then( () => {
 			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
 			       updSolicitud(respuesta,request.value.passdata.keySolicitud) 
                                .then( () => {

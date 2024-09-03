@@ -398,18 +398,24 @@ var DescargaMasivaSat = function()
                 }
    }
 
-	/* revisa que el token este caducado */
+	/* revisa si el token este caducado */
    this.estaAutenticado = () => {
                 return new Promise(function (resolve, reject) {
-                     window.selObjectUlt('request','url','/autentica.php','prev').then( obj => {
-                     var actual=Math.floor(Date.now() / 1000);
-                     if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expires) {
-                         console.log('[estaAutenticado] token activo');
-                         resolve({ autenticado:true,certificado:obj.valor.passdata })
-                     } else {
-                         console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expires);
-                         resolve({ autenticado:false }); }
-                     })
+                     window.selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
+			     var actual=Math.floor(Date.now() / 1000);
+			     if ('respuesta' in obj.valor) {
+				     if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expires) {
+					 console.log('[estaAutenticado] token activo');
+					 resolve({ autenticado:true,certificado:obj.valor.passdata })
+				     } else {
+					 console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expires);
+					 resolve({ autenticado:false }) 
+				     }
+			     }	 else { 
+					 console.log('[estaAutenticado] no encontro respuesta en el request request_id='+obj.key);
+				         resolve({ autenticado:false }); 
+			              } 
+		     });
                 });
    }
 }

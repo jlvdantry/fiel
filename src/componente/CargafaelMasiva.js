@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,InputGroupAddon,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
+import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -111,40 +111,45 @@ class CargafaelMasiva extends Component {
                if (res.autenticado!== this.state.estaAutenticado) {
                    this.setState({ estaAutenticado : res.autenticado });
                }
+               if (res.autenticado===false) {
+		          this.autenticaContraSAT();
+	       }
+		         
       });
   }
 
   autenticaContraSAT () {
     var x = new DMS();
-    var res=x.autenticate_armasoa(PWDFIEL);
+    var res=x.autenticate_armasoa(window.PWDFIEL);  /* solo arma al SOA ya firmado */
     if (res.ok===true) {
               this.setState({ ok: true, nook:false });
-              x.autenticate_enviasoa(res,PWDFIEL)
+              x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
     } else {
        this.setState({ ok: false, nook:true,msg:res.msg  });
     }
   }
 
   componentDidMount(){
+      this.autenticaContraSAT();
       estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
       window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
       window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
       handleMessage = (event) => {
-              //console.log('[handleMessage] recibio mensaje el cliente url='+event.data.request.value.url+' pwd='+event.data.PWDFIEL);
+              console.log('[handleMessage] se recibio mensaje del sw url='+event.data.request.value.url);
 	      window.PWDFIEL=event.data.PWDFIEL;
               var x = null;
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
-                 this.setState({ token: event.data.respuesta,pwdfiel: document.querySelector('#pwdfiel').value});
-                 x = new DMS();
-                         x.solicita_armasoa(this.state);
+                 this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });
               }
+
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
                  window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  var token = { created: event.data.request.value.header.token_created,expired:event.data.request.value.header.token_expired,value:event.data.request.value.header.token_value }
-                 this.setState(state => ({ token:token,pwdfiel:document.querySelector('#pwdfiel').value, folioReq:event.data.request.value.folioReq}));
+                 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:event.data.request.value.folioReq}));
                  x = new DMS();
                  x.verificando(	this.state,event.data.request.key);
               } else { window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) }); }
+
               if (event.data.request.value.url==="/verifica.php" & event.data.request.value.respuesta==='Terminada') {
                  window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  x = new DMS();
@@ -152,6 +157,7 @@ class CargafaelMasiva extends Component {
               } else {
                  window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
               }
+
               if (event.data.request.value.url==="/download.php") {
                  window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  x = new DMS();
@@ -171,13 +177,6 @@ class CargafaelMasiva extends Component {
   }
 
   cargar() {
-
-    if (document.querySelector('#pwdfiel').value==='') {
-       this.setState({ ok: false, nook:true,msg:'La contraseña es obligatoria'  });
-       return;
-    } else {
-       this.setState({ ok: true, nook:false });
-    }
 
     if (this.state.dropdownValue==='por folio') {
        this.setState({folio:document.querySelector('#folio').value});
@@ -237,6 +236,8 @@ class CargafaelMasiva extends Component {
            return;
        }
     }
+                 var x = new DMS();
+                 x.solicita_armasoa(this.state);
 
   }
 
@@ -337,21 +338,8 @@ class CargafaelMasiva extends Component {
                       </FormGroup>
 
 		      <FormGroup className="container">
-				<Label>Contraseña de la llave privada</Label>
-				<InputGroup>
-					<Input type={this.state.type} name="password_" id="pwdfiel" placeholder="contraseña" disabled={this.state.estaAutenticado}/>
-					<InputGroupAddon addonType="append">
-						<Button onClick={this.showHide} ><FontAwesomeIcon icon={['fas' , this.state.ojos]} /></Button>
-					</InputGroupAddon>
-                                        <div className="d-flex align-content-center flex-wrap">
-                                             <FontAwesomeIcon id="miayuda" icon={['fas' , 'question']} className="ml-1" data-tooltip-id="my-tooltip-1" />
-                                        </div>
-				</InputGroup> 
-				{ this.state.nook && <div id="nook" className="mt-1">
-					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> {this.state.msg} </Alert>
-					</div> 
-				}
+	              { this.state.estaAutenticado===true  &&  <Label className="text-success">Esta conectado con el SAT</Label> }
+	              { this.state.estaAutenticado===false &&  <Label calssNmae="text-danger">Esta desconectado con el SAT</Label> }
 		      </FormGroup>
 
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">

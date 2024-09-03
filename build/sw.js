@@ -20,7 +20,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v2/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v2/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v2/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v2/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v2/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v2/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v2/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v2/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v2/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v2/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v2/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v2/apple-launch-828x1792.png"},{"revision":"7bdd9efbbfdbce1303ed1ca921bac2c8","url":"static/v2/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v2/cadenaoriginal_3_3.js"},{"revision":"9d8649f83f1e3469cdbf748bddbf793d","url":"static/v2/Constantes.js"},{"revision":"17053acec5ad688b2cc1ab8fa1540e12","url":"static/v2/db.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v2/favicon.ico"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v2/forge.min.js"},{"revision":"f77aa9c3952ba6adb04894859e97d77c","url":"static/v2/index.html"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v2/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v2/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v2/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v2/pluma512x512m.png"},{"revision":"a789b6c409f1cd0ffef139d9bb11e052","url":"static/v2/static/css/main.8a7121de.css"},{"revision":"0a8a774b1169d3fe1ad693f991c062ce","url":"static/v2/static/js/main.4f564659.js"},{"revision":"76a4e1b67cc50d497523f90cb3d505b2","url":"static/v2/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v2/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v2/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v2/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v2/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v2/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v2/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v2/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v2/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v2/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v2/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v2/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v2/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v2/apple-launch-828x1792.png"},{"revision":"45d7f7781af5112ea816cdf04a00f891","url":"static/v2/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v2/cadenaoriginal_3_3.js"},{"revision":"8a1bc4e1fdb967afc22f84ba888ab778","url":"static/v2/Constantes.js"},{"revision":"17053acec5ad688b2cc1ab8fa1540e12","url":"static/v2/db.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v2/favicon.ico"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v2/forge.min.js"},{"revision":"304b94fa3c8bde74332468b18cd13d62","url":"static/v2/index.html"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v2/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v2/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v2/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v2/pluma512x512m.png"},{"revision":"a789b6c409f1cd0ffef139d9bb11e052","url":"static/v2/static/css/main.8a7121de.css"},{"revision":"474921946b3775f4b69634f1b265e966","url":"static/v2/static/js/main.a9e094e6.js"},{"revision":"76a4e1b67cc50d497523f90cb3d505b2","url":"static/v2/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v2/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -61,7 +61,6 @@ if ("function" === typeof importScripts) {
 }
 
 self.addEventListener("sync", event => {
-    console.log('[sync] sync '+event.tag);
     if (event.tag.substring(0,9)=== "autentica") {
        if (event.tag.substring(10)!=='') {
                      PWDFIEL=event.tag.substring(10);
@@ -78,7 +77,8 @@ self.addEventListener("sync", event => {
 
 });
 
-var syncRequest = estado => {
+var syncRequest = estado => { 
+    console.log('[syncRequest] Sincronizando lo reques estado='+estado)
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
@@ -86,17 +86,22 @@ var syncRequest = estado => {
     }).then( requests => {
                   return Promise.all(
                          requests.map( async (request) => {
+
                                 if (request.value.url=='/verifica.php' & (request.value.respuesta=="Terminada" || request.value.respuesta=="Rechazada")) {  
-                                                 // no procesa las verificaciones ya terminadas 
                                      return;
                                 }
+
                                 if (request.value.url=='/solicita.php' & (estado==ESTADOREQ.ACEPTADO || estado==ESTADOREQ.REQUIRIENDO)) {  // no procesa las verificaciones ya terminadas 
-                                     return;
+                                     await updestado(request,ESTADOREQ.VERIFICANDO, 'Verificando')
+				     postRequestUpd(request,"update-request","");   /* hay que checar que no genere mucho registros de verificacion */
+                                     return; //si fue aceptada la solicitud deberia de mandar la verificacion
                                 }
+
                                 if (request.value.url=='factura') {
                                      return;
                                 }
-                                //console.log('[syncRequest] syncRequest antes de hacer map '+request.value.url+' llave='+request.key);
+
+                                console.log('[syncRequest] syncRequest antes de hacer fetch url='+request.value.url+' llave='+request.key);
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
                                 await updestado(request,ESTADOREQ.REQUIRIENDO, null);
@@ -177,6 +182,7 @@ var querespuesta = (request,respuesta) => {
             );
             return;
          }
+
          if("status" in respuesta) {
             if ("code" in respuesta.status) {
                if (request.value.url=='/solicita.php') {
@@ -192,9 +198,10 @@ var querespuesta = (request,respuesta) => {
 		       return;
                }
                if (request.value.url=='/verifica.php' & respuesta.status.code==5000) {
-		       request.value.passdata.msg_v=respuesta.statusRequest.message;
+		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
+		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
 		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
-		       updestado(request,respuesta.status.code,respuesta.statusRequest.message).then( () => {
+		       updestado(request,respuesta.status.code,request.value.passdata.msg_v).then( () => {
 			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
 			       updSolicitud(respuesta,request.value.passdata.keySolicitud) 
                                .then( () => {
