@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter,InputGroup,InputGroupAddon} from 'reactstrap';
 import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DMS from '../descargaMasivaSat';
 
 
 class Valida extends Component {
@@ -10,6 +11,7 @@ class Valida extends Component {
     this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye'}
     this.validafirma = this.validafirma.bind(this)
     this.showHide = this.showHide.bind(this)
+    this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
   }
 
   validafirma(){
@@ -18,6 +20,7 @@ class Valida extends Component {
     if (res.ok===true) {
        this.setState({ ok: true, nook:false,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta });
        window.PWDFIEL=document.querySelector('#pwdfiel').value;
+	    this.autenticaContraSAT(); 
     }
     if (res.ok===false) {
        this.setState({ ok: false, nook:true,msg:res.msg  });
@@ -30,6 +33,18 @@ class Valida extends Component {
       ojos: this.state.ojos === 'eye' ? 'eye-slash' : 'eye'
     })  
   }
+
+  autenticaContraSAT () {
+            var x = new DMS();
+            var res=x.autenticate_armasoa(window.PWDFIEL);  /* solo arma al SOA ya firmado */
+            if (res.ok===true) {
+                      this.setState({ ok: true, nook:false });
+                      x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
+            } else {
+               this.setState({ ok: false, nook:true,msg:res.msg  });
+            }
+  }
+
 
   render() {
     const { ok, nook, msg, nombre,rfc,curp,email,emisor,desde,hasta,type,ojos } = this.state;

@@ -240,7 +240,7 @@ var DescargaMasivaSat = function()
 
    this.solicita_enviasoa= async function (soa,token,passdata) {
         var url=this.urlproxy;
-        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expires};
+        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
                 window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
@@ -404,11 +404,11 @@ var DescargaMasivaSat = function()
                      window.selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
 			     var actual=Math.floor(Date.now() / 1000);
 			     if ('respuesta' in obj.valor) {
-				     if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expires) {
+				     if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expired) {
 					 console.log('[estaAutenticado] token activo');
 					 resolve({ autenticado:true,certificado:obj.valor.passdata })
 				     } else {
-					 console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expires);
+					 console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expired);
 					 resolve({ autenticado:false }) 
 				     }
 			     }	 else { 

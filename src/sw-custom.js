@@ -78,7 +78,6 @@ self.addEventListener("sync", event => {
 });
 
 var syncRequest = estado => { 
-    console.log('[syncRequest] Sincronizando lo reques estado='+estado)
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
@@ -87,8 +86,8 @@ var syncRequest = estado => {
                   return Promise.all(
                          requests.map( async (request) => {
 
-                                if (request.value.url=='/verifica.php' & (request.value.respuesta=="Terminada" || request.value.respuesta=="Rechazada")) {  
-                                     return;
+                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) {
+				     if  (request.value.respuesta.substring(0,9)=="Terminada" || request.value.respuesta.substring(0,9)=="Rechazada") {  return; }
                                 }
 
                                 if (request.value.url=='/solicita.php' & (estado==ESTADOREQ.ACEPTADO || estado==ESTADOREQ.REQUIRIENDO)) {  // no procesa las verificaciones ya terminadas 
@@ -176,9 +175,9 @@ var querespuesta = (request,respuesta) => {
 
          if("created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autentica y que se cuenta con un token */
             respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
-            respuesta.expiresLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
+            respuesta.expiredLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
-                          { postRequestUpd(r,"update-request",respuesta); }
+                          { postRequestUpd(r,"autenticado",respuesta); }
             );
             return;
          }
@@ -193,25 +192,29 @@ var querespuesta = (request,respuesta) => {
 		                 updObjectByKey("request",request.value,request.key); /* actualiza el folio del requerimiento de la solicitud */
                               })
                        .then ( () => {
-                                 postRequestUpd(request,"update-request",respuesta);
+                                 postRequestUpd(request,"se genero una solicitud",respuesta);
                              });
 		       return;
                }
                if (request.value.url=='/verifica.php' & respuesta.status.code==5000) {
 		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
 		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
+		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
 		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
 		       updestado(request,respuesta.status.code,request.value.passdata.msg_v).then( () => {
 			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
+			       respuesta.statusRequest.message=request.value.passdata.msg_v;
 			       updSolicitud(respuesta,request.value.passdata.keySolicitud) 
                                .then( () => {
-			            postRequestUpd(request,"update-request",respuesta);
+			            postRequestUpd(request,"se verifico",respuesta);
                                });
                        });
 		       return;
                }
                if (request.value.url=='/verifica.php' & respuesta.status.code==300) {  // token invalido seguramente porque ya expiro
-                       updestado(request,ESTADOREQ.TOKENINVALIDO,respuesta.status.message);
+                       updestado(request,ESTADOREQ.TOKENINVALIDO,respuesta.status.message).then ( () => {;
+                                    postRequestUpd(request,"token-invalido",respuesta);
+		       });
 		       return;
                }
             }
@@ -219,11 +222,11 @@ var querespuesta = (request,respuesta) => {
 
          if(respuesta.msg=="El paquete se descargo") {
 		       request.value.passdata.msg_d=respuesta.msg;
-                       updestado(request,ESTADOREQ.PAQUETEDESCARGADO,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+                       updestado(request,ESTADOREQ.DESCARGADO,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
                                updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
                                updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
                                .then( () => {
-                                    postRequestUpd(request,"update-request",respuesta);
+                                    postRequestUpd(request,"se descargo",respuesta);
                                });
                        });
                        return;
@@ -234,7 +237,7 @@ var querespuesta = (request,respuesta) => {
 var updSolicitud = (respuesta,idKey) => {
         return new Promise( (resolve, reject) => {
 		      selObjectByKey('request',idKey).then( obj => {
-				var mensaje = respuesta.statusRequest.message!=="Terminada" ?  respuesta.statusRequest.message : 'Facturas '+respuesta.numberCfdis ;
+				var mensaje = respuesta.statusRequest.message.substring(0,9)!=="Terminada" ?  respuesta.statusRequest.message.substring(0,9) : 'Facturas '+respuesta.numberCfdis ;
 				obj.passdata.msg_v=mensaje;
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });
@@ -245,6 +248,7 @@ var updSolicitudDownload = (mensaje,idKey) => {
         return new Promise( (resolve, reject) => {
                       selObjectByKey('request',idKey).then( obj => {
                                 obj.passdata.msg_d=mensaje;
+			        obj.estado=ESTADOREQ.DESCARGADO;
                                 updObjectByKey('request',obj,idKey);
                       }).then( () => { resolve() });
         });
@@ -255,6 +259,7 @@ self.addEventListener('activate', function(event) {
 });
  
   setInterval(function() {
+       console.log('[setInterval] va a sincronizar');
        syncRequest(ESTADOREQ.INICIAL);
        syncRequest(ESTADOREQ.ACEPTADO);
   }, REVISA.ESTADOREQ * 1000);

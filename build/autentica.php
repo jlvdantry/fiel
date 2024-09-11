@@ -7,13 +7,12 @@ use PhpCfdi\SatWsDescargaMasiva\RequestBuilder\FielRequestBuilder\Fiel;
 use PhpCfdi\SatWsDescargaMasiva\RequestBuilder\FielRequestBuilder\FielRequestBuilder;
 use PhpCfdi\SatWsDescargaMasiva\Service;
 use PhpCfdi\SatWsDescargaMasiva\WebClient\GuzzleWebClient;
-
+$path='C:\Bitnami\wappstack-7.3.31-0\apache2\htdocs\fiel-dev\tmp\log';
 $webClient = new GuzzleWebClient();
 
 $service = new Service(null, $webClient);
  
 $payload=file_get_contents('php://input');
 
-##echo print_r($service->authenticate_i($payload),true);
-##echo print_r($payload,true);
 echo json_encode($service->authenticate_i($payload));
+

@@ -545,8 +545,7 @@ function leefirmas()
         })
 }
 
-function leeSolicitudes(direccion='next')
-{
+function leeSolicitudes(direccion='next') {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
@@ -560,8 +559,22 @@ function leeSolicitudes(direccion='next')
         })
 }
 
-function leeSolicitudesCorrectas()
-{
+function leeAutenticaciones(direccion='next') {
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                selObjects(objectStore,'url','/autentica.php',direccion).then(function(requests) {
+                                                               resolve(requests) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[db.js leeAutenticaciones] Database error: "+err.message);
+                });
+        })
+}
+
+
+function leeSolicitudesCorrectas() {
         var solicitudesCorrectas=[];
         return new Promise(function (resolve, reject) {
                leeSolicitudes('prev').then( a  => {
@@ -576,9 +589,35 @@ function leeSolicitudesCorrectas()
                    
 }
 
+/* lee la ultima solicitud que se esta verificando */
+function leeSolicitudesVerificando() { 
+        var solicitudesVerificando=[];
+        return new Promise(function (resolve, reject) {
+               leeSolicitudes('prev').then( a  => {
+                    a.forEach(
+                          e => { if (e.value.estatus===5001) {
+                                         solicitudesVerificando.push(e)
 
-function leefirma(key)
-{
+                          } }
+                    );
+                    resolve(solicitudesVerificando);
+               });
+        })
+}
+
+/* lee la ultima solicitud que se esta verificando */
+function obtieneelUltimoToken() {
+        var ultimoToken=[];
+        return new Promise(function (resolve, reject) {
+               this.selObjectUlt('request','url','/autentica.php','prev').then( obj => {
+                    resolve(obj);
+               });
+        })
+}
+
+
+
+function leefirma(key) {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");

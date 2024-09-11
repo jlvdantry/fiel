@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { browserHistory  } from 'react-router';
@@ -19,7 +20,7 @@ class CargafaelMasiva extends Component {
   constructor(props){
     super(props);
     this.nextPath = this.nextPath.bind(this);
-    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()),end:new Date(),formattedValueIni:null
+    this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()).toISOString(),end:new Date().toISOString(),formattedValueIni:null
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
@@ -39,6 +40,7 @@ class CargafaelMasiva extends Component {
     this.revisaSiEstaAutenticado = this.revisaSiEstaAutenticado.bind(this);
     this.handle_inserta_catalogo = this.handle_inserta_catalogo.bind(this);
     this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
+    this.haysolicitudesVerificando = this.haysolicitudesVerificando.bind(this);
   };
 
     
@@ -104,65 +106,89 @@ class CargafaelMasiva extends Component {
   }
 
   revisaSiEstaAutenticado () {
-      var mifi = null;
-      mifi = new DMS();
-      mifi.estaAutenticado().then( res => {
-               console.log('revisaSiEstaAutenticado res='+res+' this.state.estaAutenticado='+this.state.estaAutenticado);
-               if (res.autenticado!== this.state.estaAutenticado) {
-                   this.setState({ estaAutenticado : res.autenticado });
-               }
-               if (res.autenticado===false) {
-		          this.autenticaContraSAT();
-	       }
-		         
-      });
+	      var mifi = null;
+	      mifi = new DMS();
+	      mifi.estaAutenticado().then( res => {
+		       if (res.autenticado!== this.state.estaAutenticado) {
+			   this.setState({ estaAutenticado : res.autenticado });
+		       }
+		       if (res.autenticado===false) {
+				  console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+				  this.autenticaContraSAT();
+		       }
+	      });
+
   }
 
   autenticaContraSAT () {
-    var x = new DMS();
-    var res=x.autenticate_armasoa(window.PWDFIEL);  /* solo arma al SOA ya firmado */
-    if (res.ok===true) {
-              this.setState({ ok: true, nook:false });
-              x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
-    } else {
-       this.setState({ ok: false, nook:true,msg:res.msg  });
-    }
+	    var x = new DMS();
+	    var res=x.autenticate_armasoa(window.PWDFIEL);  /* solo arma al SOA ya firmado */
+	    if (res.ok===true) {
+		      this.setState({ ok: true, nook:false });
+		      x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
+	    } else {
+	       this.setState({ ok: false, nook:true,msg:res.msg  });
+	    }
+  }
+
+  haysolicitudesVerificando () {
+	         window.obtieneelUltimoToken().then ( a =>  {
+			 var token = { created: a.valor.respuesta.created,expired:a.valor.respuesta.expired,value:a.valor.respuesta.value }
+			 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:a.folioReq}));
+			 var x = new DMS();
+			 window.leeSolicitudesVerificando().then( req =>  {
+			       console.log('[haysolicitudesVerificando] va a volver a verificar la solicitud='+req.key)
+				    req.forEach( e => {
+					    this.setState(state => ({ folioReq:e.value.folioReq}));
+					    console.log('[haysolicitudesVerificando] '+JSON.stringify(e.key));
+					    x.verificando(this.state,e.key)
+				    }	     
+				    );
+
+			 });
+		 });
   }
 
   componentDidMount(){
       this.autenticaContraSAT();
       estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
-      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }); });
       window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
       handleMessage = (event) => {
-              console.log('[handleMessage] se recibio mensaje del sw url='+event.data.request.value.url);
+	      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+              console.log('[handleMessage] se recibio mensaje del sw url='+event.data.request.value.url+' accion='+event.data.action);
 	      window.PWDFIEL=event.data.PWDFIEL;
               var x = null;
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });
+		 this.haysolicitudesVerificando();
               }
 
-              if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {
-                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-                 var token = { created: event.data.request.value.header.token_created,expired:event.data.request.value.header.token_expired,value:event.data.request.value.header.token_value }
+              if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {  /* se creo una solicitud y empieza a verificar */
+                 var token = { created: event.data.request.value.header.token_created, expired:event.data.request.value.header.token_expired,value:event.data.request.value.header.token_value }
                  this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:event.data.request.value.folioReq}));
                  x = new DMS();
-                 x.verificando(	this.state,event.data.request.key);
-              } else { window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) }); }
+	        console.log('solicita.php event.data.request.key='+event.data.request.key); 
+                 x.verificando(	this.state,event.data.request.key);   /* manda el registro de verificacion */
+              } 
 
-              if (event.data.request.value.url==="/verifica.php" & event.data.request.value.respuesta==='Terminada') {
-                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-                 x = new DMS();
-                 x.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
-              } else {
-                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+              if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value) {
+                 if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
+			 x = new DMS();
+			 x.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
+		 } 
               }
 
+              if (event.data.action==='token-invalido') {
+		      this.haysolicitudesVerificando()
+              }	
+
               if (event.data.request.value.url==="/download.php") {
-                 window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
                  x = new DMS();
                  x.leezip(event.data.respuesta.xml);
               }
+
+	      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
       };
       navigator.serviceWorker.addEventListener('message', handleMessage);
   }
@@ -238,6 +264,7 @@ class CargafaelMasiva extends Component {
     }
                  var x = new DMS();
                  x.solicita_armasoa(this.state);
+	         window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
 
   }
 

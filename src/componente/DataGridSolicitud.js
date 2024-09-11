@@ -5,14 +5,11 @@ import DG from 'react-data-grid';
 const columns = [
   { key: 'fechaini',  name: 'Fecha Inicial', backgroundColor:'yellow'},
   { key: 'fechafin',  name: 'Fecha Final' },
-  { key: 'RFCEmisor', name: 'RFC Emisor' },
-  { key: 'RFCReceptor', name: 'RFC Receptor' },
+  { key: 'RFCEmisor', name: 'Emisor' },
+  { key: 'RFCReceptor', name: 'Receptor' },
   { key: 'msg', name: 'Estado Solicitud' },
-  { key: 'msg_v', name: 'Estado Verificacion' },
-  { key: 'msg_d', name: 'Estado Descarga',
-    renderHeaderCell: (props) => {
-      return <div className="text-success">Estado Descarga</div>;
-    }}
+  { key: 'msg_v', name: 'Verificando' },
+  { key: 'msg_d', name: 'Descarga'}
 ];
 
 export function MiDataGrid(props) {

@@ -69,25 +69,25 @@ class Consultafael extends Component {
                      <Card>
 			<CardHeader color="success" className="text-center" >Comprobante</CardHeader>
 			<CardBody>
-			  <CardSubtitle className="text-center">Fecha: {data.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
-			  <CardSubtitle className="text-center">Tipo de comprobante: {window.TC[data.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
-			  <CardSubtitle className="text-center">SubTotal: <CurrencyFormat value={data.valor.passdata["cfdi:Comprobante"]["@attributes"].SubTotal} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
-			  <CardSubtitle className="text-center">Total: <CurrencyFormat value={data.valor.passdata["cfdi:Comprobante"]["@attributes"].Total} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
+			  <CardSubtitle className="text-center">Fecha: {data.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha}</CardSubtitle>
+			  <CardSubtitle className="text-center">Tipo de comprobante: {window.TC[data.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante]}</CardSubtitle>
+			  <CardSubtitle className="text-center">SubTotal: <CurrencyFormat value={data.value.passdata["cfdi:Comprobante"]["@attributes"].SubTotal} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
+			  <CardSubtitle className="text-center">Total: <CurrencyFormat value={data.value.passdata["cfdi:Comprobante"]["@attributes"].Total} displayType={'text'} thousandSeparator={true} prefix={'$'} /></CardSubtitle>
 			</CardBody>
                      </Card>
 
                      <Card>
                         <CardHeader color="success" className="text-center" >Emisor</CardHeader>
                         <CardBody>
-                          <CardText color="success" className="text-center" >{ data.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc} </CardText>
-                          <CardText color="success" className="text-center" >{ data.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre}</CardText>
+                          <CardText color="success" className="text-center" >{ data.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc} </CardText>
+                          <CardText color="success" className="text-center" >{ data.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre}</CardText>
                         </CardBody>
                      </Card>
                      <Card>
                         <CardHeader color="success" className="text-center" >Receptor</CardHeader>
                         <CardBody>
-                          <CardText color="success" className="text-center" >{ data.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc} </CardText>
-                          <CardText color="success" className="text-center" >{ data.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Nombre}
+                          <CardText color="success" className="text-center" >{ data.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc} </CardText>
+                          <CardText color="success" className="text-center" >{ data.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Nombre}
                                   </CardText>
                         </CardBody>
                      </Card>
