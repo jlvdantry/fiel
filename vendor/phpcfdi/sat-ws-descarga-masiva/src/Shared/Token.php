@@ -95,7 +95,7 @@ final class Token implements JsonSerializable
     {
         return [
             'created' => $this->created,
-            'expires' => $this->expires,
+            'expired' => $this->expires,
             'value' => $this->value,
         ];
     }
