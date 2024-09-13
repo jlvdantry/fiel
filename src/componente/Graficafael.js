@@ -108,13 +108,13 @@ class Graficafael extends Component {
                        var datoFactura={};
                        var descripcion='';
                        var ingreso='desconocido', egreso='desconocido';
-                       var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
-                       var rfcEmisor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
-                       var rfcReceptor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
-                       var total=Number(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
+                       var tc=x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
+                       var rfcEmisor=x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
+                       var rfcReceptor=x.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
+                       var total=Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
                        var fechaPago=null;
-                       if ( x.valor.passdata["cfdi:Comprobante"]["cfdi:Conceptos"].length===1 ) {
-                          descripcion=x.valor.passdata["cfdi:Comprobante"]["cfdi:Conceptos"]["cfdi:Concepto"]["@attributes"].Descripcion;
+                       if ( x.value.passdata["cfdi:Comprobante"]["cfdi:Conceptos"].length===1 ) {
+                          descripcion=x.value.passdata["cfdi:Comprobante"]["cfdi:Conceptos"]["cfdi:Concepto"]["@attributes"].Descripcion;
                        } else { descripcion='Varios conceptos' }
                        var rfc=localStorage.getItem('rfc');     
                        if (rfc===rfcReceptor) {
@@ -126,19 +126,19 @@ class Graficafael extends Component {
                           if (tc==='I') { ingreso=total; egreso=0; }
                           if (tc==='N') { ingreso=0; egreso=total; }
                        }
-                       if (x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
-			       if ( x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
-				  fechaPago=x.valor.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
+                       if (x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
+			       if ( x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
+				  fechaPago=x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
 			       }
                        }
                        datoFactura={  "Emisor" : rfcEmisor
-                                            ,"Nombre Emisor" : x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
+                                            ,"Nombre Emisor" : x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
                                             ,"Receptor": rfcReceptor
-                                            ,"Fecha Emision" : x.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
+                                            ,"Fecha Emision" : x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
                                             ,"Fecha Pago" : fechaPago
-                                            ,"Descuento" : Number(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
+                                            ,"Descuento" : Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
                                             ,"Descripcion": descripcion
-                                            ,"Tipo de Comprobante": x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
+                                            ,"Tipo de Comprobante": x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
                                             ,"Ingreso": ingreso
                                             ,"Egreso": egreso 
                                           };
@@ -172,13 +172,13 @@ class Graficafael extends Component {
 
                     cuantas.map((x) => {
                        var ingreso=0, egreso=0;
-                       var tc=x.valor.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
-                       var rfcEmisor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
-                       var rfcReceptor=x.valor.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
-                       var total=parseFloat(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Total);
+                       var tc=x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
+                       var rfcEmisor=x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
+                       var rfcReceptor=x.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
+                       var total=parseFloat(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total);
 
 		       var rfc=localStorage.getItem('rfc');
-                       var mes=parseInt(x.valor.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(5,7))-1;
+                       var mes=parseInt(x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(5,7))-1;
 				   if (rfc===rfcReceptor) {
 					  if (tc==='I' ) { ingreso=0; egreso=total; }
 					  if (tc==='N') { ingreso=total; egreso=0; }
