@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Cargafael from './Cargafael';
-import Validafael from './Validafael';
 import Consultafael from './Consultafael';
 import Graficafael from './Graficafael';
 class Misfacturas extends Component {
@@ -23,8 +21,6 @@ class Misfacturas extends Component {
       <div>
 	      <Graficafael ref={this.changeGrafica}/>
 	      <Consultafael ref={this.changeConsulta} onRefresca={this.onRefresca}/>
-	      <Cargafael />
-	      <Validafael onRefresca={this.onRefresca}/>
       </div> 
     );
   }
