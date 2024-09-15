@@ -1,7 +1,9 @@
+const SW_VERSION = '1.0.5';
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
    importScripts('Constantes.js');
+   importScripts('encripta.js');
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -15,7 +17,7 @@ if ("function" === typeof importScripts) {
     // manually overriding the skipWaiting();
     self.addEventListener("install", (event) => {
       self.skipWaiting();
-      //location.reload();
+      generallaves();
     });
 
     // Manual injection point for manifest files.
@@ -73,6 +75,9 @@ self.addEventListener("sync", event => {
     };
     if (event.tag === "dameContra") {
         event.waitUntil(enviaContra())
+    };
+    if (event.tag === "GET-VERSION") {
+        event.waitUntil(enviaVersion())
     };
 
 });
@@ -157,7 +162,6 @@ var postRequestUpd = function(request,accion,respuesta) {
 var enviaContra = () => {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        //console.log('[enviaContra] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
                                 {contra: PWDFIEL}
                         );
@@ -165,6 +169,7 @@ var enviaContra = () => {
         });
 
 }
+
 
 var querespuesta = (request,respuesta) => {
          console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
@@ -179,6 +184,7 @@ var querespuesta = (request,respuesta) => {
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
                           { postRequestUpd(r,"autenticado",respuesta); }
             );
+            encripta_pw(PWDFIEL);
             return;
          }
 
@@ -256,6 +262,15 @@ var updSolicitudDownload = (mensaje,idKey) => {
 
 self.addEventListener('activate', function(event) {
   console.log('[sw.js] va a activar el intervalor para revisar requerimentos iniciales o aceptados');
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.source.postMessage({
+      type: 'VERSION',
+      version: SW_VERSION,
+    });
+  }
 });
  
   setInterval(function() {
