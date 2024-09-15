@@ -8,7 +8,8 @@ class About extends Component {
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
-   state={ collapseID: "toggler", windowWidth : window.innerWidth || document.documentElement.clientWidth , windowHeight : window.innerHeight || document.documentElement.clientHeight}
+   state={ collapseID: "toggler", windowWidth : window.innerWidth || document.documentElement.clientWidth , windowHeight : window.innerHeight || document.documentElement.clientHeight
+                       ,APPVERSION: null}
    toggle = collapseID => () => {
           console.log('si dio click');
 	  this.setState(prevState => ({
@@ -21,6 +22,24 @@ class About extends Component {
 		ReactDOM.findDOMNode(this).addEventListener('touchstart', (e)=>{ 
 		    console.log("touchstart triggered");
 		},{passive: true});
+
+		if ('serviceWorker' in navigator) {
+		  navigator.serviceWorker.ready.then((registration) => {
+		    if (registration.active) {
+		      registration.active.postMessage({ type: 'GET_VERSION' });
+		    }
+		  });
+
+		  // Listen for version response from the service worker
+		  navigator.serviceWorker.addEventListener('message', (event) => {
+		    if (event.data && event.data.type === 'VERSION') {
+		      console.log('Service Worker Version:', event.data.version);
+			    this.setState({APPVERSION:event.data.version}) ;
+		      // Optionally display the version in the UI
+		    }
+		  });
+		}
+
    }
 
    ponpasivo = () => {
@@ -48,7 +67,7 @@ class About extends Component {
 				  <p className="text-justify">Versión de la base de datos <b>{window.DBVERSION}</b></p>
 				  <p className="text-justify">Alto de la pantalla <b>{this.state.windowHeight}px</b></p>
 				  <p className="text-justify">Ancho de la pantalla <b>{this.state.windowWidth}px</b></p>
-				  <p className="text-justify">Versión del aplicativo pantalla <b>{window.APPVERSION}</b></p>
+				  <p className="text-justify">Versión del aplicativo <b>{this.state.APPVERSION}</b></p>
 			  </CardBody>
 			</Card>
                   </div>
