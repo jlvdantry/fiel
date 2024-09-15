@@ -1,4 +1,4 @@
-const SW_VERSION = '1.0.5';
+const SW_VERSION = '1.0.25';
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
@@ -72,12 +72,6 @@ self.addEventListener("sync", event => {
     if (event.tag === "verifica") {
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
        event.waitUntil(syncRequest(ESTADOREQ.ACEPTADO));
-    };
-    if (event.tag === "dameContra") {
-        event.waitUntil(enviaContra())
-    };
-    if (event.tag === "GET-VERSION") {
-        event.waitUntil(enviaVersion())
     };
 
 });
@@ -163,7 +157,7 @@ var enviaContra = () => {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
                         client.postMessage(
-                                {contra: PWDFIEL}
+                                {'type':'CONTRA','value': dame_pwd()}
                         );
                 });
         });
@@ -271,6 +265,15 @@ self.addEventListener('message', (event) => {
       version: SW_VERSION,
     });
   }
+  if (event.data && event.data.type === 'dameContra') {
+    dame_pwd().then( pwd => {
+	    event.source.postMessage({
+	      type: 'CONTRA',
+	      value: pwd,
+	    });
+    });
+  }
+
 });
  
   setInterval(function() {

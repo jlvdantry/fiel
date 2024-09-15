@@ -290,7 +290,6 @@ var DescargaMasivaSat = function()
                                      vJson=x.xmlToJson(stx);
                                      await window.openDatabasex(window.DBNAME,window.DBVERSION).then( () => {
                                                             window.inserta_factura(vJson).then( msg =>  {
-                                                                    console.log('leezip msg='+msg);
                                                             }).catch(function(err)  {
                                                                     console.log('error al guardar la factura');
                                                             });
@@ -403,12 +402,12 @@ var DescargaMasivaSat = function()
                 return new Promise(function (resolve, reject) {
                      window.selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
 			     var actual=Math.floor(Date.now() / 1000);
-			     if ('respuesta' in obj.valor) {
-				     if (actual>=obj.valor.respuesta.created & actual<=obj.valor.respuesta.expired) {
+			     if ('respuesta' in obj.value) {
+				     if (actual>=obj.value.respuesta.created & actual<=obj.value.respuesta.expired) {
 					 console.log('[estaAutenticado] token activo');
-					 resolve({ autenticado:true,certificado:obj.valor.passdata })
+					 resolve({ autenticado:true,certificado:obj.value.passdata })
 				     } else {
-					 console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.valor.respuesta.created+' expired='+obj.valor.respuesta.expired);
+					 console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.value.respuesta.created+' expired='+obj.value.respuesta.expired);
 					 resolve({ autenticado:false }) 
 				     }
 			     }	 else { 

@@ -41,6 +41,7 @@ class CargafaelMasiva extends Component {
     this.handle_inserta_catalogo = this.handle_inserta_catalogo.bind(this);
     this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
     this.haysolicitudesVerificando = this.haysolicitudesVerificando.bind(this);
+    this.dame_pwdSW  = this.dame_pwdSW.bind(this);
   };
 
     
@@ -133,7 +134,7 @@ class CargafaelMasiva extends Component {
 
   haysolicitudesVerificando () {
 	         window.obtieneelUltimoToken().then ( a =>  {
-			 var token = { created: a.valor.respuesta.created,expired:a.valor.respuesta.expired,value:a.valor.respuesta.value }
+			 var token = { created: a.value.respuesta.created,expired:a.value.respuesta.expired,value:a.value.respuesta.value }
 			 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:a.folioReq}));
 			 var x = new DMS();
 			 window.leeSolicitudesVerificando().then( req =>  {
@@ -148,16 +149,39 @@ class CargafaelMasiva extends Component {
 			 });
 		 });
   }
+ 
+  /* obtiene el pwd del sw */
+  dame_pwdSW() {
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.ready.then((registration) => {
+                    if (registration.active) {
+                      registration.active.postMessage({ type: 'dameContra' });
+                    }
+                  });
+
+                  // Listen for version response from the service worker
+                  navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'CONTRA') {
+			    window.PWDFIEL=event.data.value;
+                            this.autenticaContraSAT();
+                            estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+                    }
+                  });
+                }
+  }
 
   componentDidMount(){
-      this.autenticaContraSAT();
-      estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+      this.dame_pwdSW();
       window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }); });
       window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
       handleMessage = (event) => {
 	      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+	      if (event.data.type=='CONTRA') {
+	              window.PWDFIEL=event.data.value;
+                      this.setState({ pwdfiel:  window.PWDFIEL });
+		      return;
+              }		      
               console.log('[handleMessage] se recibio mensaje del sw url='+event.data.request.value.url+' accion='+event.data.action);
-	      window.PWDFIEL=event.data.PWDFIEL;
               var x = null;
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });

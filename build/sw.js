@@ -1,7 +1,9 @@
+const SW_VERSION = '1.0.25';
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
    importScripts('Constantes.js');
+   importScripts('encripta.js');
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -15,12 +17,12 @@ if ("function" === typeof importScripts) {
     // manually overriding the skipWaiting();
     self.addEventListener("install", (event) => {
       self.skipWaiting();
-      //location.reload();
+      generallaves();
     });
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v3/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v3/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v3/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v3/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v3/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v3/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v3/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v3/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v3/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v3/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v3/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v3/apple-launch-828x1792.png"},{"revision":"1485891e9fb50e54bca07704fc22bdf4","url":"static/v3/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v3/cadenaoriginal_3_3.js"},{"revision":"800670bb3126873bb36dbcd550d33d77","url":"static/v3/Constantes.js"},{"revision":"8fd4baf83c04548aa24f54d42bb87b55","url":"static/v3/db.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v3/favicon.ico"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v3/forge.min.js"},{"revision":"75df40b8150ea1edf7343f8dbe08a01c","url":"static/v3/index.html"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v3/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v3/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v3/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v3/pluma512x512m.png"},{"revision":"a789b6c409f1cd0ffef139d9bb11e052","url":"static/v3/static/css/main.8a7121de.css"},{"revision":"bb99ab791da2991ff243a9bf066fb67e","url":"static/v3/static/js/main.ebf84961.js"},{"revision":"76a4e1b67cc50d497523f90cb3d505b2","url":"static/v3/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v3/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"a6f9d93e6e22210605c18a24e2477a7b","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"800670bb3126873bb36dbcd550d33d77","url":"static/v4/Constantes.js"},{"revision":"da6657ab403bb0e0ea64a98edafb0871","url":"static/v4/db.js"},{"revision":"1646cdf89d61372eaf28255b8938285b","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"f6ed2db23ff71ae56f387dc77769cc19","url":"static/v4/index.html"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"a789b6c409f1cd0ffef139d9bb11e052","url":"static/v4/static/css/main.8a7121de.css"},{"revision":"36afa66aa867ad1f8b280bd298a75bf6","url":"static/v4/static/js/main.5abeea15.js"},{"revision":"76a4e1b67cc50d497523f90cb3d505b2","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -70,9 +72,6 @@ self.addEventListener("sync", event => {
     if (event.tag === "verifica") {
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
        event.waitUntil(syncRequest(ESTADOREQ.ACEPTADO));
-    };
-    if (event.tag === "dameContra") {
-        event.waitUntil(enviaContra())
     };
 
 });
@@ -157,14 +156,14 @@ var postRequestUpd = function(request,accion,respuesta) {
 var enviaContra = () => {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        //console.log('[enviaContra] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
-                                {contra: PWDFIEL}
+                                {'type':'CONTRA','value': dame_pwd()}
                         );
                 });
         });
 
 }
+
 
 var querespuesta = (request,respuesta) => {
          console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
@@ -179,6 +178,7 @@ var querespuesta = (request,respuesta) => {
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
                           { postRequestUpd(r,"autenticado",respuesta); }
             );
+            encripta_pw(PWDFIEL);
             return;
          }
 
@@ -256,6 +256,24 @@ var updSolicitudDownload = (mensaje,idKey) => {
 
 self.addEventListener('activate', function(event) {
   console.log('[sw.js] va a activar el intervalor para revisar requerimentos iniciales o aceptados');
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.source.postMessage({
+      type: 'VERSION',
+      version: SW_VERSION,
+    });
+  }
+  if (event.data && event.data.type === 'dameContra') {
+    dame_pwd().then( pwd => {
+	    event.source.postMessage({
+	      type: 'CONTRA',
+	      value: pwd,
+	    });
+    });
+  }
+
 });
  
   setInterval(function() {

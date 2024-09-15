@@ -239,7 +239,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
         cursor.onerror = function(event) {
                console.log('[db.js] selObjectUlt error ');
                var json = { };
-               json.valor=0;
+               json.value=0;
                json.key  =0;
                resolve(json);
         }
@@ -248,7 +248,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
             var cursor1 = event.target.result;
             var json = { };
             if (cursor1) {
-               json.valor=cursor1.value;
+               json.value=cursor1.value;
                json.key  =cursor1.primaryKey;
                resolve(json);
             } else {
