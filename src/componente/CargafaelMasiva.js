@@ -6,11 +6,11 @@ import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import Autocomplete from "react-autocomplete";
 
 let handleMessage = null;
-let estaAutenticado = null;
+let estaAutenticadoInter = null;  // funcion de que se se ejecuta en el intervalo
+let isRunRevisaSiEstaAutenticado = false;
 
         const days = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -24,7 +24,7 @@ class CargafaelMasiva extends Component {
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
-                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,estaAutenticado:false,RFCS:[]
+                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -35,11 +35,7 @@ class CargafaelMasiva extends Component {
     this.toggleC =  this.toggleC.bind(this)
     this.changeValueC = this.changeValueC.bind(this);
     this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
-    this.selectRFCEmisor = this.selectRFCEmisor.bind(this);
-    this.cambioRFCReceptor = this.cambioRFCReceptor.bind(this);
-    this.revisaSiEstaAutenticado = this.revisaSiEstaAutenticado.bind(this);
-    this.handle_inserta_catalogo = this.handle_inserta_catalogo.bind(this);
-    this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
+    this.selectRFCEmisor = this.selectRautenticaContraSAT = this.autenticaContraSAT.bind(this);
     this.haysolicitudesVerificando = this.haysolicitudesVerificando.bind(this);
     this.dame_pwdSW  = this.dame_pwdSW.bind(this);
   };
@@ -106,14 +102,18 @@ class CargafaelMasiva extends Component {
       browserHistory.push(path);
   }
 
-  revisaSiEstaAutenticado () {
+  /* revisa si esta autenticado recibe el objeto del aplicativo */
+  revisaSiEstaAutenticado = () => {
+	      //if (isRunRevisaSiEstaAutenticado) { return; }
+	      isRunRevisaSiEstaAutenticado=true;
 	      var mifi = null;
 	      mifi = new DMS();
-	      mifi.estaAutenticado().then( res => {
-		       if (res.autenticado!== this.state.estaAutenticado) {
-			   this.setState({ estaAutenticado : res.autenticado });
+	      mifi.getTokenEstatusSAT().then( res => {
+		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT) {
+			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT });
+                           isRunRevisaSiEstaAutenticado=false;
 		       }
-		       if (res.autenticado===false) {
+		       if (res.tokenEstatusSAT===window.TOKEN.NOSOLICITADO || res.tokenEstatusSAT===window.TOKEN.CADUCADO ) {
 				  console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
 				  this.autenticaContraSAT();
 		       }
@@ -121,7 +121,12 @@ class CargafaelMasiva extends Component {
 
   }
 
+  /* intenta autenticarse contra el sat */
   autenticaContraSAT () {
+	    console.log('[autenticaContraSAT]');
+	    if (!window.PWDFIEL) {
+		    console.error('sin pwd de la fiel');
+	    }
 	    var x = new DMS();
 	    var res=x.autenticate_armasoa(window.PWDFIEL);  /* solo arma al SOA ya firmado */
 	    if (res.ok===true) {
@@ -129,9 +134,11 @@ class CargafaelMasiva extends Component {
 		      x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
 	    } else {
 	       this.setState({ ok: false, nook:true,msg:res.msg  });
+               isRunRevisaSiEstaAutenticado=false;
 	    }
   }
 
+  /* hay solicitudes en estado de verificando */
   haysolicitudesVerificando () {
 	         window.obtieneelUltimoToken().then ( a =>  {
 			 var token = { created: a.value.respuesta.created,expired:a.value.respuesta.expired,value:a.value.respuesta.value }
@@ -152,74 +159,76 @@ class CargafaelMasiva extends Component {
  
   /* obtiene el pwd del sw */
   dame_pwdSW() {
+	        console.log('[dame_pwdSW]');
                 if ('serviceWorker' in navigator) {
                   navigator.serviceWorker.ready.then((registration) => {
                     if (registration.active) {
-                      registration.active.postMessage({ type: 'dameContra' });
-                    }
-                  });
-
-                  // Listen for version response from the service worker
-                  navigator.serviceWorker.addEventListener('message', (event) => {
-                    if (event.data && event.data.type === 'CONTRA') {
-			    window.PWDFIEL=event.data.value;
-                            this.autenticaContraSAT();
-                            estaAutenticado = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+                      registration.active.postMessage({ action: 'dameContra' });
                     }
                   });
                 }
   }
 
+
   componentDidMount(){
-      this.dame_pwdSW();
-      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }); });
-      window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
+      window.tecleoPwdPrivada().then(pwd => { 
+	      if ('pwd' in pwd.value) {
+		      this.setState({ tecleoPWD:true });
+		      this.dame_pwdSW();
+		      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }); });
+		      window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
+	      }
+      });
+
+      /* maneja los mensaje provenientes del sw */
       handleMessage = (event) => {
-	      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-	      if (event.data.type=='CONTRA') {
-	              window.PWDFIEL=event.data.value;
+              console.log('[handleMessage] se recibio mensaje del sw action='+JSON.stringify(event.data.action,true));
+              window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+              if (event.data.action==='CONTRA') {
+                      window.PWDFIEL=event.data.value;
                       this.setState({ pwdfiel:  window.PWDFIEL });
-		      return;
-              }		      
-              console.log('[handleMessage] se recibio mensaje del sw url='+event.data.request.value.url+' accion='+event.data.action);
+		      this.autenticaContraSAT();
+                      estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+                      return;
+              }
               var x = null;
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
+                 isRunRevisaSiEstaAutenticado=false;
                  this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });
-		 this.haysolicitudesVerificando();
+                 this.haysolicitudesVerificando();
               }
 
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {  /* se creo una solicitud y empieza a verificar */
-                 var token = { created: event.data.request.value.header.token_created, expired:event.data.request.value.header.token_expired,value:event.data.request.value.header.token_value }
+                 var token = { created: event.data.request.value.header.token_created, expired:event.data.request.value.header.token_expired
+                                       ,value:event.data.request.value.header.token_value }
                  this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:event.data.request.value.folioReq}));
                  x = new DMS();
-	        console.log('solicita.php event.data.request.key='+event.data.request.key); 
-                 x.verificando(	this.state,event.data.request.key);   /* manda el registro de verificacion */
-              } 
+                 x.verificando( this.state,event.data.request.key);   /* manda el registro de verificacion */
+              }
 
               if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value) {
                  if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
-			 x = new DMS();
-			 x.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
-		 } 
+                         x = new DMS();
+                         x.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
+                 }
               }
 
-              if (event.data.action==='token-invalido') {
-		      this.haysolicitudesVerificando()
-              }	
+              if (event.data.action==='token-invalido') { this.haysolicitudesVerificando() }
 
               if (event.data.request.value.url==="/download.php") {
                  x = new DMS();
                  x.leezip(event.data.respuesta.xml);
               }
 
-	      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+              window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
       };
       navigator.serviceWorker.addEventListener('message', handleMessage);
+
   }
 
   componentWillUnmount() {
     navigator.serviceWorker.removeEventListener('message',handleMessage)
-    clearInterval(estaAutenticado);
+    clearInterval(estaAutenticadoInter);
   }
 
   onChangeHandler=event=>{
@@ -286,9 +295,9 @@ class CargafaelMasiva extends Component {
            return;
        }
     }
-                 var x = new DMS();
-                 x.solicita_armasoa(this.state);
-	         window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+    var x = new DMS();
+    x.solicita_armasoa(this.state);
+    window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
 
   }
 
@@ -362,6 +371,13 @@ class CargafaelMasiva extends Component {
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Carga masiva de la factura electrónica</h2>
+                            { this.state.tecleoPWD===false &&
+                                <div  className="mt-1">
+                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Primero debe de cargar su fiel para poder solicitar facturas al SAT </Alert>
+                                </div> }
+
+                  { this.state.tecleoPWD===true && <div>
                         <FormGroup className="container col-lg-12 justify-content-around">
                           <div className="col-lg-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
@@ -389,8 +405,8 @@ class CargafaelMasiva extends Component {
                       </FormGroup>
 
 		      <FormGroup className="container">
-	              { this.state.estaAutenticado===true  &&  <Label className="text-success">Esta conectado con el SAT</Label> }
-	              { this.state.estaAutenticado===false &&  <Label calssNmae="text-danger">Esta desconectado con el SAT</Label> }
+	              { this.state.tokenEstatusSAT===window.TOKEN.ACTIVO  &&  <Label className="text-success">Esta conectado con el SAT</Label> }
+	              { this.state.tokenEstatusSAT!==window.TOKEN.ACTIVO &&  <Label className="text-danger">Esta desconectado con el SAT</Label> }
 		      </FormGroup>
 
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
@@ -481,7 +497,6 @@ class CargafaelMasiva extends Component {
                       </FormGroup> }
 
                       { this.state.dropdownValue==='por folio' && <FormGroup className="container row col-lg-12">
-				<Label>Folio de la factura</Label>
 				<InputGroup>
 					<Input type="input" name="password" id="folio" placeholder="Folio de la factura" />
 				</InputGroup>
@@ -490,14 +505,13 @@ class CargafaelMasiva extends Component {
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
                                           <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El folio es obligatorio </Alert>
                                 </div> }
-
                       </FormGroup> }
+
 
                       <div className="flex-col d-flex justify-content-center mb-2">
                            <Button color="primary" onClick={this.cargar}>Solicitar</Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
-                      <ReactTooltip id="my-tooltip-1" className="text-justify border border-info col-12" place="bottom" variant="info" html="<div >En el caso de que este protegido la contraseña, quiere decir que ya esta identificado ante el <b>SAT</b>, esto tiene una duración de cinco minutos, cuando se termine este tiempo se debe de volver a teclear la contraseña.</div>" />
       <style>
         {`
           /* Media query for screens smaller than 600px */
@@ -510,6 +524,7 @@ class CargafaelMasiva extends Component {
           }
         `}
       </style>
+				  </div> }
         </Card>
 
 

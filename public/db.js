@@ -52,17 +52,6 @@ var creadbm = function(db) {
 
 var creadb = function(db) {
                    var objectStore='';
-                   if(!db.objectStoreNames.contains('encaptura')) { /* datos que se estan capturando en una forma */
-                        objectStore = db.createObjectStore('encaptura', { autoIncrement : true });
-                        objectStore.createIndex('hora', 'hora', { unique: false });
-                        objectStore.createIndex('minuto', 'minuto', { unique: false });
-                        objectStore.createIndex('dia', 'dia', { unique: false });
-                        objectStore.createIndex('mes', 'mes', { unique: false });
-                        objectStore.createIndex('ano', 'ano', { unique: false });
-                        objectStore.createIndex('estado', 'estado', { unique: false });
-                        objectStore.createIndex('idmenu', 'idmenu', { unique: false });
-                        objectStore.createIndex('usename', 'usename', { unique: false });
-                    };
 
                    if(!db.objectStoreNames.contains('request')) { /*request hechos a un servidor externo */
                         objectStore = db.createObjectStore('request', { autoIncrement : true });
@@ -101,17 +90,6 @@ var creadb = function(db) {
                         objectStore.createIndex('label', 'label', { unique: false });
                         objectStore.createIndex('ID', 'ID', { unique: false });
                         objectStore.createIndex('catalogo_label', ['catalogo','label'], { unique: true });
-                    };
-
-                   if(!db.objectStoreNames.contains('facturas')) { /* facturas electronicas  */
-                        objectStore = db.createObjectStore('facturas', { autoIncrement : true });
-                        objectStore.createIndex('hora', 'hora', { unique: false });
-                        objectStore.createIndex('minuto', 'minuto', { unique: false });
-                        objectStore.createIndex('dia', 'dia', { unique: false });
-                        objectStore.createIndex('mes', 'mes', { unique: false });
-                        objectStore.createIndex('ano', 'ano', { unique: false });
-                        objectStore.createIndex('sello', 'sello', { unique: true });
-                        objectStore.createIndex('ID', 'ID', { unique: false });
                     };
 
 
@@ -221,7 +199,8 @@ var selObjects = function(objectStore, indexname, indexvalue, direccion='next') 
    objectStores object a buscar registros
    indexname    nombre del indice a buscar
    indexvalue   valor del indice a buscar
-   si llegan valida indexname e indexvalue se regresan todos los valores del objeto
+   direction o el orden en que se obtiene las filas o registros next=de menor a mayor, prev=de mayor a menor
+   si no llegan valida indexname e indexvalue se regresan todos los valores del objeto
    */
 var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next') {
         return new Promise(function (resolve, reject) {
@@ -252,7 +231,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
                json.key  =cursor1.primaryKey;
                resolve(json);
             } else {
-              reject();
+              reject('No encontro registro');
             };
         };
    });
@@ -408,7 +387,7 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
-                json.estado=0;
+                json.estado=wlmovto;
                 json.url=wlurl;
                 json.passdata=passdata;
                 json.forma=forma;
@@ -605,15 +584,24 @@ function leeSolicitudesVerificando() {
         })
 }
 
-/* lee la ultima solicitud que se esta verificando */
+/* Obtiene el ultimo TOKEN generado */
 function obtieneelUltimoToken() {
-        var ultimoToken=[];
         return new Promise(function (resolve, reject) {
                this.selObjectUlt('request','url','/autentica.php','prev').then( obj => {
                     resolve(obj);
                });
         })
 }
+
+/*  lee si tecleo el pwd de la llave privada */
+function tecleoPwdPrivada() {
+        return new Promise(function (resolve, reject) {
+               this.selObjectUlt('request','url','_X_','prev').then( obj => {
+                    resolve(obj);
+               });
+        })
+}
+
 
 
 

@@ -26,13 +26,13 @@ class About extends Component {
 		if ('serviceWorker' in navigator) {
 		  navigator.serviceWorker.ready.then((registration) => {
 		    if (registration.active) {
-		      registration.active.postMessage({ type: 'GET_VERSION' });
+		      registration.active.postMessage({ action: 'GET_VERSION' });
 		    }
 		  });
 
 		  // Listen for version response from the service worker
 		  navigator.serviceWorker.addEventListener('message', (event) => {
-		    if (event.data && event.data.type === 'VERSION') {
+		    if (event.data && event.data.action === 'VERSION') {
 		      console.log('Service Worker Version:', event.data.version);
 			    this.setState({APPVERSION:event.data.version}) ;
 		      // Optionally display the version in the UI

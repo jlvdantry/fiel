@@ -1,6 +1,6 @@
-const SW_VERSION = '1.0.25';
+const SW_VERSION = '1.0.61';
 if ("function" === typeof importScripts) {
-   importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
+	importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
    importScripts('Constantes.js');
    importScripts('encripta.js');
@@ -63,17 +63,23 @@ if ("function" === typeof importScripts) {
 }
 
 self.addEventListener("sync", event => {
+    console.log('recibio sync el sw event='+JSON.stringify(event,true));
     if (event.tag.substring(0,9)=== "autentica") {
        if (event.tag.substring(10)!=='') {
                      PWDFIEL=event.tag.substring(10);
        }
-       event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
+       event.waitUntil(syncRequest(ESTADOREQ.INICIAL.AUTENTICA));
     };
     if (event.tag === "verifica") {
-       event.waitUntil(syncRequest(ESTADOREQ.INICIAL));
+       event.waitUntil(syncRequest(ESTADOREQ.INICIAL.VERIFICA));
        event.waitUntil(syncRequest(ESTADOREQ.ACEPTADO));
     };
-
+    if (event.tag === "solicita") {
+       event.waitUntil(syncRequest(ESTADOREQ.INICIAL.SOLICITUD));
+    } ;
+    if (event.tag === "download") {
+       event.waitUntil(syncRequest(ESTADOREQ.INICIAL.DESCARGA));
+    } ;
 });
 
 var syncRequest = estado => { 
@@ -84,6 +90,9 @@ var syncRequest = estado => {
     }).then( requests => {
                   return Promise.all(
                          requests.map( async (request) => {
+
+                                if (request.value.url=='/autentica.php') {
+				}
 
                                 if (request.value.url=='/verifica.php' & 'respuesta' in request.value) {
 				     if  (request.value.respuesta.substring(0,9)=="Terminada" || request.value.respuesta.substring(0,9)=="Rechazada") {  return; }
@@ -153,11 +162,11 @@ var postRequestUpd = function(request,accion,respuesta) {
         });
 };
  
-var enviaContra = () => {
+var enviaContra = (pwd) => {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
                         client.postMessage(
-                                {'type':'CONTRA','value': dame_pwd()}
+                                {'action':'CONTRA','value': pwd}
                         );
                 });
         });
@@ -198,7 +207,6 @@ var querespuesta = (request,respuesta) => {
                }
                if (request.value.url=='/verifica.php' & respuesta.status.code==5000) {
 		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
-		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
 		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
 		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
 		       updestado(request,respuesta.status.code,request.value.passdata.msg_v).then( () => {
@@ -259,26 +267,22 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'GET_VERSION') {
+  console.log('recibio message el sw event='+JSON.stringify(event.data,true));
+  if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
-      type: 'VERSION',
+      action: 'VERSION',
       version: SW_VERSION,
     });
   }
-  if (event.data && event.data.type === 'dameContra') {
-    dame_pwd().then( pwd => {
-	    event.source.postMessage({
-	      type: 'CONTRA',
-	      value: pwd,
-	    });
-    });
+  if (event.data && event.data.action === 'dameContra') {
+     dame_pwd().then( x => { enviaContra(x); });
   }
 
 });
  
   setInterval(function() {
        console.log('[setInterval] va a sincronizar');
-       syncRequest(ESTADOREQ.INICIAL);
+       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
        syncRequest(ESTADOREQ.ACEPTADO);
   }, REVISA.ESTADOREQ * 1000);
 

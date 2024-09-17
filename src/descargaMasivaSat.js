@@ -230,9 +230,9 @@ var DescargaMasivaSat = function()
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("autentica_"+pwd);
-                                       console.log('[inserta_request] envio sincronizacion al service worker ');
+                                       console.log('[autenticate_enviasoa] envio autenticacion al service worker ');
                                    }).catch(function(err) {console.log("[broseaing.js] inserta_request El servicio de trabajo no esta listo: "+err.message)});
-                                } else { console.log('[inserta_request] no envio la sincronizacion con el service worker '); }
+                                } else { console.log('[autenticate_enviasoa] no envio la sincronizacion con el service worker '); }
                 }).catch(function(err) {
                                 console.log("[inserta_request] Database error: "+err.message);
                 });
@@ -241,10 +241,10 @@ var DescargaMasivaSat = function()
    this.solicita_enviasoa= async function (soa,token,passdata) {
         var url=this.urlproxy;
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
-                window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITA,hs1,soa).then( key => {
+                window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITUD,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
-                                       registration.sync.register("autentica");
+                                       registration.sync.register("solicita");
                                        console.log('[solicita_enviasoa] envio sincronizacion al service worker ');
                                    }).catch(function(err) {console.log("[broseaing.js] inserta_request El servicio de trabajo no esta listo: "+err.message)});
                                 } else { console.log('[solicita_enviasoa] no envio la sincronizacion con el service worker '); }
@@ -260,7 +260,7 @@ var DescargaMasivaSat = function()
                 window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
-                                       registration.sync.register("autentica");
+                                       registration.sync.register("download");
                                        console.log('[download_enviasoa] envio sincronizacion al service worker ');
                                    }).catch(function(err) {console.log("[broseaing.js] inserta_request El servicio de trabajo no esta listo: "+err.message)});
                                 } else { console.log('[download_enviasoa] no envio la sincronizacion con el service worker '); }
@@ -344,11 +344,12 @@ var DescargaMasivaSat = function()
                 this.mifiel = new fiel();
                 this.mifiel.validafiellocal(estado.pwdfiel);
                 this.cer = this.mifiel.damecertificadofiel();
-                this.estaAutenticado().then( (res) => {
-                   if (res.autenticado) { 
+                this.getTokenEstatusSAT().then( (res) => {
+                   if (res.tokenEstatusSAT===window.TOKEN.ACTIVO) { 
                       estado.certificado=res.certificado;
                       var passdata = { 'fechaini':estado.start.substring(0,10),'fechafin':estado.end.substring(0,10),
                                                   'RFCEmisor':estado.RFCEmisor,'RFCReceptor':estado.RFCReceptor };
+	              console.log('[solicita_armasoa] ya armo el soa de solicita y va a ennviar el soa');	
                       this.armaBodySol(estado);
                       this.solicita_enviasoa(this.xmltoken,estado.token,passdata)
                    }
@@ -397,23 +398,25 @@ var DescargaMasivaSat = function()
                 }
    }
 
-	/* revisa si el token este caducado */
-   this.estaAutenticado = () => {
+   /* revisa si el token este caducado */
+   this.getTokenEstatusSAT = () => {
                 return new Promise(function (resolve, reject) {
                      window.selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
 			     var actual=Math.floor(Date.now() / 1000);
 			     if ('respuesta' in obj.value) {
 				     if (actual>=obj.value.respuesta.created & actual<=obj.value.respuesta.expired) {
-					 console.log('[estaAutenticado] token activo');
-					 resolve({ autenticado:true,certificado:obj.value.passdata })
+					 console.log('[getTokenEstatusSAT] token activo id='+obj.key);
+					 resolve({ tokenEstatusSAT:window.TOKEN.ACTIVO,certificado:obj.value.passdata })
 				     } else {
-					 console.log('[estaAutenticado] token caducado actual='+actual+' created='+obj.value.respuesta.created+' expired='+obj.value.respuesta.expired);
-					 resolve({ autenticado:false }) 
+					 console.log('[getTokenEstatusSAT] token caducado id='+obj.id);
+					 resolve({ tokenEstatusSAT:window.TOKEN.CADUCADO }) 
 				     }
 			     }	 else { 
-					 console.log('[estaAutenticado] no encontro respuesta en el request request_id='+obj.key);
-				         resolve({ autenticado:false }); 
+					 console.log('[getTokenEstatusSAT] no se ha generadon un token  id='+obj.key);
+				         resolve({ tokenEstatusSAT:window.TOKEN.NOGENERADO }); 
 			              } 
+		     }).catch( err => {
+				         resolve({ tokenEstatusSAT:window.TOKEN.NOSOLICITADO }); 
 		     });
                 });
    }
