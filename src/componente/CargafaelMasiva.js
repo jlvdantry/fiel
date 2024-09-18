@@ -35,7 +35,8 @@ class CargafaelMasiva extends Component {
     this.toggleC =  this.toggleC.bind(this)
     this.changeValueC = this.changeValueC.bind(this);
     this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
-    this.selectRFCEmisor = this.selectRautenticaContraSAT = this.autenticaContraSAT.bind(this);
+    this.selectRFCEmisor = this.selectRFCEmisor.bind(this);
+    this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
     this.haysolicitudesVerificando = this.haysolicitudesVerificando.bind(this);
     this.dame_pwdSW  = this.dame_pwdSW.bind(this);
   };
