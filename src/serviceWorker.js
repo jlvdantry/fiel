@@ -20,6 +20,7 @@ const isLocalhost = Boolean(
 );
 
 export function register(config) {
+  console.log('[register] empezo');
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
@@ -31,6 +32,7 @@ export function register(config) {
     }
 
     window.addEventListener('load', () => {
+      console.log('[load] empezo');
       const swUrl = `${process.env.PUBLIC_URL}/sw.js`;
 
       if (isLocalhost) {
@@ -54,6 +56,7 @@ export function register(config) {
 }
 
 function registerValidSW(swUrl, config) {
+  console.log('[ registerValidSW] swUrl='+swUrl+' config='+config);
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
@@ -63,6 +66,7 @@ function registerValidSW(swUrl, config) {
           return;
         }
         installingWorker.onstatechange = () => {
+          console.log('[onstatechange] cambio onstate installingWorker.state='+installingWorker.state);
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
               // At this point, the updated precached content has been fetched,

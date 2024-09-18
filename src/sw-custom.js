@@ -1,4 +1,4 @@
-const SW_VERSION = '1.0.62';
+const SW_VERSION = '1.0.64';
 if ("function" === typeof importScripts) {
 	importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
@@ -263,7 +263,8 @@ var updSolicitudDownload = (mensaje,idKey) => {
 }
 
 self.addEventListener('activate', function(event) {
-  console.log('[sw.js] va a activar el intervalor para revisar requerimentos iniciales o aceptados');
+        console.log('[activate] ');
+	event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('message', (event) => {

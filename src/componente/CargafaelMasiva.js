@@ -10,7 +10,6 @@ import Autocomplete from "react-autocomplete";
 
 let handleMessage = null;
 let estaAutenticadoInter = null;  // funcion de que se se ejecuta en el intervalo
-let isRunRevisaSiEstaAutenticado = false;
 
         const days = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -105,14 +104,11 @@ class CargafaelMasiva extends Component {
 
   /* revisa si esta autenticado recibe el objeto del aplicativo */
   revisaSiEstaAutenticado = () => {
-	      //if (isRunRevisaSiEstaAutenticado) { return; }
-	      isRunRevisaSiEstaAutenticado=true;
 	      var mifi = null;
 	      mifi = new DMS();
 	      mifi.getTokenEstatusSAT().then( res => {
 		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT) {
 			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT });
-                           isRunRevisaSiEstaAutenticado=false;
 		       }
 		       if (res.tokenEstatusSAT===window.TOKEN.NOSOLICITADO || res.tokenEstatusSAT===window.TOKEN.CADUCADO ) {
 				  console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
@@ -135,7 +131,6 @@ class CargafaelMasiva extends Component {
 		      x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
 	    } else {
 	       this.setState({ ok: false, nook:true,msg:res.msg  });
-               isRunRevisaSiEstaAutenticado=false;
 	    }
   }
 
@@ -194,7 +189,6 @@ class CargafaelMasiva extends Component {
               }
               var x = null;
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
-                 isRunRevisaSiEstaAutenticado=false;
                  this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });
                  this.haysolicitudesVerificando();
               }
