@@ -1,4 +1,4 @@
-const SW_VERSION = '1.0.64';
+const SW_VERSION = '1.0.70';
 if ("function" === typeof importScripts) {
 	importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
@@ -39,22 +39,49 @@ if ("function" === typeof importScripts) {
       /\.(?:js|css)$/, new workbox.strategies.StaleWhileRevalidate({ cacheName: "static-resources" })
     );
 
+	workbox.routing.registerRoute(
+	  new workbox.routing.NavigationRoute(
+	    new workbox.strategies.NetworkFirst({
+	      // Define the cache name for fallback HTML
+	      cacheName: 'html-cache',
+	      // Customize the list of URLs that Workbox ignores during navigation
+	      networkTimeoutSeconds: 10,
+	      plugins: [
+		{
+		  // Specify a cache expiration policy
+		  expiration: {
+		    maxEntries: 50,
+		  },
+		},
+	      ],
+	    }),
+	    {
+	      // This will ensure all navigation requests (e.g. /dashboard, /profile) go to index.html
+	      // but you can exclude certain URLs (like API endpoints)
+	      allowlist: [/^\/$/, /^\/index\.html$/], // The root path and index.html should return the main HTML file.
+	      denylist: [/\*\.php\//], // Exclude API requests from being redirected.
+	    }
+	  )
+	);
+
 	// default page handler for offline usage,
 	// where the browser does not how to handle deep links
 	// it's a SPA, so each path that is a navigation should default to index.html
+
+	// Cache the 'index.html' page with a NetworkFirst strategy.
 	workbox.routing.registerRoute(
-	  ({ event }) => event.request.mode === 'navigate',
-	  async () => {
-	    const defaultBase = '/index.html';
-	    return caches
-	      .match(workbox.precaching.getCacheKeyForURL(defaultBase))
-	      .then(response => {
-		  return response || fetch(defaultBase);
-	      })
-	      .catch(err => {
-		return fetch(defaultBase);
-	      });
-	  }
+	  ({ request }) => request.mode === 'navigate', // Handle all navigation requests
+	  new workbox.strategies.NetworkFirst({
+	    cacheName: 'html-cache',
+	    plugins: [
+	      {
+		expiration: {
+		  maxAgeSeconds: 24 * 60 * 60, // Cache for 24 hours
+		  maxEntries: 1, // Only cache one HTML page (the index.html)
+		},
+	      },
+	    ],
+	  })
 	);
 
   } else {
