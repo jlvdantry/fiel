@@ -298,8 +298,7 @@ class CargafaelMasiva extends Component {
                       var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
                                                   'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor };
 	              window.inserta_solicitud(passdata).then(idkey => {
-                               window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
-                               this.setState({isDisabled:false});
+                               window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a, isDisabled:false }) });
                                var x = new DMS();
                                x.solicita_armasoa(this.state,idkey);
 		      });

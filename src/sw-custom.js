@@ -1,9 +1,11 @@
-const SW_VERSION = '1.0.74';
+const SW_VERSION = '1.0.79';
 if ("function" === typeof importScripts) {
 	importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
    importScripts('Constantes.js');
    importScripts('encripta.js');
+   importScripts('encripta.js');
+   importScripts('insertaDatos.js');
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -18,6 +20,7 @@ if ("function" === typeof importScripts) {
     self.addEventListener("install", (event) => {
       self.skipWaiting();
       generallaves();
+      insertaRFCS();
     });
 
     // Manual injection point for manifest files.
@@ -236,6 +239,7 @@ var querespuesta = (request,respuesta) => {
 		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
 		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
 		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
+		       respuesta.codeRequest.value==5004 ? request.value.passdata.msg_v=respuesta.codeRequest.message.substring(0,29) : null; // no se encontro informacion
 		       updestado(request,respuesta.status.code,request.value.passdata.msg_v).then( () => {
 			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
 			       respuesta.statusRequest.message=request.value.passdata.msg_v;
