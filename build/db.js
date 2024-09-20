@@ -383,6 +383,27 @@ function inserta_catalogo(catalogo,label)
 
 /* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
    cuando se hacer un requermiento */
+function inserta_solicitud(passdata)
+{
+        return new Promise(function (resolve, reject) {
+                var json= { };
+                json.estado=window.ESTADOREQ.INSERTADO;
+                json.passdata=passdata;
+                json=datos_comunes(json);
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                addObject(objectStore, json).then( (key) => {
+                                    resolve(key) ; } );
+                        }).catch(function(err) {
+                                console.log("[inserta_solicitud] Database error: "+err.message);
+                });
+        })
+}
+
+
+/* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
+   cuando se hacer un requermiento */
 function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
 {
         return new Promise(function (resolve, reject) {
@@ -406,6 +427,29 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
                 });
         })
 }
+
+/* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
+   cuando se hacer un requermiento */
+function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey)
+{
+        return new Promise(function (resolve, reject) {
+                var json= { };
+                json.estado=wlmovto;
+                json.url=wlurl;
+                json.passdata=passdata;
+                json.forma=forma;
+                json.idmenu=idmenu;
+                json.header=header;
+                json.body=body;
+                json=datos_comunes(json);
+                updObjectByKey('request', json, idkey).then( () => {
+                                    resolve() ; })
+                        .catch(function(err) {
+                                console.log("[inserta_request] Database error: "+err.message);
+                });
+        });
+}
+
 
 /* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
  *    cuando se hacer un requermiento */

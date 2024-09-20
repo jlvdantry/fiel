@@ -238,10 +238,10 @@ var DescargaMasivaSat = function()
                 });
    }
 
-   this.solicita_enviasoa= async function (soa,token,passdata) {
+   this.solicita_enviasoa= async function (soa,token,passdata,idkey) {
         var url=this.urlproxy;
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
-                window.inserta_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITUD,hs1,soa).then( key => {
+                window.update_request(url,passdata,window.MENUS.DESCARGAMASIVA,window.FORMA.DESCARGAMASIVA,window.MOVIMIENTO.SOLICITUD,hs1,soa,idkey).then( key => {
                                 if ("serviceWorker" in navigator && "SyncManager" in window) {
                                    navigator.serviceWorker.ready.then(function(registration) {
                                        registration.sync.register("solicita");
@@ -340,7 +340,7 @@ var DescargaMasivaSat = function()
    }
 
 
-   this.solicita_armasoa = function (estado) {
+   this.solicita_armasoa = function (estado,idkey) {
                 this.mifiel = new fiel();
                 this.mifiel.validafiellocal(estado.pwdfiel);
                 this.cer = this.mifiel.damecertificadofiel();
@@ -351,7 +351,7 @@ var DescargaMasivaSat = function()
                                                   'RFCEmisor':estado.RFCEmisor,'RFCReceptor':estado.RFCReceptor };
 	              console.log('[solicita_armasoa] ya armo el soa de solicita y va a ennviar el soa');	
                       this.armaBodySol(estado);
-                      this.solicita_enviasoa(this.xmltoken,estado.token,passdata)
+                      this.solicita_enviasoa(this.xmltoken,estado.token,passdata,idkey)
                    }
                 })
 

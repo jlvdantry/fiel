@@ -23,7 +23,7 @@ class CargafaelMasiva extends Component {
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
-                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false
+                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -290,10 +290,19 @@ class CargafaelMasiva extends Component {
            return;
        }
     }
-    var x = new DMS();
-    x.solicita_armasoa(this.state);
-    window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+    this.setState({isDisabled:true});
+    this.inserta_solicitud();
+  }
 
+  inserta_solicitud() {
+                      var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
+                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor };
+	              window.inserta_solicitud(passdata).then(idkey => {
+                               window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+                               this.setState({isDisabled:false});
+                               var x = new DMS();
+                               x.solicita_armasoa(this.state,idkey);
+		      });
   }
 
   showHide(e){
@@ -504,7 +513,7 @@ class CargafaelMasiva extends Component {
 
 
                       <div className="flex-col d-flex justify-content-center mb-2">
-                           <Button color="primary" onClick={this.cargar}>Solicitar</Button>
+                           <Button color="primary" onClick={this.cargar} disabled={this.state.isDisabled} >{this.state.isDisabled ? 'Solicitando' : 'Solicitar' }</Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
       <style>
