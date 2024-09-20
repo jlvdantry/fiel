@@ -89,14 +89,14 @@ class Ayuda extends Component {
                       <UncontrolledCollapse toggler="#toggler4" isOpen={collapseID==='toggler4' ? true : false}>
                         <Card>
                           <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA"</b>. Aquí el aplicativo le mostrará y/o solicitara las siguiente información.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA"</b>. Aquí el aplicativo le mostrará y/o solicitara la siguiente información.</p>
                   <p className="text-justify"><b className="text-info">2.</b> Previamente se debio de haber validado la  <b className="text-info">"FIEL"</b></p>
-                  <p className="text-justify"><b className="text-info">3.</b> El aplicativo le mostrará que el RFC que contiene la FIEL.</p>
+                  <p className="text-justify"><b className="text-info">3.</b> El aplicativo le mostrará el RFC que contiene la FIEL.</p>
                   <p className="text-justify"><b className="text-info">4.</b> El aplicativo le mostrará que esta autenticado ante el SAT. </p>
                   <p className="text-justify"><b className="text-info">5.</b> El aplicativo le solicitará el RFC o RFCS que le emitierón un factura o que usted emitio un factura.</p>
-                  <p className="text-justify"><b className="text-info">6.</b> El aplicativo le solicitará la fecha inicial y final en que la expidio la factura</p>
+                  <p className="text-justify"><b className="text-info">6.</b> El aplicativo le solicitará la fecha inicial y final en que se expidio la factura</p>
                   <p className="text-justify"><b className="text-info">7.</b> Una vez tecleado los datos solicitados deberá de dar click en en el botón solicitar</p>
-                  <p className="text-justify"><b className="text-info">8.</b> Si todo esta correcto le mostrará una tabla con el registro de la solicitud donde podra ver el estado desde que fue aceptada hasta que se decarga las factura o hubo un error. </p>
+                  <p className="text-justify"><b className="text-info">8.</b> Si todo esta correcto le mostrará una tabla con el registro de la solicitud donde podra ver el estado desde que fue aceptada hasta que se decargaron las facturas. </p>
                           </CardBody>
                         </Card>
                       </UncontrolledCollapse>
@@ -108,7 +108,7 @@ class Ayuda extends Component {
                         <Card>
                           <CardBody>
                   <p className="text-justify"><b className="text-info">1.</b> Dar un clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS"</b>.</p>
-                  <p className="text-justify"><b className="text-info">2.</b> Si no se han descargado facturas, le enviar un mensaje que aun no hay facturas descargadas.</p>
+                  <p className="text-justify"><b className="text-info">2.</b> Si no se han descargado facturas, le enviara el aplicativo  un mensaje que aun no hay facturas descargadas.</p>
                   <p className="text-justify"><b className="text-info">3.</b> Si hay facturas le mostrara un grafica de los ingresos y/o egresos del año de emisión actual o anterior.</p>
                   <p className="text-justify"><b className="text-info">4.</b> Se podra consultar en forma detallada las facturas dando click en el boton <b className="text-info"><FontAwesomeIcon icon={['fas' , 'search']} className='mr-2' />"Consultar historial"</b>.</p>
                   <p className="text-justify"><b className="text-info">4.</b> Se podra exportar a excel las facturas al icono con el logo de <b className="text-info">"Excel"</b>.</p>
