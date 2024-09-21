@@ -1,4 +1,4 @@
-const SW_VERSION = '1.0.79';
+const SW_VERSION = '1.0.80';
 if ("function" === typeof importScripts) {
 	importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('db.js');
