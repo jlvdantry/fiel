@@ -78,7 +78,7 @@ const fiel = function()
      reader.readAsText('cadenaoriginal_3_3.xslt');
   }
 
-
+  /** lee el certificado o la llave publica **/
   this.leefiel = function (evt)
   {
      console.log('leefiel empezo'+JSON.stringify(evt.target.files[0]));
@@ -106,7 +106,6 @@ const fiel = function()
 
       reader.onloadend = function () {
           console.log('leefiel termino de cargar');
-          /* cargofiel();        * cahce si se cargo la file */
       }
       reader.readAsDataURL(evt.target.files[0]);
      console.log('leefiel paso'+evt.target.files[0]);
@@ -488,4 +487,3 @@ const fiel = function()
 
 
 }
-export default fiel;

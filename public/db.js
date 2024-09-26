@@ -390,6 +390,7 @@ function inserta_solicitud(passdata)
                 json.estado=window.ESTADOREQ.INSERTADO;
                 json.passdata=passdata;
                 json=datos_comunes(json);
+		json.url='/solicita.php';
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
                         }).then(function(objectStore) {

@@ -299,8 +299,8 @@ class CargafaelMasiva extends Component {
                                                   'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor };
 	              window.inserta_solicitud(passdata).then(idkey => {
                                window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a, isDisabled:false }) });
-                               var x = new DMS();
-                               x.solicita_armasoa(this.state,idkey);
+                               //var x = new DMS();
+                               //x.solicita_armasoa(this.state,idkey);
 		      });
   }
 

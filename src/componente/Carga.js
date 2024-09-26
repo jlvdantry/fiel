@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {FormGroup, Alert, Button, Card} from 'reactstrap';
 import { browserHistory  } from 'react-router';
-import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
@@ -41,12 +40,12 @@ class Carga extends Component {
   }
 
   cargarpub() {
-    var x = new fiel();
+    var x = new window.cargaFiel();
     x.cargafiellocal('cer');
   }
 
   cargarkey() {
-    var x = new fiel();
+    var x = new window.cargaFiel();
     x.cargafiellocal('key');
   }
 

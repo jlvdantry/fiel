@@ -8,8 +8,6 @@ import Carga from './componente/Carga';
 import Mifiel from './componente/Mifiel';
 import Misfacturas from './componente/Misfacturas';
 import Valida from './componente/Valida';
-import Cargafael from './componente/Cargafael';
-import Validafael from './componente/Validafael';
 import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
