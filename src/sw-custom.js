@@ -1,7 +1,12 @@
-const SW_VERSION = '1.0.86';
+const SW_VERSION = '1.0.210';
+importScripts('utils.js');
+importScripts('db.js');
+importScripts('dbFiel.js');
+importScripts('fiel.js');
+importScripts('descargaMasivaSat.js');
+var DMS = null;
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
-   importScripts('db.js');
    importScripts('Constantes.js');
    importScripts('encripta.js');
    importScripts('insertaDatos.js');
@@ -104,14 +109,11 @@ self.addEventListener("sync", event => {
        event.waitUntil(syncRequest(ESTADOREQ.ACEPTADO));
     };
     if (event.tag === "solicita") {
-       event.waitUntil(syncRequest(ESTADOREQ.INICIAL.SOLICITUD));
-    } ;
-    if (event.tag === "download") {
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL.DESCARGA));
     } ;
 });
 
-var syncRequest = estado => { 
+var syncRequest = async (estado,DMS=null)  => { 
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); return oS;
     }).then( objectStore => {
@@ -121,6 +123,15 @@ var syncRequest = estado => {
                          requests.map( async (request) => {
 
                                 if (request.value.url=='/autentica.php') {
+				}
+
+                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {   
+					console.log('va a procesar la solicitud');
+					dame_pwd().then( pwd => { 
+						 console.log('[syncRequest] va a solicitar el armado del soa del key='+request.key);
+						 DMS.solicita_armasoa(request,request.key,pwd) 
+					});
+					return;
 				}
 
                                 if (request.value.url=='/verifica.php' & 'respuesta' in request.value) {
@@ -180,10 +191,10 @@ var updestado = (request,esta,respuesta) => {
         });
 };
 
+/* envia mensaje a los clientes despues de que se actualizo el request */
 var postRequestUpd = function(request,accion,respuesta) {
         self.clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
                 clients.forEach(function(client) {
-                        //console.log('[postRequestUpd] envia mensaje al cliente id='+client.id+' accion='+accion+' key='+request.key);
                         client.postMessage(
                                 {action: accion, request: request, respuesta: respuesta, PWDFIEL:PWDFIEL}
                         );
@@ -202,7 +213,7 @@ var enviaContra = (pwd) => {
 
 }
 
-
+/* checa cual fue la respuesta del servidor */
 var querespuesta = (request,respuesta) => {
          console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
@@ -210,13 +221,15 @@ var querespuesta = (request,respuesta) => {
             return;
          }
 
-         if("created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autentica y que se cuenta con un token */
+         if("created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autenticado y que se cuenta con un token */
             respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
             respuesta.expiredLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
                           { postRequestUpd(r,"autenticado",respuesta); }
             );
-            encripta_pw(PWDFIEL);
+            if (DMS===null) {
+		    DMS= new DescargaMasivaSat();
+	    }
             return;
          }
 
@@ -275,7 +288,7 @@ var querespuesta = (request,respuesta) => {
 var updSolicitud = (respuesta,idKey) => {
         return new Promise( (resolve, reject) => {
 		      selObjectByKey('request',idKey).then( obj => {
-				var mensaje = respuesta.statusRequest.message.substring(0,9)!=="Terminada" ?  respuesta.statusRequest.message.substring(0,9) : 'Facturas '+respuesta.numberCfdis ;
+				var mensaje = respuesta.statusRequest.message.substring(0,9)!=="Terminada" ?  respuesta.statusRequest.message : 'Facturas '+respuesta.numberCfdis ;
 				obj.passdata.msg_v=mensaje;
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });
@@ -308,13 +321,19 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.action === 'dameContra') {
      dame_pwd().then( x => { enviaContra(x); });
   }
+  if (event.data && event.data.action === 'setContra') {
+	  encripta_pw(event.data.PWDFIEL);
+  }
 
 });
  
-  setInterval(function() {
+  setInterval( () => {
        console.log('[setInterval] va a sincronizar');
-       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+       syncRequest(ESTADOREQ.INICIAL.AUTENTICA,DMS);
+       syncRequest(ESTADOREQ.INICIAL.SOLICITUD,DMS);
+       syncRequest(ESTADOREQ.INICIAL.VERIFICA,DMS);
        syncRequest(ESTADOREQ.ACEPTADO);
+       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
   }, REVISA.ESTADOREQ * 1000);
 
 

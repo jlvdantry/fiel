@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { browserHistory  } from 'react-router';
 import { Button, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader, CardDeck} from 'reactstrap';
-import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CurrencyFormat from 'react-currency-format';
 
@@ -54,7 +53,7 @@ class Validafael extends Component {
           var key = localStorage.key(i);
           var valor = localStorage.getItem(key);
           if (key.indexOf('xml_name_')!==-1) {
-	    var x = new fiel();
+	    var x = new window.cargaFiel();
 	    var res=x.validafael(valor);
 	    if (res.ok===true) {
 	       archi.push({ ok: true, nook:false, certijson : res.certijson , faeljson : res.faeljson,seintegro:0  });

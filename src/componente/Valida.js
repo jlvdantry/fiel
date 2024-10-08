@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,CardFooter,InputGroup,InputGroupAddon} from 'reactstrap';
-import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import DMS from '../descargaMasivaSat';
 
-
+let mifiel=null;
+let timer=null;
+let DMS=null;
 class Valida extends Component {
   constructor(props){
     super(props);
@@ -12,19 +12,53 @@ class Valida extends Component {
     this.validafirma = this.validafirma.bind(this)
     this.showHide = this.showHide.bind(this)
     this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
+    this.revisaFirma = this.revisaFirma.bind(this);
+    this.yaCargoFirma = this.yaCargoFirma.bind(this);
   }
 
-  validafirma(){
-    var x = new fiel();
-    var res=x.validafiellocal(document.querySelector('#pwdfiel').value);
-    if (res.ok===true) {
-       this.setState({ ok: true, nook:false,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta });
-       window.PWDFIEL=document.querySelector('#pwdfiel').value;
-	    this.autenticaContraSAT(); 
-    }
-    if (res.ok===false) {
-       this.setState({ ok: false, nook:true,msg:res.msg  });
-    }
+  revisaFirma(){
+       mifiel = new window._fiel();
+       timer = setInterval(() => this.yaCargoFirma(), 300)
+  };
+
+  yaCargoFirma() {
+
+          if (mifiel.privada!==null & mifiel.publica!==null) {
+		 clearInterval(timer); 
+                 this.validafirma();
+	  }
+  }
+
+  yaCargoFirmaDMS() {
+	  if (DMS.mifiel.privada!==null & DMS.mifiel.publica!==null) {
+                 clearInterval(timer);
+                 DMS.autenticate_armasoa(window.PWDFIEL).then( x => { console.log('paso autenticate_armasoa'); });
+          }
+  }
+
+
+
+  validafirma() {
+	    mifiel.validafiellocal(document.querySelector('#pwdfiel').value).then( res => {
+		    console.log('[validafirma] despues de terminar validafiellocal');
+		    if (res.ok===true) {
+		       this.setState({ ok: true, nook:false,nombre:res.nombre,rfc:res.rfc, curp:res.curp,email:res.email,emisor:res.emisor,desde:res.desde,hasta:res.hasta });
+		       window.PWDFIEL=document.querySelector('#pwdfiel').value;
+
+		       if ('serviceWorker' in navigator) {
+			  navigator.serviceWorker.ready.then((registration) => {
+			    if (registration.active) {
+			      registration.active.postMessage({ action: 'setContra',PWDFIEL:window.PWDFIEL });
+			    }
+			  });
+		       } 
+
+		       this.autenticaContraSAT();	
+		    }
+		    if (res.ok===false) {
+		       this.setState({ ok: false, nook:true,msg:res.msg  });
+		    }
+	    });
   }
 
   showHide(e){
@@ -35,14 +69,8 @@ class Valida extends Component {
   }
 
   autenticaContraSAT () {
-            var x = new DMS();
-            var res=x.autenticate_armasoa(window.PWDFIEL);  /* solo arma al SOA ya firmado */
-            if (res.ok===true) {
-                      this.setState({ ok: true, nook:false });
-                      x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
-            } else {
-               this.setState({ ok: false, nook:true,msg:res.msg  });
-            }
+            DMS = new window.DescargaMasivaSat();
+            timer = setInterval(() => this.yaCargoFirmaDMS(), 300)
   }
 
 
@@ -62,7 +90,7 @@ class Valida extends Component {
                         </InputGroup>
 		      </FormGroup>
                       <div className="flex-col d-flex justify-content-center">
-		           <Button color="primary" onClick={this.validafirma}>Validar</Button>
+		           <Button color="primary" onClick={this.revisaFirma}>Validar</Button>
                       </div>
               </Container>
               { ok && <Container id="ok" className="border p-2 mb-3">

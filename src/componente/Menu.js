@@ -66,9 +66,11 @@ class Menumi extends Component {
   }
 
   cambio() {
-       if (localStorage.getItem('nombre')!=null) {
-          this.setState({nombre : localStorage.getItem('nombre')})
-       } else {  this.setState({nombre : null })  }
+	  window.dameNombre().then( nombre => {
+	       if (nombre!=null) {
+		  this.setState({nombre : nombre})
+	       } else {  this.setState({nombre : null })  }
+	   }).catch( err => { this.setState({nombre : null })});
   }
 
   

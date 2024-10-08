@@ -25,9 +25,7 @@ class App extends Component {
 	  <Route path="/validar" component={Valida}/>
 	  <Route path="/mifiel" component={Mifiel}/>
 	  <Route path="/misfacturas" component={Misfacturas}/>
-	  <Route path="/cargafael" component={Cargafael}/>
 	  <Route path="/cargafaelMasiva" component={CargafaelMasiva}/>
-	  <Route path="/validarfael" component={Validafael}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>
 	  <Route path="/about" component={About}/>

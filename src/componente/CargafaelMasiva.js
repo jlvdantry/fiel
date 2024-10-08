@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { browserHistory  } from 'react-router';
-import DMS from '../descargaMasivaSat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
 import { MiDataGrid } from './DataGridSolicitud';
@@ -13,6 +12,7 @@ let estaAutenticadoInter = null;  // funcion de que se se ejecuta en el interval
 
         const days = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa']
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+        var DMS = '';
 
 class CargafaelMasiva extends Component {
 
@@ -63,11 +63,13 @@ class CargafaelMasiva extends Component {
 	    const inputValue = event.target.value.toUpperCase();
 	    const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
             this.setState({ RFCEmisorIsValid: isValid }) 
-            if (localStorage.getItem('rfc')!==null) {
-		    if (inputValue!==localStorage.getItem('rfc')) {
-		       this.setState({RFCReceptor:localStorage.getItem('rfc')}); }
-		    else { this.setState({ RFCReceptor:''}); }
-            }
+	    window.dameRfc().then( rfc => {
+		    if (rfc!==null) {
+			    if (inputValue!==rfc) {
+			       this.setState({RFCReceptor:rfc}); }
+			    else { this.setState({ RFCReceptor:''}); }
+		    }
+	    });
     }
 
     selectRFCEmisor(value) {
@@ -75,12 +77,14 @@ class CargafaelMasiva extends Component {
             const inputValue = value;
             // Use a regular expression pattern to define your validation criteria
             const isValid = /^([A-Z,Ñ,&]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])([A-Z]|[0-9]){2}([A]|[0-9]){1})$/.test(inputValue);
-            this.setState({ RFCEmisorIsValid: isValid }) 
-            if (localStorage.getItem('rfc')!==null) {
-                    if (inputValue!==localStorage.getItem('rfc')) {
-                       this.setState({ RFCReceptor:localStorage.getItem('rfc')}); }
-                    else { this.setState({ RFCReceptor:''}); }
-            }
+            this.setState({ RFCEmisorIsValid: isValid });
+	    window.dameRfc().then( rfc => {
+		    if (rfc!==null) {
+			    if (inputValue!==rfc) {
+			       this.setState({ RFCReceptor:rfc}); }
+			    else { this.setState({ RFCReceptor:''}); }
+		    }
+	    });
     }
 
 
@@ -104,9 +108,7 @@ class CargafaelMasiva extends Component {
 
   /* revisa si esta autenticado recibe el objeto del aplicativo */
   revisaSiEstaAutenticado = () => {
-	      var mifi = null;
-	      mifi = new DMS();
-	      mifi.getTokenEstatusSAT().then( res => {
+	      DMS.getTokenEstatusSAT().then( res => {
 		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT) {
 			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT });
 		       }
@@ -124,14 +126,10 @@ class CargafaelMasiva extends Component {
 	    if (!window.PWDFIEL) {
 		    console.error('sin pwd de la fiel');
 	    }
-	    var x = new DMS();
-	    var res=x.autenticate_armasoa(window.PWDFIEL);  /* solo arma al SOA ya firmado */
-	    if (res.ok===true) {
-		      this.setState({ ok: true, nook:false });
-		      x.autenticate_enviasoa(res,window.PWDFIEL)  /* Envia el soa para autentica al rfc o a la FIEL */
-	    } else {
-	       this.setState({ ok: false, nook:true,msg:res.msg  });
-	    }
+	    DMS.autenticate_armasoa(window.PWDFIEL).then( x => { this.setState({ ok: true, nook:false }); })
+	       .then( err => {
+		       this.setState({ ok: false, nook:true,msg:err  });
+	    });
   }
 
   /* hay solicitudes en estado de verificando */
@@ -139,13 +137,12 @@ class CargafaelMasiva extends Component {
 	         window.obtieneelUltimoToken().then ( a =>  {
 			 var token = { created: a.value.respuesta.created,expired:a.value.respuesta.expired,value:a.value.respuesta.value }
 			 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:a.folioReq}));
-			 var x = new DMS();
 			 window.leeSolicitudesVerificando().then( req =>  {
-			       console.log('[haysolicitudesVerificando] va a volver a verificar la solicitud='+req.key)
+			       console.log('[haysolicitudesVerificando] total de solicitudes verificando='+req.length)
 				    req.forEach( e => {
 					    this.setState(state => ({ folioReq:e.value.folioReq}));
 					    console.log('[haysolicitudesVerificando] '+JSON.stringify(e.key));
-					    x.verificando(this.state,e.key)
+					    DMS.verificando(this.state,e.key)
 				    }	     
 				    );
 
@@ -167,6 +164,7 @@ class CargafaelMasiva extends Component {
 
 
   componentDidMount(){
+      DMS = new window.DescargaMasivaSat();
       window.tecleoPwdPrivada().then(pwd => { 
 	      if ('pwd' in pwd.value) {
 		      this.setState({ tecleoPWD:true });
@@ -187,7 +185,7 @@ class CargafaelMasiva extends Component {
                       estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
                       return;
               }
-              var x = null;
+
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });
                  this.haysolicitudesVerificando();
@@ -197,22 +195,19 @@ class CargafaelMasiva extends Component {
                  var token = { created: event.data.request.value.header.token_created, expired:event.data.request.value.header.token_expired
                                        ,value:event.data.request.value.header.token_value }
                  this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:event.data.request.value.folioReq}));
-                 x = new DMS();
-                 x.verificando( this.state,event.data.request.key);   /* manda el registro de verificacion */
+	         DMS.verificando( this.state,event.data.request.key);   /* manda el registro de verificacion */
               }
 
-              if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value) {
-                 if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
-                         x = new DMS();
-                         x.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
+      if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value) {
+	 if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
+                         DMS.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
                  }
               }
 
               if (event.data.action==='token-invalido') { this.haysolicitudesVerificando() }
 
               if (event.data.request.value.url==="/download.php") {
-                 x = new DMS();
-                 x.leezip(event.data.respuesta.xml);
+                 DMS.leezip(event.data.respuesta.xml);
               }
 
               window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
@@ -294,13 +289,12 @@ class CargafaelMasiva extends Component {
     this.inserta_solicitud();
   }
 
+  /* inserta una solicitud en request */
   inserta_solicitud() {
                       var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
-                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor };
+                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor,'TipoSolicitud':this.state.TipoSolicitud };
 	              window.inserta_solicitud(passdata).then(idkey => {
                                window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a, isDisabled:false }) });
-                               //var x = new DMS();
-                               //x.solicita_armasoa(this.state,idkey);
 		      });
   }
 

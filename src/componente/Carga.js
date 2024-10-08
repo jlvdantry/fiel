@@ -31,12 +31,18 @@ class Carga extends Component {
   }
 
   cambio() {
-       if (localStorage.getItem('cer_name')!=null) {
-          this.setState({cer_name : localStorage.getItem('cer_name')})
-       } else {  this.setState({cer_name : null })  }
-       if (localStorage.getItem('key_name')!=null) {
-          this.setState({key_name : localStorage.getItem('key_name')})
-       } else { this.setState({key_name : null }) }
+
+       window.damePublica().then( publica => {
+	       if (publica.cer_name!=null) {
+		  this.setState({cer_name : publica.cer_name})
+	       } else {  this.setState({cer_name : null })  }
+       }).catch(er => { this.setState({cer_name : null }) });
+
+       window.damePrivada().then( privada => {
+	       if (privada.key_name!=null) {
+		  this.setState({key_name : privada.key_name})
+	       } else { this.setState({key_name : null }) }
+       }).catch(er => { this.setState({key_name : null }) });
   }
 
   cargarpub() {

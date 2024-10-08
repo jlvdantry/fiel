@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSubtitle,CardText,CardHeader,InputGroup,InputGroupAddon} from 'reactstrap';
-import fiel from '../fiel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import ShowMoreText from 'react-show-more-text';
@@ -31,7 +30,7 @@ class Firmar extends Component {
 
 
   validafirma(){
-    var x = new fiel();
+    var x = new window.cargaFiel();
     var res=x.validafiellocal(document.querySelector('#pwdfiel').value,this.props.value);
     if (res.ok===true) {
        this.setState({ ok: true, nook:false,nombre:res.nombre,desde:res.desde,hasta:res.hasta

@@ -371,33 +371,13 @@ function inserta_catalogo(catalogo,label)
                 json=datos_comunesCat(json);
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'catalogos', "readwrite");
-                        }).then(function(objectStore) {
-                                addObject(objectStore, json).then( (key) => {
-                                    json.key=key;
-                                    resolve(json) ; } );
+                               }).then(function(objectStore) {
+					addObject(objectStore, json).then( (key) => {
+					    json.key=key;
+					    resolve(json) ; }).
+                                        catch( (err) => { console.log('registro duplicado'); resolve(); })
                         }).catch(function(err) {
                                 console.log("[inserta_catalogos] Database error: "+err.message);
-                });
-        })
-}
-
-/* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
-   cuando se hacer un requermiento */
-function inserta_solicitud(passdata)
-{
-        return new Promise(function (resolve, reject) {
-                var json= { };
-                json.estado=window.ESTADOREQ.INSERTADO;
-                json.passdata=passdata;
-                json=datos_comunes(json);
-		json.url='/solicita.php';
-                openDatabasex(DBNAME, DBVERSION).then(function(db) {
-                        return openObjectStore(db, 'request', "readwrite");
-                        }).then(function(objectStore) {
-                                addObject(objectStore, json).then( (key) => {
-                                    resolve(key) ; } );
-                        }).catch(function(err) {
-                                console.log("[inserta_solicitud] Database error: "+err.message);
                 });
         })
 }
@@ -429,7 +409,8 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
         })
 }
 
-/* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
+
+/* funcion que actualiza los datos en la tabla de request 
    cuando se hacer un requermiento */
 function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey)
 {
@@ -444,7 +425,7 @@ function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey)
                 json.body=body;
                 json=datos_comunes(json);
                 updObjectByKey('request', json, idkey).then( () => {
-                                    resolve() ; })
+                                    resolve(idkey) ; })
                         .catch(function(err) {
                                 console.log("[inserta_request] Database error: "+err.message);
                 });
@@ -460,7 +441,7 @@ function inserta_factura(faeljson)
                 var json= { };
                 var fechaPago=null;
                 var yearPago=null;
-                json.estado=0;
+                json.estado=ESTADOREQ.INSERTADO;
                 json.url='factura';
                 json.passdata=faeljson;
                 json.forma=0;
@@ -499,7 +480,7 @@ function inserta_firma(faeljson)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
-                json.estado=0;
+                json.estado=ESTADOREQ.INSERTADO;
                 json.url='firma';
                 json.passdata=faeljson;
                 json.forma=0;
@@ -619,7 +600,7 @@ function leeSolicitudesVerificando() {
         return new Promise(function (resolve, reject) {
                leeSolicitudes('prev').then( a  => {
                     a.forEach(
-                          e => { if (e.value.estatus===5001) {
+                          e => { if (e.value.estado===ESTADOREQ.VERIFICANDO) {
                                          solicitudesVerificando.push(e)
 
                           } }
