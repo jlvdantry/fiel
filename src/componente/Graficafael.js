@@ -60,7 +60,7 @@ class Graficafael extends Component {
 
     changeValueYear(e) {
        this.setState({dropdownValueYear: e.currentTarget.textContent},() => {
-                       console.log('actualizo el año');
+                       //console.log('actualizo el año');
                        this.queYear();
              });
     }
@@ -68,9 +68,9 @@ class Graficafael extends Component {
     componentWillMount(){
        this.queYear();
 	const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-	console.log('Viewport Width:', viewportWidth);
+	//console.log('Viewport Width:', viewportWidth);
 	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-	console.log('Viewport Height', viewportHeight);
+	//console.log('Viewport Height', viewportHeight);
     }
 
     queYear() {
@@ -230,7 +230,7 @@ class Graficafael extends Component {
   }
 
   render() {
-    console.log('Graficafael render data='+JSON.stringify(this.state.data));
+    //console.log('Graficafael render data='+JSON.stringify(this.state.data));
     const dropdownValue = this.state.dropdownValue
     var options={};
     if (dropdownValue==='Barras Horizontales') {

@@ -1,4 +1,4 @@
-const SW_VERSION = '1.0.210';
+const SW_VERSION = '1.0.240';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -113,20 +113,22 @@ self.addEventListener("sync", event => {
     } ;
 });
 
-var syncRequest = async (estado,DMS=null)  => { 
+var syncRequest = estado => { 
+    console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
-          var oS=openObjectStore(db, 'request', "readonly"); return oS;
-    }).then( objectStore => {
-          var req=selObjects(objectStore, "estadoIndex", estado); return req;
+          var oS=openObjectStore(db, 'request', "readonly"); 
+	  return oS;
+    }).then( async objectStore => {
+          var req= await selObjects(objectStore, "estadoIndex", estado); 
+          console.log('[syncRequest] paso selObjects estado='+estado+' total de requerimientos='+req.length);
+	  return req;
     }).then( requests => {
                   return Promise.all(
-                         requests.map( async (request) => {
+                         requests.map( (request) => {
+                                console.log('[syncRequest] syncRequest antes de hacer fetch url='+request.value.url+' llave='+request.key+' estado='+estado);
 
-                                if (request.value.url=='/autentica.php') {
-				}
-
-                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {   
-					console.log('va a procesar la solicitud');
+                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
+					/* si se cumple solo va armar el soa para la peticion */
 					dame_pwd().then( pwd => { 
 						 console.log('[syncRequest] va a solicitar el armado del soa del key='+request.key);
 						 DMS.solicita_armasoa(request,request.key,pwd) 
@@ -134,13 +136,13 @@ var syncRequest = async (estado,DMS=null)  => {
 					return;
 				}
 
-                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) {
+
+                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // no procesa las verificaciones ya terminadas
 				     if  (request.value.respuesta.substring(0,9)=="Terminada" || request.value.respuesta.substring(0,9)=="Rechazada") {  return; }
                                 }
 
-                                if (request.value.url=='/solicita.php' & (estado==ESTADOREQ.ACEPTADO || estado==ESTADOREQ.REQUIRIENDO)) {  // no procesa las verificaciones ya terminadas 
-                                     await updestado(request,ESTADOREQ.VERIFICANDO, 'Verificando')
-				     postRequestUpd(request,"update-request","");   /* hay que checar que no genere mucho registros de verificacion */
+                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.ACEPTADO) {  
+				     postRequestUpd(request,"update-request","");   /* mensajea al cliente y aqui se genera el registro de verificacion */
                                      return; //si fue aceptada la solicitud deberia de mandar la verificacion
                                 }
 
@@ -148,20 +150,16 @@ var syncRequest = async (estado,DMS=null)  => {
                                      return;
                                 }
 
-                                console.log('[syncRequest] syncRequest antes de hacer fetch url='+request.value.url+' llave='+request.key);
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
-                                await updestado(request,ESTADOREQ.REQUIRIENDO, null);
+                                updestado(request,ESTADOREQ.REQUIRIENDO, null);
                                 fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
                                 .then(response => {
                                           if (response.status==500) { updestado(request,ESTADOREQ.ERROR); return { 'error' : response.status };
                                           } else { return response.json(); }
                                 })
-                                .then(response => {
-                                          if(request.value.url=='/autentica.php') 
-                                            { updestado(request,ESTADOREQ.AUTENTICADO, response); }
-                                          else 
-                                            { updestado(request,ESTADOREQ.RECIBIDO, response); }
+                                .then( async response => {
+                                          await updestado(request,ESTADOREQ.RECIBIDO, response); 
                                           return response;
                                  })
                                 .then(response => { querespuesta(request,response); return Promise.resolve(); })
@@ -227,16 +225,13 @@ var querespuesta = (request,respuesta) => {
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
                           { postRequestUpd(r,"autenticado",respuesta); }
             );
-            if (DMS===null) {
-		    DMS= new DescargaMasivaSat();
-	    }
             return;
          }
 
          if("status" in respuesta) {
             if ("code" in respuesta.status) {
                if (request.value.url=='/solicita.php') {
-		       updestado(request,respuesta.status.code,respuesta.status.message)
+		       updestado(request,respuesta.status.code,respuesta.status.message)   // se supoone que aqui se acepto la solicitud
                        .then( (r) => { 
 		                 request.value.passdata.msg=respuesta.status.message;
 		                 "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
@@ -247,12 +242,12 @@ var querespuesta = (request,respuesta) => {
                              });
 		       return;
                }
-               if (request.value.url=='/verifica.php' & respuesta.status.code==5000) {
+               if (request.value.url=='/verifica.php' & respuesta.status.code==ESTADOREQ.ACEPTADO) {
 		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
 		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
 		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
 		       respuesta.codeRequest.value==5004 ? request.value.passdata.msg_v=respuesta.codeRequest.message.substring(0,29) : null; // no se encontro informacion
-		       updestado(request,respuesta.status.code,request.value.passdata.msg_v).then( () => {
+		       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,request.value.passdata.msg_v).then( () => {
 			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
 			       respuesta.statusRequest.message=request.value.passdata.msg_v;
 			       updSolicitud(respuesta,request.value.passdata.keySolicitud) 
@@ -262,7 +257,7 @@ var querespuesta = (request,respuesta) => {
                        });
 		       return;
                }
-               if (request.value.url=='/verifica.php' & respuesta.status.code==300) {  // token invalido seguramente porque ya expiro
+               if (request.value.url=='/verifica.php' & respuesta.status.code==ESTADOREQ.TOKENINVALIDO) {  // token invalido seguramente porque ya expiro
                        updestado(request,ESTADOREQ.TOKENINVALIDO,respuesta.status.message).then ( () => {;
                                     postRequestUpd(request,"token-invalido",respuesta);
 		       });
@@ -288,7 +283,16 @@ var querespuesta = (request,respuesta) => {
 var updSolicitud = (respuesta,idKey) => {
         return new Promise( (resolve, reject) => {
 		      selObjectByKey('request',idKey).then( obj => {
-				var mensaje = respuesta.statusRequest.message.substring(0,9)!=="Terminada" ?  respuesta.statusRequest.message : 'Facturas '+respuesta.numberCfdis ;
+			        var mensaje='';
+			        if (respuesta.statusRequest.message.substring(0,9)!=="Terminada") {
+				    mensaje = respuesta.statusRequest.message ;
+                                    if (mensaje=="No se encontró la información") {
+					    obj.estado=ESTADOREQ.SOLICITUDSININFORMACION;
+				    }	    else  { obj.estado=ESTADOREQ.ACEPTADO; }
+				} else {
+				    mensaje = 'Facturas '+respuesta.numberCfdis;  
+                                    obj.estado=ESTADOREQ.SOLICITUDTERMINADA
+				}
 				obj.passdata.msg_v=mensaje;
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });
@@ -328,10 +332,14 @@ self.addEventListener('message', (event) => {
 });
  
   setInterval( () => {
+            if (DMS===null) {
+                    DMS= new DescargaMasivaSat();
+            }
+
        console.log('[setInterval] va a sincronizar');
-       syncRequest(ESTADOREQ.INICIAL.AUTENTICA,DMS);
-       syncRequest(ESTADOREQ.INICIAL.SOLICITUD,DMS);
-       syncRequest(ESTADOREQ.INICIAL.VERIFICA,DMS);
+       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
+       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
+       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
        syncRequest(ESTADOREQ.ACEPTADO);
        syncRequest(ESTADOREQ.INICIAL.DESCARGA);
   }, REVISA.ESTADOREQ * 1000);

@@ -2,9 +2,9 @@
    /* genera las llaves RSA del aplicativo */
    generallaves = () => {
         lee_llaves().then( x => {
-	        console.log(' ya estan generadas las llaves');
+	        //console.log(' ya estan generadas las llaves');
 	}).catch((error) => {
-                console.log('va a generar llaves ');
+                //console.log('va a generar llaves ');
                 const keypair = forge.pki.rsa.generateKeyPair({ bits: 2048, e: 0x10001 });
                 const publicKeyPem = forge.pki.publicKeyToPem(keypair.publicKey);
                 const privateKeyPem = forge.pki.privateKeyToPem(keypair.privateKey);
@@ -33,7 +33,6 @@
 
    /* lee llaves llaves RSA */
    lee_llaves = ()  => {
-	console.log(lee_llaves.name);
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
@@ -49,7 +48,6 @@
 
    /* obtiene la pwd */
    dame_pwd = ()  => {
-	console.log(dame_pwd.name);
         return new Promise(function (resolve, reject) {
                 lee_llaves().then(x => {
                         const privateKey = forge.pki.privateKeyFromPem(x.value.pr);
@@ -65,13 +63,11 @@
 
    /* guarda el pwd encriptado */
    guarda_pwd = (obj)  => {
-	   console.log(guarda_pwd.name);
 	   updObjectByKey('request',obj.value,obj.key);
    }
 
    /* Encripta la llave del pwd */
    encripta_pw = (pr) => {
-	        console.log(encripta_pw.name);
 	        lee_llaves().then(x => {
 			const publicKey = forge.pki.publicKeyFromPem(x.value.pu);
 			// Encrypt the message with the public key

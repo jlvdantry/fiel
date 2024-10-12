@@ -8,15 +8,15 @@ var _fiel = function()
   this.cer1 = "";
   this.privada = {};
   this.publica = {};
-  console.log('[_fiel] instancio');
+  //console.log('[_fiel] instancio');
 
   damePrivada().then(privada => { 
-	  console.log('[_fiel] seteo la privada');
+	  //console.log('[_fiel] seteo la privada');
 	  this.privada = privada; 
   }).catch(er => { this.privada.key = null;console.log('[_fiel] aun no esta cargada la privada') });
 
   damePublica().then(publica => { 
-	  console.log('[_fiel] seteo la publica');
+	  //console.log('[_fiel] seteo la publica');
 	  this.publica = publica; 
   }).catch(er => { this.publica.cer = null;console.log('[_fiel] aun no esta cargada la publica') });
 
@@ -87,7 +87,7 @@ var _fiel = function()
   this.validafiellocal = async (pwd,cadena='prueba') =>
   {
        var x = await this.validaprivada(pwd,cadena).then( ret => {
-              console.log('[validafiellocal] termino validaprivada');
+              //console.log('[validafiellocal] termino validaprivada');
 	      if (ret.ok) {
 		  var md = forge.md.sha256.create();
 		  md.update(cadena);
@@ -105,7 +105,7 @@ var _fiel = function()
                         insertaOActualizaFiel(certificado.subject.attributes[5].value,"rfc").then( x => {;
                                      insertaOActualizaFiel(certificado.subject.attributes[0].value,"nombre");
 			});
-			console.log('[validaprivada] va a retornar que es valida la firma'); 
+			//console.log('[validaprivada] va a retornar que es valida la firma'); 
 			return { 'ok'  : true, "msg" : "La firma electronica es correcta", nombre: certificado.subject.attributes[0].value
 											 , rfc   : certificado.subject.attributes[5].value
 											 , curp   : certificado.subject.attributes[6].value
@@ -120,14 +120,14 @@ var _fiel = function()
 		  } else { return { 'ok'  : false, "msg" : "El certificado es erroneo" }; }
 	      } else { return  { 'ok'  : false, "msg" : "La contraseña de la llave privada es erronea "}; }
        }).then( 
-	       x => { console.log('validaprivada] va a retornar'); return x }
+	       x => {  return x }
        );
        return x;
   }
 
   this.validafielSAT = async (pwd) =>
   {
-	  console.log('[validafielSAT]');
+	  //console.log('[validafielSAT]');
 	  var x = new DescargaMasivaSat();
   }
 
@@ -135,11 +135,11 @@ var _fiel = function()
   /** lee el certificado o la llave publica **/
   this.leefiel = function (evt)
   {
-     console.log('leefiel empezo'+JSON.stringify(evt.target.files[0]));
+     //console.log('leefiel empezo'+JSON.stringify(evt.target.files[0]));
      var reader = new FileReader();
      reader.onload = (function(theFile) {
           return function(e) {
-                  console.log('empezo onload'+theFile.name);
+                  //console.log('empezo onload'+theFile.name);
                   var namelen='';
 		  if (theFile.name.indexOf(".cer")!==-1) {
 		     localStorage.setItem("cer",e.target.result);
@@ -154,24 +154,24 @@ var _fiel = function()
 		     alert('La firma digital debe de contar con extension cer y key');
 		     return false;
 		  }};
-                  console.log('termino onload '+theFile.name);
+                  //console.log('termino onload '+theFile.name);
         };
       })(evt.target.files[0]);
 
       reader.onloadend = function () {
-          console.log('leefiel termino de cargar');
+          //console.log('leefiel termino de cargar');
       }
       reader.readAsDataURL(evt.target.files[0]);
-     console.log('leefiel paso'+evt.target.files[0]);
+     //console.log('leefiel paso'+evt.target.files[0]);
   }
 
   this.leefielkey = (evt) =>
   {
-     console.log('leefielkey empezo'+JSON.stringify(evt.target.files[0]));
+     //console.log('leefielkey empezo'+JSON.stringify(evt.target.files[0]));
      var reader = new FileReader();
      reader.onload = (function(theFile) {
           return function(e) {
-                  console.log('empezo onload'+theFile.name);
+                  //console.log('empezo onload'+theFile.name);
                   if (theFile.name.indexOf(".cer")!==-1) {
                      localStorage.setItem("cer",e.target.result);
                      localStorage.setItem("cer_name",theFile.name);
@@ -183,7 +183,7 @@ var _fiel = function()
                      alert('La firma digital debe de contar con extension cer y key');
                      return false;
                   }};
-                  console.log('termino onload '+theFile.name);
+                  //console.log('termino onload '+theFile.name);
         };
       })(evt.target.files[0]);
 
@@ -192,7 +192,7 @@ var _fiel = function()
           /* cargofiel();        * cahce si se cargo la file */
       }
       reader.readAsDataURL(evt.target.files[0]);
-     console.log('leefielkey paso'+evt.target.files[0]);
+     //console.log('leefielkey paso'+evt.target.files[0]);
   }
 
 

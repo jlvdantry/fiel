@@ -164,6 +164,7 @@ class CargafaelMasiva extends Component {
 
 
   componentDidMount(){
+      estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
       DMS = new window.DescargaMasivaSat();
       window.tecleoPwdPrivada().then(pwd => { 
 	      if ('pwd' in pwd.value) {
@@ -181,37 +182,45 @@ class CargafaelMasiva extends Component {
               if (event.data.action==='CONTRA') {
                       window.PWDFIEL=event.data.value;
                       this.setState({ pwdfiel:  window.PWDFIEL });
-		      this.autenticaContraSAT();
-                      estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+		      //this.autenticaContraSAT();
+                      //estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
                       return;
               }
 
               if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
                  this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });
-                 this.haysolicitudesVerificando();
+                 //this.haysolicitudesVerificando();
               }
 
-              if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===5000) {  /* se creo una solicitud y empieza a verificar */
-                 var token = { created: event.data.request.value.header.token_created, expired:event.data.request.value.header.token_expired
-                                       ,value:event.data.request.value.header.token_value }
-                 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:event.data.request.value.folioReq}));
-	         DMS.verificando( this.state,event.data.request.key);   /* manda el registro de verificacion */
+              if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===window.ESTADOREQ.ACEPTADO) {  
+		 /* se creo una solicitud y empieza a verificar */
+		 window.obtieneelUltimoToken().then( aut => {
+			 if ('respuesta' in aut.value) {
+			    if (aut.value.respuesta!==null) {
+				 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired
+						       ,value:aut.value.respuesta.value }
+				 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:event.data.request.value.folioReq}));
+				 DMS.verificando( this.state,event.data.request.key);   /* manda el registro de verificacion */
+			    }
+                         }
+		 });
               }
 
-      if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value) {
-	 if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
-                         DMS.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
-                 }
-              }
+	      if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value) {
+		 if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
+				 DMS.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
+		 }
+	      }
 
-              if (event.data.action==='token-invalido') { this.haysolicitudesVerificando() }
+	      if (event.data.action==='token-invalido') { this.haysolicitudesVerificando() }
 
-              if (event.data.request.value.url==="/download.php") {
-                 DMS.leezip(event.data.respuesta.xml);
-              }
+	      if (event.data.request.value.url==="/download.php") {
+			 DMS.leezip(event.data.respuesta.xml);
+	      }
 
-              window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
+	      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
       };
+
       navigator.serviceWorker.addEventListener('message', handleMessage);
 
   }
