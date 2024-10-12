@@ -585,6 +585,13 @@ function leeSolicitudesCorrectas() {
                leeSolicitudes('prev').then( a  => {
                     a.forEach( 
                           e => { if (e.value.passdata!==null) { 
+				         if ('msg_v' in e.value.passdata) {
+						 e.value.passdata.msg=e.value.passdata.msg_v;
+					 }
+                                         if ('msg_d' in e.value.passdata) {
+                                                 e.value.passdata.msg=e.value.passdata.msg_d;
+                                         }
+
                                          solicitudesCorrectas.push(e.value.passdata) 
                           } }
                     );

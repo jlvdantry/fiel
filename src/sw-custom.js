@@ -1,4 +1,4 @@
-const SW_VERSION = '1.0.240';
+const SW_VERSION = '1.0.243';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
