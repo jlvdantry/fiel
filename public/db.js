@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='16';
+var DBVERSION='17';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -76,6 +76,7 @@ var creadb = function(db) {
                         objectStore.createIndex('yearPago', 'yearPago', { unique: false });
                         objectStore.createIndex('url_yearEmision', ['url','yearEmision'], { unique: false });
                         objectStore.createIndex('url_yearPago', ['url','yearPago'], { unique: false });
+                        objectStore.createIndex('estado', 'estado', { unique: false });
                     };
 
                    if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propios del aplicativo */

@@ -1,4 +1,4 @@
-const SW_VERSION = '1.0.243';
+ SW_VERSION = '1.0.253';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -113,7 +113,7 @@ self.addEventListener("sync", event => {
     } ;
 });
 
-var syncRequest = estado => { 
+var syncRequest = async estado => { 
     console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); 
@@ -277,7 +277,7 @@ var querespuesta = (request,respuesta) => {
                        });
                        return;
          }
-     updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
+     upestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
 };
 
 var updSolicitud = (respuesta,idKey) => {
@@ -307,6 +307,9 @@ var updSolicitudDownload = (mensaje,idKey) => {
                                 updObjectByKey('request',obj,idKey);
                       }).then( () => { resolve() });
         });
+}
+
+var borraverificaciones = () => {
 }
 
 self.addEventListener('activate', function(event) {
@@ -342,6 +345,7 @@ self.addEventListener('message', (event) => {
        syncRequest(ESTADOREQ.INICIAL.VERIFICA);
        syncRequest(ESTADOREQ.ACEPTADO);
        syncRequest(ESTADOREQ.INICIAL.DESCARGA);
+       bajaVerificaciones();
   }, REVISA.ESTADOREQ * 1000);
 
 
