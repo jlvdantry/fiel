@@ -79,4 +79,37 @@ function inserta_solicitud(passdata)
 
 
 
+function bajaVerificaciones()
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then( objectStore => { 
+				let range = IDBKeyRange.only(ESTADOREQ.VERIFICACIONTERMINADA);
+				myIndex=objectStore.index('estado');
+				cursor  = myIndex.openCursor(range,'prev');
+				let counter = 0;
+				cursor.onerror   = event => {
+				}
+				cursor.onsuccess = event => {
+				    var cursor1 = event.target.result;
+				    if (cursor1) {
+                                       counter++; 
+                                       if (counter>3)  {
+				          objectStore.delete(cursor1.primaryKey);	
+					  console.log(' registro borrado='+cursor1.primaryKey);
+				       }
+				       cursor1.continue();
+				    } else {
+				       resolve('registros borrados');
+				    };
+				};
+
+
+                        }).catch(function(err) {
+                                reject(err.message);
+                });
+        })
+
+}
 
