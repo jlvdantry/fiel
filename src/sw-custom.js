@@ -1,4 +1,4 @@
- SW_VERSION = '1.0.253';
+ SW_VERSION = '1.0.257';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -113,7 +113,7 @@ self.addEventListener("sync", event => {
     } ;
 });
 
-var syncRequest = async estado => { 
+var syncRequest = estado => { 
     console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); 
@@ -169,25 +169,6 @@ var syncRequest = async estado => {
     });
 };
 
-/* actualiza el estado del request */
-var updestado = (request,esta,respuesta) => {
-        request.value.estado=esta;
-        request.value.respuesta=respuesta;
-        return new Promise( (resolve, reject) => {
-            var now = new Date();
-            openDatabasex(DBNAME, DBVERSION).then(function(db) {
-                  return openObjectStore(db, 'request', "readwrite");
-                   }).then( objectStore => {
-                           return updObject_01(objectStore, request.value, request.key);
-                   }).then( objectStore => {
-                           //console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
-                           resolve(request);
-                   }).catch(function(err)  {
-                           return Promise.reject(err);
-                   });
-            resolve(request);
-        });
-};
 
 /* envia mensaje a los clientes despues de que se actualizo el request */
 var postRequestUpd = function(request,accion,respuesta) {
@@ -288,12 +269,16 @@ var updSolicitud = (respuesta,idKey) => {
 				    mensaje = respuesta.statusRequest.message ;
                                     if (mensaje=="No se encontró la información") {
 					    obj.estado=ESTADOREQ.SOLICITUDSININFORMACION;
-				    }	    else  { obj.estado=ESTADOREQ.ACEPTADO; }
+				    }	    
+				    else  { 
+					    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
+					    obj.passdata.msg_v="Verificacione(s): "+obj.passdata.intentos;
+					    obj.estado=ESTADOREQ.ACEPTADO; 
+				    }
 				} else {
 				    mensaje = 'Facturas '+respuesta.numberCfdis;  
                                     obj.estado=ESTADOREQ.SOLICITUDTERMINADA
 				}
-				obj.passdata.msg_v=mensaje;
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });
         });
@@ -346,6 +331,7 @@ self.addEventListener('message', (event) => {
        syncRequest(ESTADOREQ.ACEPTADO);
        syncRequest(ESTADOREQ.INICIAL.DESCARGA);
        bajaVerificaciones();
+       bajaTokenCaducado();
   }, REVISA.ESTADOREQ * 1000);
 
 

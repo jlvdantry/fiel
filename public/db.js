@@ -728,6 +728,28 @@ function bajafirmas(key)
 };
 
 
+/* actualiza el estado del request */
+var updestado = (request,esta,respuesta) => {
+        request.value.estado=esta;
+        request.value.respuesta=respuesta;
+        return new Promise( (resolve, reject) => {
+            var now = new Date();
+            openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                  return openObjectStore(db, 'request', "readwrite");
+                   }).then( objectStore => {
+                           return updObject_01(objectStore, request.value, request.key);
+                   }).then( objectStore => {
+                           //console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
+                           resolve(request);
+                   }).catch(function(err)  {
+                           return Promise.reject(err);
+                   });
+            resolve(request);
+        });
+};
+
+
+
 
 
 

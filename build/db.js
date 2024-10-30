@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='16';
+var DBVERSION='17';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -76,6 +76,7 @@ var creadb = function(db) {
                         objectStore.createIndex('yearPago', 'yearPago', { unique: false });
                         objectStore.createIndex('url_yearEmision', ['url','yearEmision'], { unique: false });
                         objectStore.createIndex('url_yearPago', ['url','yearPago'], { unique: false });
+                        objectStore.createIndex('estado', 'estado', { unique: false });
                     };
 
                    if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propios del aplicativo */
@@ -725,6 +726,28 @@ function bajafirmas(key)
                 });
         })
 };
+
+
+/* actualiza el estado del request */
+var updestado = (request,esta,respuesta) => {
+        request.value.estado=esta;
+        request.value.respuesta=respuesta;
+        return new Promise( (resolve, reject) => {
+            var now = new Date();
+            openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                  return openObjectStore(db, 'request', "readwrite");
+                   }).then( objectStore => {
+                           return updObject_01(objectStore, request.value, request.key);
+                   }).then( objectStore => {
+                           //console.log('[updestado] actualizo el estado forma key='+request.key+' Estado='+esta);
+                           resolve(request);
+                   }).catch(function(err)  {
+                           return Promise.reject(err);
+                   });
+            resolve(request);
+        });
+};
+
 
 
 
