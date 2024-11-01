@@ -377,27 +377,44 @@ var DescargaMasivaSat = function()
 		});
    }
 
+
+   this.queda = (actual,expired) => {
+        var difference = (expired-actual)*1000;
+	const millisecondsInADay = 24 * 60 * 60 * 1000;
+	const days = Math.floor(difference / millisecondsInADay);
+	const hours = Math.floor((difference % millisecondsInADay) / (60 * 60 * 1000));
+	const minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
+	const seconds = Math.floor((difference % (60 * 1000)) / 1000);
+	const formattedResult = ` Quedan  ${minutes}:${seconds} segundos`;
+        return formattedResult;
+   }
+
    /* revisa si el token este caducado */
    this.getTokenEstatusSAT = () => {
-                return new Promise(function (resolve, reject) {
+                return new Promise( (resolve, reject) => {
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
 			     var actual=Math.floor(Date.now() / 1000);
 			     if ('respuesta' in obj.value) {
 				     if (actual>=obj.value.respuesta.created & actual<=obj.value.respuesta.expired) {
-					 console.log('[getTokenEstatusSAT] token activo id='+obj.key);
-					 resolve({ tokenEstatusSAT:TOKEN.ACTIVO,certificado:obj.value.passdata,token:obj.value.respuesta })
+					 var cuantoQueda=this.queda(actual,obj.value.respuesta.expired); 
+					 //console.log('[getTokenEstatusSAT] token activo id='+obj.key);
+					 resolve({ tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda })
 				     } else {
 					 console.log('[getTokenEstatusSAT] token caducado id='+obj.key);
-					 resolve({ tokenEstatusSAT:TOKEN.CADUCADO }) 
+					 updestado(obj,TOKEN.CADUCADO,'Token caducado').then( x =>  {
+						resolve({ tokenEstatusSAT:TOKEN.CADUCADO }) 
+					 });
 				     }
-			     }	 else { 
-					 console.log('[getTokenEstatusSAT] no se ha generadon un token  id='+obj.key);
-				         resolve({ tokenEstatusSAT:TOKEN.NOGENERADO }); 
-			              } 
-		     }).catch( err => {
+			     } else { 
+					 //console.log('[getTokenEstatusSAT] no se ha generadon un token  id='+obj.key);
+					 resolve({ tokenEstatusSAT:TOKEN.NOGENERADO }); 
+			     } 
+		}).catch( err => {
+			                 console.log('[getTokenEstatusSAT] err='+err);
 				         resolve({ tokenEstatusSAT:TOKEN.NOSOLICITADO }); 
 		     });
                 });
    }
+
 }
 

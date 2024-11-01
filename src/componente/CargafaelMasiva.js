@@ -23,7 +23,7 @@ class CargafaelMasiva extends Component {
                    ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
-                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false
+                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false,queda:''
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -109,8 +109,8 @@ class CargafaelMasiva extends Component {
   /* revisa si esta autenticado recibe el objeto del aplicativo */
   revisaSiEstaAutenticado = () => {
 	      DMS.getTokenEstatusSAT().then( res => {
-		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT) {
-			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT });
+		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT || res.queda!==this.state.queda) {
+			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT , queda:res.queda});
 		       }
 		       if (res.tokenEstatusSAT===window.TOKEN.NOSOLICITADO || res.tokenEstatusSAT===window.TOKEN.CADUCADO ) {
 				  console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
@@ -411,7 +411,7 @@ class CargafaelMasiva extends Component {
                       </FormGroup>
 
 		      <FormGroup className="container">
-	              { this.state.tokenEstatusSAT===window.TOKEN.ACTIVO  &&  <Label className="text-success">Esta conectado con el SAT</Label> }
+	              { this.state.tokenEstatusSAT===window.TOKEN.ACTIVO  &&  <Label className="text-success">Esta conectado con el SAT { this.state.queda }</Label> }
 	              { this.state.tokenEstatusSAT!==window.TOKEN.ACTIVO &&  <Label className="text-danger">Esta desconectado con el SAT</Label> }
 		      </FormGroup>
 
