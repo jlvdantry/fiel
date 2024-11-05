@@ -13,6 +13,6 @@ $webClient = new GuzzleWebClient();
 $service = new Service(null, $webClient);
  
 $payload=file_get_contents('php://input');
-error_log(__FUNCTION__.' payload= '.print_r($payload,true).PHP_EOL,3,$path);
+error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' payload= '.PHP_EOL,3,$path);
 echo json_encode($service->authenticate_i($payload));
 

@@ -64,6 +64,8 @@ class GuzzleWebClient implements WebClientInterface
             $psr7Response = $this->client->request($request->getMethod(), $request->getUri(), [
                 'headers' => $request->getHeaders(),
                 'body' => $request->getBody(),
+		    'timeout' => 10,          // Total request timeout
+		    'connect_timeout' => 10,   // Connection establishment timeout
             ]);
         } catch (GuzzleException $exception) {
             $psr7Response = ($exception instanceof RequestException) ? $exception->getResponse() : null;

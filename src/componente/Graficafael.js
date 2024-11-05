@@ -6,8 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { exportToExcel } from "react-json-to-excel";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,BarElement,LineController,DoughnutController,ArcElement,PieController } from 'chart.js';
+import { ExtraeComprobantes } from './ExtraeComprobantes';
 
 const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',' Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const RFC = await window.dameRfc();
 
 ChartJS.register(
   CategoryScale,
@@ -66,10 +68,11 @@ class Graficafael extends Component {
     }
 
     componentWillMount(){
+
        this.queYear();
-	const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+	//const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 	//console.log('Viewport Width:', viewportWidth);
-	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+	//const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 	//console.log('Viewport Height', viewportHeight);
     }
 
@@ -104,48 +107,8 @@ class Graficafael extends Component {
   exportaExcel(){
         var datosFactura=[];
         window.leefacturas().then( (cuantas) => {
-                datosFactura=cuantas.map( (x) => {
-                       var datoFactura={};
-                       var descripcion='';
-                       var ingreso='desconocido', egreso='desconocido';
-                       var tc=x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
-                       var rfcEmisor=x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
-                       var rfcReceptor=x.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
-                       var total=Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
-                       var fechaPago=null;
-                       if ( x.value.passdata["cfdi:Comprobante"]["cfdi:Conceptos"].length===1 ) {
-                          descripcion=x.value.passdata["cfdi:Comprobante"]["cfdi:Conceptos"]["cfdi:Concepto"]["@attributes"].Descripcion;
-                       } else { descripcion='Varios conceptos' }
-                       var rfc=localStorage.getItem('rfc');     
-                       if (rfc===rfcReceptor) {
-                          if (tc==='I' ) { ingreso=0; egreso=total; }
-                          if (tc==='N') { ingreso=total; egreso=0; }
-                       }
-                       if (rfc===rfcEmisor) {
-                          if (tc==='E' ) { ingreso=0; egreso=total; }
-                          if (tc==='I') { ingreso=total; egreso=0; }
-                          if (tc==='N') { ingreso=0; egreso=total; }
-                       }
-                       if (x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
-			       if ( x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
-				  fechaPago=x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
-			       }
-                       }
-                       datoFactura={  "Emisor" : rfcEmisor
-                                            ,"Nombre Emisor" : x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
-                                            ,"Receptor": rfcReceptor
-                                            ,"Fecha Emision" : x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
-                                            ,"Fecha Pago" : fechaPago
-                                            ,"Descuento" : Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
-                                            ,"Descripcion": descripcion
-                                            ,"Tipo de Comprobante": x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
-                                            ,"Ingreso": ingreso
-                                            ,"Egreso": egreso 
-                                          };
-                                       
-                      return datoFactura;
-                });
-                exportToExcel(datosFactura,'MisFacturas')
+                datosFactura=ExtraeComprobantes(cuantas,RFC);
+                exportToExcel(datosFactura,'MisFacturas');
         });
   }
 
@@ -177,13 +140,12 @@ class Graficafael extends Component {
                        var rfcReceptor=x.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
                        var total=parseFloat(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total);
 
-		       var rfc=localStorage.getItem('rfc');
                        var mes=parseInt(x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(5,7))-1;
-				   if (rfc===rfcReceptor) {
+				   if (RFC===rfcReceptor) {
 					  if (tc==='I' ) { ingreso=0; egreso=total; }
 					  if (tc==='N') { ingreso=total; egreso=0; }
 				   }
-				   if (rfc===rfcEmisor) {
+				   if (RFC===rfcEmisor) {
 					  if (tc==='E' ) { ingreso=0; egreso=total; }
 					  if (tc==='I') { ingreso=total; egreso=0; }
 					  if (tc==='N') { ingreso=0; egreso=total; }
@@ -241,6 +203,7 @@ class Graficafael extends Component {
 			    },
 	       	    },
                     responsive:true,
+                    maintainAspectRatio: false,
 		    plugins: {
 			    legend: {
 			      position: 'right',
@@ -261,6 +224,7 @@ class Graficafael extends Component {
                             },
                     },
                     responsive:true,
+                    maintainAspectRatio: false,
                     plugins: {
                             legend: {
                               position: 'top',
@@ -275,6 +239,8 @@ class Graficafael extends Component {
     }
     if (dropdownValue==='Dona' || dropdownValue==='Pie') {
        options={ 
+         responsive:true,
+         maintainAspectRatio: false,
          elements: {
               center: {
                 legend: { display: true, position: "right" },
@@ -324,7 +290,7 @@ class Graficafael extends Component {
                         </div>
                         { this.state.data.labels && this.state.data.labels.length>0 &&
 				<Card className="m-1">
-					<CardBody>
+					<CardBody style={{ width: '100%', height: '400px' }}>
 						{ (dropdownValue==='Barras Verticales') && <Bar data={this.state.data} options={options}> </Bar> }
 						{ (dropdownValue==='Barras Horizontales') && <Bar data={this.state.data} options={options}> </Bar> }
 						{ (dropdownValue==='Dona') && <Doughnut data={this.state.data} options={options}> </Doughnut> }

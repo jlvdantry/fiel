@@ -206,7 +206,7 @@ class CargafaelMasiva extends Component {
 		 });
               }
 
-	      if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value) {
+	      if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value & event.data.request.value.respuesta!==null) {
 		 if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
 				 DMS.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
 		 }

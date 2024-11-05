@@ -49,11 +49,12 @@ function dameRfc() {
         })
 }
 
-async function dameNombre() {
-      var x = await selObjectUlt('request','url','fiel').then( fiel => {
+function dameNombre() {
+      return new Promise( (resolve, reject) => {
+             selObjectUlt('request','url','fiel').then( fiel => {
                         resolve (fiel.value.nombre)
                 }).catch( err => { reject (null) })
-      return x;
+      });
 }
 
 /* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
@@ -97,7 +98,7 @@ function bajaVerificaciones()
                                        counter++; 
                                        if (counter>3)  {
 				          objectStore.delete(cursor1.primaryKey);	
-					  console.log(' registro borrado='+cursor1.primaryKey);
+					  console.log('[bajaVerificaciones] registro borrado='+cursor1.primaryKey);
 				       }
 				       cursor1.continue();
 				    } else {
@@ -114,7 +115,7 @@ function bajaVerificaciones()
 }
 
 
-function bajaTokenCaducado()
+function bajaTokenInvalido()
 {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
@@ -132,7 +133,41 @@ function bajaTokenCaducado()
                                        counter++;
                                        if (counter>3)  {
                                           objectStore.delete(cursor1.primaryKey);
-                                          console.log(' registro borrado='+cursor1.primaryKey);
+                                          console.log('[bajaTokenInvalido] registro borrado='+cursor1.primaryKey);
+                                       }
+                                       cursor1.continue();
+                                    } else {
+                                       resolve('registros borrados');
+                                    };
+                                };
+
+
+                        }).catch(function(err) {
+                                reject(err.message);
+                });
+        })
+
+}
+
+function bajaTokenCaducado()
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then( objectStore => {
+                                let range = IDBKeyRange.only(TOKEN.CADUCADO);
+                                myIndex=objectStore.index('estado');
+                                cursor  = myIndex.openCursor(range,'prev');
+                                let counter = 0;
+                                cursor.onerror   = event => {
+                                }
+                                cursor.onsuccess = event => {
+                                    var cursor1 = event.target.result;
+                                    if (cursor1) {
+                                       counter++;
+                                       if (counter>3)  {
+                                          objectStore.delete(cursor1.primaryKey);
+                                          console.log('[bajaTokenCaducado] registro borrado='+cursor1.primaryKey);
                                        }
                                        cursor1.continue();
                                     } else {

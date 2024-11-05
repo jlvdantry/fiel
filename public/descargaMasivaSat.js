@@ -378,6 +378,7 @@ var DescargaMasivaSat = function()
    }
 
 
+   /* tiempo que le queda al token de autenticacion */
    this.queda = (actual,expired) => {
         var difference = (expired-actual)*1000;
 	const millisecondsInADay = 24 * 60 * 60 * 1000;
@@ -385,7 +386,7 @@ var DescargaMasivaSat = function()
 	const hours = Math.floor((difference % millisecondsInADay) / (60 * 60 * 1000));
 	const minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
 	const seconds = Math.floor((difference % (60 * 1000)) / 1000);
-	const formattedResult = ` Quedan  ${minutes}:${seconds} segundos`;
+	const formattedResult = ` Quedan  ${minutes}:${seconds.toString().padStart(2, '0')} segundos`;
         return formattedResult;
    }
 

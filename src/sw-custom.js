@@ -1,4 +1,4 @@
- SW_VERSION = '1.0.257';
+SW_VERSION = '1.0.275';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -114,13 +114,11 @@ self.addEventListener("sync", event => {
 });
 
 var syncRequest = estado => { 
-    console.log('[syncRequest] estado='+estado);
     openDatabasex(DBNAME, DBVERSION).then( db => {
           var oS=openObjectStore(db, 'request', "readonly"); 
 	  return oS;
     }).then( async objectStore => {
           var req= await selObjects(objectStore, "estadoIndex", estado); 
-          console.log('[syncRequest] paso selObjects estado='+estado+' total de requerimientos='+req.length);
 	  return req;
     }).then( requests => {
                   return Promise.all(
@@ -130,7 +128,6 @@ var syncRequest = estado => {
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
 					/* si se cumple solo va armar el soa para la peticion */
 					dame_pwd().then( pwd => { 
-						 console.log('[syncRequest] va a solicitar el armado del soa del key='+request.key);
 						 DMS.solicita_armasoa(request,request.key,pwd) 
 					});
 					return;
@@ -258,7 +255,7 @@ var querespuesta = (request,respuesta) => {
                        });
                        return;
          }
-     upestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
+     updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
 };
 
 var updSolicitud = (respuesta,idKey) => {
@@ -332,6 +329,7 @@ self.addEventListener('message', (event) => {
        syncRequest(ESTADOREQ.INICIAL.DESCARGA);
        bajaVerificaciones();
        bajaTokenCaducado();
+       bajaTokenInvalido();
   }, REVISA.ESTADOREQ * 1000);
 
 

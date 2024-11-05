@@ -19,11 +19,11 @@ var  ESTADOREQ = {
 	, INSERTADO:'0'  /* Insertardo el requerimiento localmente */
 	}; /* Estado del requerimiento */
 
-var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:0, NOGENERADO:2, NOSOLICITADO:3 }   // tiempo en que vigente el token proporcionado por el SAT, para controlar si esta aun viente el token
+var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:3 }   // tiempo en que vigente el token proporcionado por el SAT, para controlar si esta aun viente el token
      // NOGENERADO ya se solicito pero aun no se ha generado
      // NOSOLICITADO no se ha solicitado
 var  REVISA = { 
-	  VIGENCIATOKEN : 10 /* cada cuando se revisa si el token esta vigente */
+	  VIGENCIATOKEN : 1 /* cada cuando se revisa si el token esta vigente */
 	, ESTADOREQ:30   /* cada cuando se revisa el estado del requerimiento */
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
