@@ -30,8 +30,6 @@ export function register(config) {
       // serve assets; see https://github.com/facebook/create-react-app/issues/2374
       return;
     }
-
-    window.addEventListener('load', () => {
       console.log('[load] empezo');
       const swUrl = `${process.env.PUBLIC_URL}/sw.js`;
 
@@ -51,7 +49,6 @@ export function register(config) {
         // Is not localhost. Just register service worker
         registerValidSW(swUrl, config);
       }
-    });
   }
 }
 

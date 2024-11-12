@@ -1,4 +1,4 @@
-SW_VERSION = '1.0.275';
+SW_VERSION = '1.0.280';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -201,8 +201,9 @@ var querespuesta = (request,respuesta) => {
             respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
             respuesta.expiredLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
-                          { postRequestUpd(r,"autenticado",respuesta); }
-            );
+                          { postRequestUpd(r,"autenticado",respuesta); 
+			    if (DMS===null) { DMS= new DescargaMasivaSat(); }
+			  });
             return;
          }
 
@@ -300,7 +301,7 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('message', (event) => {
-  console.log('recibio message el sw event='+JSON.stringify(event.data,true));
+  console.log('recibio message el sw event='+JSON.stringify(event.data.action,true));
   if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
       action: 'VERSION',
@@ -317,10 +318,6 @@ self.addEventListener('message', (event) => {
 });
  
   setInterval( () => {
-            if (DMS===null) {
-                    DMS= new DescargaMasivaSat();
-            }
-
        console.log('[setInterval] va a sincronizar');
        syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
        syncRequest(ESTADOREQ.INICIAL.SOLICITUD);

@@ -333,6 +333,9 @@ var DescargaMasivaSat = function()
 				   }
 				})
 			}
+			else {
+				console.error('no genero el armasoa de la solicitud, porque no checa la privadam error='+res.msg);
+			}
 		});
 
    }
@@ -358,6 +361,7 @@ var DescargaMasivaSat = function()
 	                   this.verifica_enviasoa(this.xmltoken,estado.token,idKey);	
 			   return { ok:true, msg :'Fiel correcta' }
 			} else {
+                           console.error('no es valida la fiel local '+res.msg);
 			   return { ok:false , msg : res.msg };
 			}
 		});
@@ -395,10 +399,9 @@ var DescargaMasivaSat = function()
                 return new Promise( (resolve, reject) => {
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
 			     var actual=Math.floor(Date.now() / 1000);
-			     if ('respuesta' in obj.value) {
+			     if ('respuesta' in obj.value && 'created' in obj.value.respuesta) {
 				     if (actual>=obj.value.respuesta.created & actual<=obj.value.respuesta.expired) {
 					 var cuantoQueda=this.queda(actual,obj.value.respuesta.expired); 
-					 //console.log('[getTokenEstatusSAT] token activo id='+obj.key);
 					 resolve({ tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda })
 				     } else {
 					 console.log('[getTokenEstatusSAT] token caducado id='+obj.key);
@@ -407,7 +410,6 @@ var DescargaMasivaSat = function()
 					 });
 				     }
 			     } else { 
-					 //console.log('[getTokenEstatusSAT] no se ha generadon un token  id='+obj.key);
 					 resolve({ tokenEstatusSAT:TOKEN.NOGENERADO }); 
 			     } 
 		}).catch( err => {

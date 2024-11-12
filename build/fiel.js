@@ -11,12 +11,12 @@ var _fiel = function()
   //console.log('[_fiel] instancio');
 
   damePrivada().then(privada => { 
-	  //console.log('[_fiel] seteo la privada');
+	  console.log('[_fiel] seteo la privada');
 	  this.privada = privada; 
   }).catch(er => { this.privada.key = null;console.log('[_fiel] aun no esta cargada la privada') });
 
   damePublica().then(publica => { 
-	  //console.log('[_fiel] seteo la publica');
+	  console.log('[_fiel] seteo la publica');
 	  this.publica = publica; 
   }).catch(er => { this.publica.cer = null;console.log('[_fiel] aun no esta cargada la publica') });
 

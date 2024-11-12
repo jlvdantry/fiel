@@ -62,7 +62,7 @@ class Menumi extends Component {
 	}
 	  //this.setState({ showInstallMessage: true });
     document.querySelector('#ayuda').click();
-      timer = setInterval(() => this.cambio(), 2000)
+      //timer = setInterval(() => this.cambio(), 2000)
   }
 
   cambio() {
