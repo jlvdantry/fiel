@@ -399,7 +399,7 @@ var DescargaMasivaSat = function()
                 return new Promise( (resolve, reject) => {
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
 			     var actual=Math.floor(Date.now() / 1000);
-			     if ('respuesta' in obj.value && 'created' in obj.value.respuesta) {
+			     if ('respuesta' in obj.value && obj.value.respuesta!==null ) {
 				     if (actual>=obj.value.respuesta.created & actual<=obj.value.respuesta.expired) {
 					 var cuantoQueda=this.queda(actual,obj.value.respuesta.expired); 
 					 resolve({ tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda })

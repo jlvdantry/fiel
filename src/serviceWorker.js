@@ -31,7 +31,7 @@ export function register(config) {
       return;
     }
       console.log('[load] empezo');
-      const swUrl = `${process.env.PUBLIC_URL}/sw.js`;
+      const swUrl = `${process.env.PUBLIC_URL}/sw.js?v=${window.VERSION}`;
 
       if (isLocalhost) {
         // This is running on localhost. Let's check if a service worker still exists or not.
@@ -58,6 +58,7 @@ function registerValidSW(swUrl, config) {
     .register(swUrl)
     .then(registration => {
       registration.onupdatefound = () => {
+        console.log('[onupdatefound] endtro ');
         const installingWorker = registration.installing;
         if (installingWorker == null) {
           return;

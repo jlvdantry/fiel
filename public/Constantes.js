@@ -27,3 +27,4 @@ var  REVISA = {
 	, ESTADOREQ:30   /* cada cuando se revisa el estado del requerimiento */
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
+var VERSION='1.0.289';

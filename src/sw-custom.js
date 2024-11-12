@@ -1,4 +1,4 @@
-SW_VERSION = '1.0.280';
+SW_VERSION = '1.0.288';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -17,15 +17,24 @@ if ("function" === typeof importScripts) {
     workbox.loadModule('workbox-strategies');
 
 
+      self.skipWaiting();
     //`generateSW` and `generateSWString` provide the option
     // to force update an exiting service worker.
     // Since we're using `injectManifest` to build SW,
     // manually overriding the skipWaiting();
     self.addEventListener("install", (event) => {
-      self.skipWaiting();
+      console.log('[install] entro');
+      //self.skipWaiting();
       generallaves();
       insertaRFCS();
     });
+
+
+	self.addEventListener('activate', function(event) {
+		console.log('[activate] ');
+		event.waitUntil(self.clients.claim());
+	});
+
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
@@ -295,17 +304,13 @@ var updSolicitudDownload = (mensaje,idKey) => {
 var borraverificaciones = () => {
 }
 
-self.addEventListener('activate', function(event) {
-        console.log('[activate] ');
-	event.waitUntil(self.clients.claim());
-});
 
 self.addEventListener('message', (event) => {
   console.log('recibio message el sw event='+JSON.stringify(event.data.action,true));
   if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
       action: 'VERSION',
-      version: SW_VERSION,
+      version: VERSION,
     });
   }
   if (event.data && event.data.action === 'dameContra') {
