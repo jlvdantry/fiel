@@ -8,10 +8,11 @@ const columns = [
   { key: 'Receptor', name: 'RFC Receptor', minWidth: 16, flex: 3 },
   { key: 'Fecha Emision',  name: 'Fecha Emision',  minWidth: 20, flex: 1, headerRenderer: () => <div>Fecha<br />Emision</div>},
   { key: 'Fecha Pago',  name: 'Fecha Pago',  minWidth: 20, flex: 1},
-  { key: 'Descuento',  name: 'Descuento',  minWidth: 20, flex: 1},
   { key: 'Tipo de Comprobante',  name: 'TC', minWidth: 10, flex: 2},
   { key: 'Ingreso', name: 'Ingreso', minWidth: 20, flex: 3 },
   { key: 'Egreso', name: 'Egreso', minWidth: 20, flex: 3 },
+  { key: 'Iva Acreditado', name: 'ivaAcreditado', minWidth: 20, flex: 3 },
+  { key: 'Iva Cobrado', name: 'ivaCobrado', minWidth: 20, flex: 3 }
 ];
 
 export default  function DataGridFacturas(props) {

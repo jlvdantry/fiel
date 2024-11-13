@@ -1,24 +1,33 @@
 export function  ExtraeComprobantes(fact,RFC) {
-			var datosFactura=fact.map( (x) => {
+			var datosFactura=fact.map( (x,index) => {
 			       var datoFactura={};
 			       var descripcion='';
+			       var ivaAcreditado=0;
+			       var ivaCobrado=0;
+			       var iva=0;
 			       var ingreso='desconocido', egreso='desconocido';
 			       var tc=x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
 			       var rfcEmisor=x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
 			       var rfcReceptor=x.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Rfc;
 			       var total=Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
+
+                               if (x.value.passdata["cfdi:Comprobante"].hasOwnProperty("cfdi:Impuestos")) {
+			          var iva=  Number(x.value.passdata["cfdi:Comprobante"]["cfdi:Impuestos"]["@attributes"].TotalImpuestosTrasladados).toLocaleString('en-US');
+			       }
+
 			       var fechaPago=null;
 			       if ( x.value.passdata["cfdi:Comprobante"]["cfdi:Conceptos"].length===1 ) {
 				  descripcion=x.value.passdata["cfdi:Comprobante"]["cfdi:Conceptos"]["cfdi:Concepto"]["@attributes"].Descripcion;
 			       } else { descripcion='Varios conceptos' }
 			       if (RFC===rfcReceptor) {
-				  if (tc==='I' ) { ingreso=0; egreso=total; }
-				  if (tc==='N') { ingreso=total; egreso=0; }
+				  if (tc==='E' ) { ingreso=total; egreso=0; ivaAcreditado=0; ivaCobrado=iva; }
+				  if (tc==='I' ) { ingreso=0; egreso=total; ivaAcreditado=iva  ; ivaCobrado=0 }
+				  if (tc==='N') { ingreso=total; egreso=0;  ivaAcreditado=0  ; ivaCobrado=0 }
 			       }
 			       if (RFC===rfcEmisor) {
-				  if (tc==='E' ) { ingreso=0; egreso=total; }
-				  if (tc==='I') { ingreso=total; egreso=0; }
-				  if (tc==='N') { ingreso=0; egreso=total; }
+				  if (tc==='E' ) { ingreso=0; egreso=total; ivaAcreditado=iva; ivaCobrado=0; }
+				  if (tc==='I') { ingreso=total; egreso=0;  ivaAcreditado=0  ; ivaCobrado=iva}
+				  if (tc==='N') { ingreso=0; egreso=total;  ivaAcreditado=0  ; ivaCobrado=0 }
 			       }
 			       if (x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
 				       if ( x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
@@ -30,15 +39,18 @@ export function  ExtraeComprobantes(fact,RFC) {
 						    ,"Receptor": rfcReceptor
 						    ,"Fecha Emision" : x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
 						    ,"Fecha Pago" : fechaPago
-						    ,"Descuento" : Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
+						    //,"Descuento" : Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
 						    ,"Descripcion": descripcion
 						    ,"Tipo de Comprobante": x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
 						    ,"Ingreso": ingreso
+				                    ,"Iva Cobrado": ivaCobrado
+				                    ,"Iva Acreditado": ivaAcreditado
 						    ,"Egreso": egreso
 						  };
-
+	                      console.log('[ExtraeComprobantes] index='+index+' datosFactura='+JSON.stringify(datoFactura,true));
 			      return datoFactura;
 			});
+	        console.log('[ExtraeComprobantes]  datosFactura='+JSON.stringify(datosFactura,true));
 	        return datosFactura;
 };
 
