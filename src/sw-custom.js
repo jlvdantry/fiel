@@ -332,6 +332,7 @@ self.addEventListener('message', (event) => {
        bajaVerificaciones();
        bajaTokenCaducado();
        bajaTokenInvalido();
+       bajaRequiriendo();
   }, REVISA.ESTADOREQ * 1000);
 
 

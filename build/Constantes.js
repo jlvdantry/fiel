@@ -27,4 +27,5 @@ var  REVISA = {
 	, ESTADOREQ:30   /* cada cuando se revisa el estado del requerimiento */
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
-var VERSION='1.0.289';
+var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
+var VERSION='1.0.293';

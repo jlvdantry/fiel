@@ -183,3 +183,42 @@ function bajaTokenCaducado()
 
 }
 
+/* baja aquellos reques que tienen estatus de requiriendo pero que tienen una antiguedad mayor a 2 minutos */
+function bajaRequiriendo()
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then( objectStore => {
+                                let range = IDBKeyRange.only(ESTADOREQ.REQUIRIENDO);
+                                myIndex=objectStore.index('estado');
+                                cursor  = myIndex.openCursor(range,'prev');
+                                let counter = 0;
+                                cursor.onerror   = event => {
+                                }
+                                cursor.onsuccess = event => {
+                                    var cursor1 = event.target.result;
+                                    if (cursor1) {
+                                       counter++;
+                                       var fh=get_fechahora();
+                                       var hora = cursor1.value.hora < 10 ? '0' + cursor1.value.hora : cursor1.value.hora;
+                                       var minuto = cursor1.value.minutos < 10 ? '0' + cursor1.value.minutos : cursor1.value.minutos;
+                                       var fr=cursor1.value.fecha+' '+hora+':'+minuto;
+                                       var dif = differenceInMinutes(fh,fr);
+                                       if  (dif > REQUIRIENDOMINUTOS) {
+					    console.log('[bajaRequiriendo] fecha hora='+fh);
+                                            objectStore.delete(cursor1.primaryKey);
+				       }
+                                       cursor1.continue();
+                                    } else {
+                                       resolve('registros borrados');
+                                    };
+                                };
+
+
+                        }).catch(function(err) {
+                                reject(err.message);
+                });
+        })
+}
+
