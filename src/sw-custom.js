@@ -161,7 +161,7 @@ var syncRequest = estado => {
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null);
                                 fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
                                 .then(response => {
-                                          if (response.status==500) { updestado(request,ESTADOREQ.ERROR); return { 'error' : response.status };
+                                          if (response.status===500) { updestado(request,ESTADOREQ.ERROR); return { 'error' : response.status };
                                           } else { return response.json(); }
                                 })
                                 .then( async response => {
@@ -202,7 +202,7 @@ var enviaContra = (pwd) => {
 var querespuesta = (request,respuesta) => {
          console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
-            updestado(request,5,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
+            updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
             return;
          }
 
@@ -276,6 +276,7 @@ var updSolicitud = (respuesta,idKey) => {
 				    mensaje = respuesta.statusRequest.message ;
                                     if (mensaje=="No se encontró la información") {
 					    obj.estado=ESTADOREQ.SOLICITUDSININFORMACION;
+					    obj.passdata.msg_v=mensaje;
 				    }	    
 				    else  { 
 					    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
