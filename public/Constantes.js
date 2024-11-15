@@ -10,7 +10,7 @@ var  ESTADOREQ = {
         , SOLICITUDSININFORMACION : '125'
 	, RESPUESTADESCONOCIDA:'99'
 	, RECIBIDO:'1'   /* recibio respuesta del servidor */
-	, ERROR:'500'
+	, ERROR:500
 	, ACEPTADO:5000   /* la solicitud y/o verificacion fue aceptada por el sat */
 	, REQUIRIENDO:'2'   /* se va a requerir  el servicor */
 	, TOKENINVALIDO:'300'
@@ -28,4 +28,4 @@ var  REVISA = {
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.302';
+var VERSION='1.0.317';

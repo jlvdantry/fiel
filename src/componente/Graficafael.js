@@ -9,6 +9,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { ExtraeComprobantes } from './ExtraeComprobantes';
 
 const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',' Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const labelsShort = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul',' Ago','Sep','Oct','Nov','Dic'];
 const RFC = await window.dameRfc();
 
 ChartJS.register(
@@ -31,7 +32,7 @@ class Graficafael extends Component {
   constructor(props){
     super(props);
     this.state = { data:{},dropdownOpenYear:false,dropdownOpen:false,dropdownValueYear:'Año Emisión Actual',dropdownValue:'Barras Horizontales'
-                   ,refresca:true, exportaExcel:false, datosExcel:null, filtroYearValue:0, filtro:''}
+                   ,refresca:true, exportaExcel:false, datosExcel:null, filtroYearValue:0, filtro:'', isMobile:false}
     this.toggle =  this.toggle.bind(this)
     this.toggleYear =  this.toggleYear.bind(this)
     this.changeValue = this.changeValue.bind(this);
@@ -39,7 +40,12 @@ class Graficafael extends Component {
     this.actuaFacturas = this.actuaFacturas.bind(this);
     this.exportaExcel = this.exportaExcel.bind(this);
     this.queYear = this.queYear.bind(this);
+    this.handleResize = this.handleResize.bind(this); 
   }
+
+    handleResize() {
+	    this.setState({isMobile : window.innerWidth < 768 ? true : false});
+    }
 
     toggle(event) {
 
@@ -62,18 +68,14 @@ class Graficafael extends Component {
 
     changeValueYear(e) {
        this.setState({dropdownValueYear: e.currentTarget.textContent},() => {
-                       //console.log('actualizo el año');
                        this.queYear();
              });
     }
 
     componentWillMount(){
-
        this.queYear();
-	//const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-	//console.log('Viewport Width:', viewportWidth);
-	//const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-	//console.log('Viewport Height', viewportHeight);
+       this.handleResize();
+       window.addEventListener("resize", this.handleResize);
     }
 
     queYear() {
@@ -164,7 +166,7 @@ class Graficafael extends Component {
                     //console.log('Graficafael actuaFacturas that.state.dropdownValue='+JSON.stringify(that.state.dropdownValue));
                     if (that.state.dropdownValue==="Dona" || that.state.dropdownValue==="Pie") {
                             that.setState({
-                                    data:{labels : labels
+				    data:{labels : labels
                                          ,datasets: [
                                                 {data:datai,label:'Ingreso'
                                               ,backgroundColor:[colors[0],colors[1],colors[2],colors[3],colors[4],colors[5],colors[6],colors[7],colors[8],colors[9],colors[10],colors[11]]}
@@ -177,7 +179,7 @@ class Graficafael extends Component {
                             });
                     } else {
 			    that.setState({
-				    data:{labels : labels 
+				    data:{labels : this.isMobile ? labels : labelsShort 
 					 ,datasets: [ 
 						{label:'Ingreso',data:datai,backgroundColor:colori,borderColor:colori} 
 					       ,{label:'Egreso',data:datae,backgroundColor:colore,borderColor:colore} 

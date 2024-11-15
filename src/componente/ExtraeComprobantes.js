@@ -12,7 +12,7 @@ export function  ExtraeComprobantes(fact,RFC) {
 			       var total=Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
 
                                if (x.value.passdata["cfdi:Comprobante"].hasOwnProperty("cfdi:Impuestos")) {
-			          var iva=  Number(x.value.passdata["cfdi:Comprobante"]["cfdi:Impuestos"]["@attributes"].TotalImpuestosTrasladados).toLocaleString('en-US');
+			          iva=  Number(x.value.passdata["cfdi:Comprobante"]["cfdi:Impuestos"]["@attributes"].TotalImpuestosTrasladados).toLocaleString('en-US');
 			       }
 
 			       var fechaPago=null;

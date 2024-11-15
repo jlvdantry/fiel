@@ -398,14 +398,20 @@ var DescargaMasivaSat = function()
    this.getTokenEstatusSAT = () => {
                 return new Promise( (resolve, reject) => {
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
+			     if (obj.value.estado===ESTADOREQ.ERROR) {
+				     resolve({ tokenEstatusSAT:ESTADOREQ.ERROR });
+			     }
 			     var actual=Math.floor(Date.now() / 1000);
 			     if ('respuesta' in obj.value && obj.value.respuesta!==null ) {
-				     if (actual>=obj.value.respuesta.created & actual<=obj.value.respuesta.expired) {
+				     if (actual<=obj.value.respuesta.expired) {
 					 var cuantoQueda=this.queda(actual,obj.value.respuesta.expired); 
 					 resolve({ tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda })
-				     } else {
+				     }
+				     if (actual>=obj.value.respuesta.expired ) {
 					 console.log('[getTokenEstatusSAT] token caducado id='+obj.key);
-					 updestado(obj,TOKEN.CADUCADO,'Token caducado').then( x =>  {
+                                         obj.value.respuesta.token='caducado'
+					 obj.value.respuesta.actual=actual;
+					 updestado(obj,TOKEN.CADUCADO,obj.value.reepuesta).then( x =>  {
 						resolve({ tokenEstatusSAT:TOKEN.CADUCADO }) 
 					 });
 				     }

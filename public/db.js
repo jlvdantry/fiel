@@ -619,10 +619,14 @@ function leeSolicitudesVerificando() {
 }
 
 /* Obtiene el ultimo TOKEN generado */
-function obtieneelUltimoToken() {
+function obtieneelUltimoTokenActivo() {
         return new Promise(function (resolve, reject) {
                this.selObjectUlt('request','url','/autentica.php','prev').then( obj => {
-                    resolve(obj);
+                    if (obj.value.estado===ESTADOREQ.AUTENTICADO) {
+                       resolve(obj);
+		    } else {
+                       reject(obj);
+		    }
                });
         })
 }

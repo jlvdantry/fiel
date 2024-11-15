@@ -112,7 +112,7 @@ class CargafaelMasiva extends Component {
 		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT || res.queda!==this.state.queda) {
 			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT , queda:res.queda});
 		       }
-		       if (res.tokenEstatusSAT===window.TOKEN.NOSOLICITADO || res.tokenEstatusSAT===window.TOKEN.CADUCADO ) {
+		       if (res.tokenEstatusSAT===window.TOKEN.NOSOLICITADO || res.tokenEstatusSAT===window.TOKEN.CADUCADO || res.tokenEstatusSAT===window.ESTADOREQ.ERROR) {
 				  console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
 				  this.autenticaContraSAT();
 		       }
@@ -134,7 +134,7 @@ class CargafaelMasiva extends Component {
 
   /* hay solicitudes en estado de verificando */
   haysolicitudesVerificando () {
-	         window.obtieneelUltimoToken().then ( a =>  {
+	         window.obtieneelUltimoTokenActivo().then ( a =>  {
 			 var token = { created: a.value.respuesta.created,expired:a.value.respuesta.expired,value:a.value.respuesta.value }
 			 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:a.folioReq}));
 			 window.leeSolicitudesVerificando().then( req =>  {
@@ -147,6 +147,7 @@ class CargafaelMasiva extends Component {
 				    );
 
 			 });
+		 }).catch( e => { console.log('[haysolicitudesVerificando] no encontro un token activo');
 		 });
   }
  
@@ -182,8 +183,6 @@ class CargafaelMasiva extends Component {
               if (event.data.action==='CONTRA') {
                       window.PWDFIEL=event.data.value;
                       this.setState({ pwdfiel:  window.PWDFIEL });
-		      //this.autenticaContraSAT();
-                      //estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
                       return;
               }
 
@@ -194,7 +193,7 @@ class CargafaelMasiva extends Component {
 
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===window.ESTADOREQ.ACEPTADO) {  
 		 /* se creo una solicitud y empieza a verificar */
-		 window.obtieneelUltimoToken().then( aut => {
+		 window.obtieneelUltimoTokenActivo().then( aut => {
 			 if ('respuesta' in aut.value) {
 			    if (aut.value.respuesta!==null) {
 				 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired
@@ -203,6 +202,7 @@ class CargafaelMasiva extends Component {
 				 DMS.verificando( this.state,event.data.request.key);   /* manda el registro de verificacion */
 			    }
                          }
+		 }).catch( e=> { console.log('[handleMessage] no encontro un token activo para verificar');
 		 });
               }
 
