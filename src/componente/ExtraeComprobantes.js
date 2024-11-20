@@ -47,10 +47,9 @@ export function  ExtraeComprobantes(fact,RFC) {
 				                    ,"Iva Acreditado": ivaAcreditado
 						    ,"Egreso": egreso
 						  };
-	                      console.log('[ExtraeComprobantes] index='+index+' datosFactura='+JSON.stringify(datoFactura,true));
 			      return datoFactura;
 			});
-	        console.log('[ExtraeComprobantes]  datosFactura='+JSON.stringify(datosFactura,true));
+	        //console.log('[ExtraeComprobantes]  datosFactura='+JSON.stringify(datosFactura,true));
 	        return datosFactura;
 };
 

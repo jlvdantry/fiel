@@ -1,4 +1,4 @@
-SW_VERSION = '1.0.288';
+SW_VERSION = '1.0.289';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -286,6 +286,7 @@ var updSolicitud = (respuesta,idKey) => {
 				} else {
 				    mensaje = 'Facturas '+respuesta.numberCfdis;  
                                     obj.estado=ESTADOREQ.SOLICITUDTERMINADA
+                                    obj.passdata.msg_v=mensaje;
 				}
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });

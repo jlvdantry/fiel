@@ -44,7 +44,8 @@ class Graficafael extends Component {
   }
 
     handleResize() {
-	    this.setState({isMobile : window.innerWidth < 768 ? true : false});
+	    console.log('[handleResize] entro');
+	    this.setState({isMobile : (window.innerWidth < 768 ? true : false)});
     }
 
     toggle(event) {
@@ -115,9 +116,8 @@ class Graficafael extends Component {
   }
 
   actuaFacturas(){
-        var that=this;
-        that.setState({data:{}});
-        window.leefacturas(this.state.filtro).then(function(cuantas) {
+        this.setState({data:{}});
+        window.leefacturas(this.state.filtro).then(cuantas => {
                     var datae = Array(12).fill(0);   /* egresos */ var datai = Array(12).fill(0);   /* ingresos */ var datan = Array(12).fill(0);   /* neto */
                     let usedColors = new Set();
 		    var dynamicColors = function() {
@@ -133,7 +133,7 @@ class Graficafael extends Component {
 		    };
 		    const colors = [dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()
                                    ,dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors(),dynamicColors()];
-                    //console.log('actuaFacturas colors='+colors);
+                    //console.log('actuaFacturas cuantas facturas='+cuantas.length);
 
                     cuantas.map((x) => {
                        var ingreso=0, egreso=0;
@@ -163,9 +163,8 @@ class Graficafael extends Component {
                     var colori=dynamicColors();
                     var colore=dynamicColors();
                     var colorn=dynamicColors();
-                    //console.log('Graficafael actuaFacturas that.state.dropdownValue='+JSON.stringify(that.state.dropdownValue));
-                    if (that.state.dropdownValue==="Dona" || that.state.dropdownValue==="Pie") {
-                            that.setState({
+                    if (this.state.dropdownValue==="Dona" || this.state.dropdownValue==="Pie") {
+                            this.setState({
 				    data:{labels : labels
                                          ,datasets: [
                                                 {data:datai,label:'Ingreso'
@@ -178,8 +177,9 @@ class Graficafael extends Component {
                                          },
                             });
                     } else {
-			    that.setState({
-				    data:{labels : this.isMobile ? labels : labelsShort 
+			    //console.log('va a poner labels='+labels+' labelsShort='+labelsShort+' isMobile='+JSON.stringify(this.state,true) );
+			    this.setState({
+				    data:{labels : (this.state.isMobile ? labelsShort : labels )
 					 ,datasets: [ 
 						{label:'Ingreso',data:datai,backgroundColor:colori,borderColor:colori} 
 					       ,{label:'Egreso',data:datae,backgroundColor:colore,borderColor:colore} 
@@ -188,13 +188,14 @@ class Graficafael extends Component {
 					 },
 			    });
                     }
-         }).catch(function(err)  {
-                    that.setState({datai:{},datae:{},datan:{}});
+         }).catch( err  => {
+		    console.error('[actuaFacturas] err'+err);
+                    this.setState({datai:{},datae:{},datan:{}});
          });
   }
 
   render() {
-    //console.log('Graficafael render data='+JSON.stringify(this.state.data));
+    //console.log('Graficafael render data labels='+JSON.stringify(this.state,true));
     const dropdownValue = this.state.dropdownValue
     var options={};
     if (dropdownValue==='Barras Horizontales') {
@@ -208,7 +209,7 @@ class Graficafael extends Component {
                     maintainAspectRatio: false,
 		    plugins: {
 			    legend: {
-			      position: 'right',
+			      position: 'top',
 			    },
 			    title: {
 			      display: true,
