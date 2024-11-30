@@ -7,7 +7,7 @@ const columns = [
   { key: 'fechafin',  name: 'Fecha Final', minWidth: 50, flex: 2},
   { key: 'RFCEmisor', name: 'Emisor',  minWidth: 60, flex: 3},
   { key: 'RFCReceptor', name: 'Receptor', minWidth: 60, flex: 3 },
-  { key: 'msg', name: 'Estado Solicitud', minWidth: 80, flex: 3 },
+  { key: 'msg', name: 'Estado Solicitud', minWidth: 80, flex: 3, cellClass:'blink' },
 ];
 
 export function MiDataGrid(props) {
@@ -40,16 +40,20 @@ export function MiDataGrid(props) {
       {props.filas.map((row, rowIndex) => (
             <div className="card mb-2">
 		<div key={rowIndex} className="card-body">
-		  <div className="row  justify-content-between"><div><b>Fecha Inicial   </b></div> <div>{row.fechaini}</div></div>
-		  <div className="row justify-content-between"><div><b>Fecha Final     </b></div> <div>{row.fechafin}</div></div>
-		  <div className="row justify-content-between"><div><b>RFC Emisor      </b></div> <div>{row.RFCEmisor}</div></div>
-		  <div className="row justify-content-between"><div><b>RFC Receptor    </b></div> <div>{row.RFCReceptor}</div></div>
-		  <div className="row justify-content-between"><div><b>Estado Solicitud</b></div> <div>{row.msg}</div></div>
-		</div>
+	        {
+			columns.map( (col,colIndex) => (
+			  <div className="row  justify-content-between">
+				 <div><b>{col.name}</b></div> 
+				{ !('cellClass' in  col) &&  <div>{row[col.key]}</div>  }
+				{  ('cellClass' in  col) &&  <div className='blink'>{row[col.key]}</div>  }
+			  </div>
+			))
+                }
+	        </div>
 	    </div>
       ))}
     </div>
-  );
+  )
 
   return <div>{isMobile ? renderMobileView() : renderGrid()}</div>;
 }
