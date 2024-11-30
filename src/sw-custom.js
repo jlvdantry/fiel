@@ -1,10 +1,11 @@
-SW_VERSION = '1.0.289';
+SW_VERSION = '1.0.290';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
 var DMS = null;
+var intervalId = null;
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('Constantes.js');
@@ -30,9 +31,39 @@ if ("function" === typeof importScripts) {
     });
 
 
-	self.addEventListener('activate', function(event) {
+	self.addEventListener('activate', event => {
 		console.log('[activate] ');
 		event.waitUntil(self.clients.claim());
+                if (DMS===null) { 
+		    DMS= new DescargaMasivaSat(); 
+		    DMS.getTokenEstatusSAT().then( res => {
+			       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
+				       console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+				       dame_pwd.then(pwd => {
+				            DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') }); 
+				       });
+			       } else {
+				       DMS=null;
+			       }
+		    });
+		}
+		intervalId = setInterval( () => {
+		       console.log('[setInterval] va a sincronizar');
+		       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
+		       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
+		       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+		       syncRequest(ESTADOREQ.ACEPTADO);
+		       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
+		       bajaVerificaciones();
+		       bajaTokenCaducado();
+		       bajaTokenInvalido();
+		       bajaRequiriendo();
+		  }, REVISA.ESTADOREQ * 1000);
+		    // Clean up the interval when the SW is stopped
+		    self.addEventListener('beforeunload', () => {
+			clearInterval(intervalId);
+			console.log("Interval cleared!");
+		    });
 	});
 
 
@@ -137,6 +168,7 @@ var syncRequest = estado => {
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
 					/* si se cumple solo va armar el soa para la peticion */
 					dame_pwd().then( pwd => { 
+                                                 if (DMS===null) { DMS= new DescargaMasivaSat(); }
 						 DMS.solicita_armasoa(request,request.key,pwd) 
 					});
 					return;
@@ -284,10 +316,16 @@ var updSolicitud = (respuesta,idKey) => {
 					    obj.estado=ESTADOREQ.ACEPTADO; 
 				    }
 				} else {
+                                if (respuesta.statusRequest.message.substring(0,9)==="Terminada") {
 				    mensaje = 'Facturas '+respuesta.numberCfdis;  
                                     obj.estado=ESTADOREQ.SOLICITUDTERMINADA
                                     obj.passdata.msg_v=mensaje;
 				}
+                                if (respuesta.statusRequest.message.substring(0,7)==="Vencida") {
+                                    mensaje = 'Vencida ';
+                                    obj.estado=ESTADOREQ.SOLICITUDVENCIDA
+                                    obj.passdata.msg_v=mensaje;
+                                }
 				updObjectByKey('request',obj,idKey);
 		      }).then( () => { resolve() });
         });
