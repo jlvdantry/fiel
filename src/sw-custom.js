@@ -4,6 +4,7 @@ importScripts('db.js');
 importScripts('dbFiel.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
+importScripts('encripta.js');
 console.log('[sw] entro');
 var DMS = null;
 var intervalId = null;
@@ -177,7 +178,10 @@ var syncRequest = estado => {
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null);
                                 fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
                                 .then(response => {
-                                          if (response.status===500) { updestado(request,ESTADOREQ.ERROR); return { 'error' : response.status };
+                                          if (response.status===500) { updestado(request,ESTADOREQ.ERROR).then( x=> {
+						  console.log('sw error 500');
+						  Promise.reject({'error' : response.status });
+					  });
                                           } else { return response.json(); }
                                 })
                                 .then( async response => {
@@ -343,22 +347,24 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.action === 'setContra') {
 	  encripta_pw(event.data.PWDFIEL);
   }
-
 });
 
-if (DMS===null) {
-    DMS= new DescargaMasivaSat();
-    DMS.getTokenEstatusSAT().then( res => {
+/* checa si ya se tecleo el pwd de la privada */
+dame_pwd().then(pwd => {
+    if (pwd!==null)  { /* ya se tecleo la pwd */
+       if (DMS===null) {
+           DMS= new DescargaMasivaSat();
+           DMS.getTokenEstatusSAT().then( res => {
 	       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
 		       console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
-		       dame_pwd.then(pwd => {
-			    DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') });
-		       });
+		       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') });
 	       } else {
 		       DMS=null;
 	       }
+           });
+       }
+    }
 });
-}
 
  
 setInterval( () => {
