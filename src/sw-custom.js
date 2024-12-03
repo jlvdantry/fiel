@@ -4,6 +4,7 @@ importScripts('db.js');
 importScripts('dbFiel.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
+console.log('[sw] entro');
 var DMS = null;
 var intervalId = null;
 if ("function" === typeof importScripts) {
@@ -47,23 +48,6 @@ if ("function" === typeof importScripts) {
 			       }
 		    });
 		}
-		intervalId = setInterval( () => {
-		       console.log('[setInterval] va a sincronizar');
-		       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
-		       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
-		       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
-		       syncRequest(ESTADOREQ.ACEPTADO);
-		       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
-		       bajaVerificaciones();
-		       bajaTokenCaducado();
-		       bajaTokenInvalido();
-		       bajaRequiriendo();
-		  }, REVISA.ESTADOREQ * 1000);
-		    // Clean up the interval when the SW is stopped
-		    self.addEventListener('beforeunload', () => {
-			clearInterval(intervalId);
-			console.log("Interval cleared!");
-		    });
 	});
 
 
@@ -315,7 +299,7 @@ var updSolicitud = (respuesta,idKey) => {
 					    obj.passdata.msg_v="Verificacione(s): "+obj.passdata.intentos;
 					    obj.estado=ESTADOREQ.ACEPTADO; 
 				    }
-				} else {
+				}
                                 if (respuesta.statusRequest.message.substring(0,9)==="Terminada") {
 				    mensaje = 'Facturas '+respuesta.numberCfdis;  
                                     obj.estado=ESTADOREQ.SOLICITUDTERMINADA
@@ -361,8 +345,23 @@ self.addEventListener('message', (event) => {
   }
 
 });
+
+if (DMS===null) {
+    DMS= new DescargaMasivaSat();
+    DMS.getTokenEstatusSAT().then( res => {
+	       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
+		       console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+		       dame_pwd.then(pwd => {
+			    DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') });
+		       });
+	       } else {
+		       DMS=null;
+	       }
+});
+}
+
  
-  setInterval( () => {
+setInterval( () => {
        console.log('[setInterval] va a sincronizar');
        syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
        syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
@@ -373,7 +372,7 @@ self.addEventListener('message', (event) => {
        bajaTokenCaducado();
        bajaTokenInvalido();
        bajaRequiriendo();
-  }, REVISA.ESTADOREQ * 1000);
+}, REVISA.ESTADOREQ * 1000);
 
 
 

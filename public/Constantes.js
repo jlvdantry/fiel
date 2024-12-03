@@ -6,6 +6,7 @@ var  ESTADOREQ = {
           INICIAL:MOVIMIENTO
 	, AUTENTICADO:'10' 
         , SOLICITUDTERMINADA : '123'
+        , SOLICITUDVENCIDA : '126'
         , VERIFICACIONTERMINADA : '124'
         , SOLICITUDSININFORMACION : '125'
 	, RESPUESTADESCONOCIDA:'99'
@@ -24,8 +25,8 @@ var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:
      // NOSOLICITADO no se ha solicitado
 var  REVISA = { 
 	  VIGENCIATOKEN : 1 /* cada cuando se revisa si el token esta vigente */
-	, ESTADOREQ:30   /* cada cuando se revisa el estado del requerimiento */
+	, ESTADOREQ:10   /* cada cuando se revisa el estado del requerimiento */
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.324';
+var VERSION='1.0.340';

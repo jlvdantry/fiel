@@ -58,3 +58,13 @@ function differenceInMinutes(dateStr1, dateStr2) {
     return diffInMinutes;
 }
 
+// Function to display log messages
+function logToDocument(message) {
+    const logMessage = document.createElement('div');
+    logMessage.textContent = message;
+    logContainer.appendChild(logMessage);
+
+    // Auto-scroll to the bottom
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
