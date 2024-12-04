@@ -165,8 +165,20 @@ var syncRequest = estado => {
                                 }
 
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.ACEPTADO) {  
-				     postRequestUpd(request,"update-request","");   /* mensajea al cliente y aqui se genera el registro de verificacion */
-                                     return; //si fue aceptada la solicitud deberia de mandar la verificacion
+					 obtieneelUltimoTokenActivo().then( aut => {
+						 if ('respuesta' in aut.value) {
+						    if (aut.value.respuesta!==null) {
+							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired
+									       ,value:aut.value.respuesta.value }
+							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq }
+							 DMS.verificando( datos,request.key);
+						    }
+						 }
+					 }).catch( e=> { console.log('[handleMessage] no encontro un token activo para verificar');
+					 });
+
+				         postRequestUpd(request,"update-request","");   /* mensajea al cliente y aqui se genera el registro de verificacion */
+                                         return; //si fue aceptada la solicitud deberia de mandar la verificacion
                                 }
 
                                 if (request.value.url=='factura') {
@@ -353,6 +365,7 @@ self.addEventListener('message', (event) => {
 dame_pwd().then(pwd => {
     if (pwd!==null)  { /* ya se tecleo la pwd */
        if (DMS===null) {
+           PWDFIEL= pwd;
            DMS= new DescargaMasivaSat();
            DMS.getTokenEstatusSAT().then( res => {
 	       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {

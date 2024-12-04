@@ -342,9 +342,6 @@ var DescargaMasivaSat = function()
 
    this.verificando = async function (estado,idKey) {
                  var resv=this.verifica_armasoa(estado,idKey);
-		 //if (resv.ok===true) {
-		 //      this.verifica_enviasoa(resv.soap,estado.token,idKey);
-		 //}
    }
 
    this.descargando = async (estado,packageId,keySolicitud) => {

@@ -193,17 +193,19 @@ class CargafaelMasiva extends Component {
 
               if (event.data.request.value.url==="/solicita.php" & event.data.request.value.estado===window.ESTADOREQ.ACEPTADO) {  
 		 /* se creo una solicitud y empieza a verificar */
+		      /* la logica se pasa al sw 
 		 window.obtieneelUltimoTokenActivo().then( aut => {
 			 if ('respuesta' in aut.value) {
 			    if (aut.value.respuesta!==null) {
 				 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired
 						       ,value:aut.value.respuesta.value }
 				 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:event.data.request.value.folioReq}));
-				 DMS.verificando( this.state,event.data.request.key);   /* manda el registro de verificacion */
+				 DMS.verificando( this.state,event.data.request.key);  
 			    }
                          }
 		 }).catch( e=> { console.log('[handleMessage] no encontro un token activo para verificar');
 		 });
+		      */
               }
 
 	      if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value & event.data.request.value.respuesta!==null) {
