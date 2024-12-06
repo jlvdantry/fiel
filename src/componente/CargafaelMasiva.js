@@ -112,10 +112,12 @@ class CargafaelMasiva extends Component {
 		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT || res.queda!==this.state.queda) {
 			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT , queda:res.queda});
 		       }
+		      /* codigo que se pasa al sw
 		       if (res.tokenEstatusSAT===window.TOKEN.NOSOLICITADO || res.tokenEstatusSAT===window.TOKEN.CADUCADO || res.tokenEstatusSAT===window.ESTADOREQ.ERROR) {
 				  console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
 				  this.autenticaContraSAT();
 		       }
+		       */
 	      });
 
   }
@@ -165,15 +167,15 @@ class CargafaelMasiva extends Component {
 
 
   componentDidMount(){
-      estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
       DMS = new window.DescargaMasivaSat();
-      window.tecleoPwdPrivada().then(pwd => { 
-	      if ('pwd' in pwd.value) {
-		      this.setState({ tecleoPWD:true });
-		      this.dame_pwdSW();
-		      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }); });
-		      window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
-	      }
+      estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+      window.tecleoPwdPrivada().then(pwd => {
+             if ('pwd' in pwd.value) {
+                     this.setState({ tecleoPWD:true });
+                     this.dame_pwdSW();
+                     window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }); });
+                     window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
+             }
       });
 
       /* maneja los mensaje provenientes del sw */
@@ -209,9 +211,11 @@ class CargafaelMasiva extends Component {
               }
 
 	      if (event.data.request.value.url==="/verifica.php" &  'respuesta' in event.data.request.value & event.data.request.value.respuesta!==null) {
+		 /* logica se pasa al sw
 		 if (event.data.request.value.respuesta.substring(0,9)==='Terminada') {
 				 DMS.descargando(this.state,event.data.respuesta.packagesIds,event.data.request.value.passdata.keySolicitud);
 		 }
+		 */
 	      }
 
 	      if (event.data.action==='token-invalido') { this.haysolicitudesVerificando() }

@@ -396,13 +396,19 @@ var DescargaMasivaSat = function()
                 return new Promise( (resolve, reject) => {
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
 			     if (obj.value.estado===ESTADOREQ.ERROR) {
-				     resolve({ tokenEstatusSAT:ESTADOREQ.ERROR });
+				     return { tokenEstatusSAT:ESTADOREQ.ERROR };
 			     }
+			     if (obj.value.estado===TOKEN.CADUCADO) {
+				     return { tokenEstatusSAT:TOKEN.CADUCADO };
+			     }
+                             if (obj.value.estado===ESTADOREQ.REQUIRIENDO) {
+                                     return { tokenEstatusSAT:ESTADOREQ.REQUIRIENDO };
+                             }
 			     var actual=Math.floor(Date.now() / 1000);
-			     if ('respuesta' in obj.value && obj.value.respuesta!==null ) {
+			     if ('respuesta' in obj.value && obj.value.respuesta!==null && obj.value.respuesta!==undefined) {
 				     if (actual<=obj.value.respuesta.expired) {
 					 var cuantoQueda=this.queda(actual,obj.value.respuesta.expired); 
-					 resolve({ tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda })
+					 return { tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda }
 				     }
 				     if (actual>=obj.value.respuesta.expired ) {
 					 console.log('[getTokenEstatusSAT] token caducado id='+obj.key);
@@ -413,11 +419,15 @@ var DescargaMasivaSat = function()
 					 });
 				     }
 			     } else { 
-					 resolve({ tokenEstatusSAT:TOKEN.NOGENERADO }); 
+					 return { tokenEstatusSAT:TOKEN.NOGENERADO }; 
 			     } 
-		}).catch( err => {
+		})
+                .then( x => {
+                             resolve(x);
+		})
+		.catch( err => {
 			                 console.log('[getTokenEstatusSAT] err='+err);
-				         resolve({ tokenEstatusSAT:TOKEN.NOSOLICITADO }); 
+				         Promise.resolve({ tokenEstatusSAT:TOKEN.NOSOLICITADO }); 
 		     });
                 });
    }

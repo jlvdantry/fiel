@@ -29,15 +29,18 @@ function damePublica() {
         return new Promise( (resolve, reject) => {
 		selObjectUlt('request','url','fiel').then( fiel => {
 			resolve (fiel.value.publica)
-		}).catch( err => { reject (null) })
+		}).then( pub => { resolve(pub); })
+		.catch( err => { reject (null) })
         })
 }
 
 function damePrivada() {
         return new Promise( (resolve, reject) => {
                 selObjectUlt('request','url','fiel').then( fiel => {
-                        resolve (fiel.value.privada)
-                }).catch( err => { reject (null) })
+                        return fiel.value.privada
+                })
+		.then( pri => { resolve(pri); })
+		.catch( err => { reject (null) })
         })
 }
 

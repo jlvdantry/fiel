@@ -148,7 +148,7 @@ var syncRequest = estado => {
     }).then( requests => {
                   return Promise.all(
                          requests.map( (request) => {
-                                console.log('[syncRequest] syncRequest antes de hacer fetch url='+request.value.url+' llave='+request.key+' estado='+estado);
+                                console.log('[syncRequest] syncRequest url='+request.value.url+' llave='+request.key+' estado='+estado);
 
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
 					/* si se cumple solo va armar el soa para la peticion */
@@ -160,11 +160,31 @@ var syncRequest = estado => {
 				}
 
 
-                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // no procesa las verificaciones ya terminadas
-				     if  (request.value.respuesta.substring(0,9)=="Terminada" || request.value.respuesta.substring(0,9)=="Rechazada") {  return; }
+                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // genera registro para que se  descargue las facturas
+                                     console.log('[syncRequest] verifica.php y respúesta');
+				     if  (request.value.respuesta.substring(0,9)=="Terminada")  {  
+                                         console.log('[syncRequest] verifica.php y respúesta y terminada');
+					 obtieneelUltimoTokenActivo().then( aut => {
+                                                 console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo');
+						 if ('respuesta' in aut.value) {
+                                                    console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo hay respuesta en el ultimo token');
+						    if (aut.value.respuesta!==null) {
+                                                         console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo hay respuesta en el ultimo token y no es nulo');
+							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired ,value:aut.value.respuesta.value }
+							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq }
+                                                         DMS.descargando(datos,request.value.respuesta.packagesIds,request.value.passdata.keySolicitud);
+						    }
+						 }
+					 }).catch( e=> { console.log('[syncRequest] no encontro un token activo para descargar');
+					 });
+				     }
                                 }
 
-                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.ACEPTADO) {  
+                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // no procesa las verificaciones ya terminadas
+                                     if  (request.value.respuesta.substring(0,9)=="Rechazada") {  return; }
+                                }
+
+                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.ACEPTADO) {  // genera el registro de verificacion
 					 obtieneelUltimoTokenActivo().then( aut => {
 						 if ('respuesta' in aut.value) {
 						    if (aut.value.respuesta!==null) {
@@ -187,21 +207,26 @@ var syncRequest = estado => {
 
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
-                                updestado(request,ESTADOREQ.REQUIRIENDO, null);
-                                fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
-                                .then(response => {
-                                          if (response.status===500) { updestado(request,ESTADOREQ.ERROR).then( x=> {
-						  console.log('sw error 500');
-						  Promise.reject({'error' : response.status });
-					  });
-                                          } else { return response.json(); }
-                                })
-                                .then( async response => {
-                                          await updestado(request,ESTADOREQ.RECIBIDO, response); 
-                                          return response;
-                                 })
-                                .then(response => { querespuesta(request,response); return Promise.resolve(); })
-                                .catch(function(err)  { return Promise.reject(err); })
+                                updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
+					console.log('[syncRequest] va hacer request url='+request.value.url+' llave='+request.key+' estado='+estado);
+					fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
+					.then( async response => {
+						  if (response.status===500) { 
+							  console.log('sw error 500');
+							  await updestado(request,ESTADOREQ.ERROR);
+							  reject({'error' : response.status });
+						  } else { return response.json(); }
+					})
+					.then( async response => {
+						  await updestado(request,ESTADOREQ.RECIBIDO, response); 
+						  return response;
+					 })
+					.then(response => { querespuesta(request,response); return Promise.resolve(); })
+					.catch(function(err)  { 
+						console.log('sw cacho error');
+						return Promise.reject(err); 
+					})
+                                });
                          })
                    );
     });
@@ -232,6 +257,10 @@ var enviaContra = (pwd) => {
 
 /* checa cual fue la respuesta del servidor */
 var querespuesta = (request,respuesta) => {
+         if(respuesta===undefined) {
+		 console.log('[querepuesta] respuesta indefinida'+JSON.stringify(request));
+		 debugger;
+	 }
          console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
             updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
@@ -362,24 +391,33 @@ self.addEventListener('message', (event) => {
 });
 
 /* checa si ya se tecleo el pwd de la privada */
-dame_pwd().then(pwd => {
-    if (pwd!==null)  { /* ya se tecleo la pwd */
-       if (DMS===null) {
-           PWDFIEL= pwd;
-           DMS= new DescargaMasivaSat();
-           DMS.getTokenEstatusSAT().then( res => {
-	       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
-		       console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
-		       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') });
-	       } else {
-		       DMS=null;
-	       }
-           });
-       }
-    }
-});
+var revisaSiEstaAutenticado = () => {
+	dame_pwd().then(pwd => {
+	    if (pwd!==null)  { /* ya se tecleo la pwd */
+	       if (DMS===null) {
+		   PWDFIEL= pwd;
+		   DMS= new DescargaMasivaSat();
+               }
+	       DMS.getTokenEstatusSAT().then( res => {
+                   if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO) {
+			       console.log('[sw-custom revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') });
+                   }
+	       });
+	    }
+	});
+}
 
- 
+        dame_pwd().then(pwd => {
+            if (pwd!==null)  { /* ya se tecleo la pwd */
+               if (DMS===null) {
+                   PWDFIEL= pwd;
+                   DMS= new DescargaMasivaSat();
+               }
+            }
+        });
+
+
 setInterval( () => {
        console.log('[setInterval] va a sincronizar');
        syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
@@ -392,6 +430,10 @@ setInterval( () => {
        bajaTokenInvalido();
        bajaRequiriendo();
 }, REVISA.ESTADOREQ * 1000);
+
+setInterval( () => {
+       revisaSiEstaAutenticado()
+}, REVISA.VIGENCIATOKEN_SW * 1000);
 
 
 
