@@ -6,6 +6,8 @@ var  ESTADOREQ = {
           INICIAL:MOVIMIENTO
 	, AUTENTICADO:'10' 
         , SOLICITUDTERMINADA : '123'
+        , SOLICITUDPENDIENTEDOWNLOAD : '127'
+        , SOLICITUDDESCARGANDO : '128'
         , SOLICITUDVENCIDA : '126'
         , VERIFICACIONTERMINADA : '124'
         , SOLICITUDSININFORMACION : '125'
@@ -30,4 +32,4 @@ var  REVISA = {
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.370';
+var VERSION='1.0.388';

@@ -125,8 +125,8 @@ var DescargaMasivaSat = function()
 
 	/* Arma el body para descargar las facturas 
 	 */
-   this.armaBodyDownload = function (datos,packageId) {
-          var IdPaquete =  packageId;
+   this.armaBodyDownload = function (datos,solicitud) {
+          var IdPaquete =  solicitud.value.folioReq[0];
           var xmlRfc = datos.firma.rfc;
           this.toDigestXml =  '<des:PeticionDescargaMasivaTercerosEntrada xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:peticionDescarga IdPaquete="'+IdPaquete+'" RfcSolicitante="'+xmlRfc+'">'+
@@ -240,7 +240,7 @@ var DescargaMasivaSat = function()
         var url=this.urlproxy;
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
                 update_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITUD,hs1,soa,idkey).then( key => {
-                                console.log("[solicita_enviasoa] el requerimiento de solicitud se actualizo idkey="+key);
+                                console.log("[solicita_enviasoa] actualizo key="+key);
                 });
    }
 
@@ -312,7 +312,7 @@ var DescargaMasivaSat = function()
         var passdata={ keySolicitud:idKey };
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'VerificaSolicitudDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
                 inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
-                                console.log("[verifica_enviasoa] inserto request de verificacion ");
+                                console.log("[verifica_enviasoa] inserto key="+key.key);
                 });
    }
 
@@ -326,7 +326,7 @@ var DescargaMasivaSat = function()
 				      request.value.certificado=res.certificado;
 				      request.value.token=res.token;
 				      this.armaBodySol(request.value);
-				      console.log('[solicita_armasoa] ya armo el body del soa y va a solicitar el envio idkey='+idkey);	
+				      console.log('[solicita_armasoa] armo el body key='+idkey);	
 				      this.solicita_enviasoa(this.xmltoken,request.value.token,request.value.passdata,idkey)
 				   }
 				   if (res.tokenEstatusSAT===TOKEN.CADUCADO) { 
@@ -334,7 +334,7 @@ var DescargaMasivaSat = function()
 				})
 			}
 			else {
-				console.error('no genero el armasoa de la solicitud, porque no checa la privadam error='+res.msg);
+				console.error('[solicita_armasoa] no genero el armasoa key='+res.msg);
 			}
 		});
 
@@ -344,8 +344,8 @@ var DescargaMasivaSat = function()
                  var resv=this.verifica_armasoa(estado,idKey);
    }
 
-   this.descargando = async (estado,packageId,keySolicitud) => {
-                 var resv=this.download_armasoa(estado,packageId[0],keySolicitud);
+   this.descargando = async (estado,request) => {
+                 var resv=this.download_armasoa(estado,request);
    }
 
 
@@ -364,15 +364,20 @@ var DescargaMasivaSat = function()
 		});
    }
 
-   this.download_armasoa = function (estado,packageId,keySolicitud) {
+   this.download_armasoa = function (estado,request) {
                 this.mifiel.validafiellocal(estado.pwdfiel).then( res => {
+			console.log('[DMS] paso validafiellocal');
 			this.cer = this.mifiel.damecertificadofiel();
+			console.log('[DMS] paso damecertificadofiel');
 			if (res.ok) {
-			   estado.firma = res;
-			   this.armaBodyDownload(estado,packageId);
-	                   this.download_enviasoa(this.xmltoken,estado.token,packageId,keySolicitud);	
+			   estado.firma = res
+			   this.armaBodyDownload(estado,request);
+			   console.log('[DMS] paso armaBodyDownload');
+	                   this.download_enviasoa(this.xmltoken,estado.token,request.packageId,request.key);	
+			   console.log('[DMS] paso download_enviasoa');
 			   return { ok:true, msg :'Fiel correcta' }
 			} else {
+			   console.log('[DMS] dio falso res.ok');
 			   return { ok:false , msg : res.msg };
 			}
 		});
@@ -411,7 +416,7 @@ var DescargaMasivaSat = function()
 					 return { tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda }
 				     }
 				     if (actual>=obj.value.respuesta.expired ) {
-					 console.log('[getTokenEstatusSAT] token caducado id='+obj.key);
+					 console.log('[DMS getTokenEstatusSAT] token caducado id='+obj.key);
                                          obj.value.respuesta.token='caducado'
 					 obj.value.respuesta.actual=actual;
 					 updestado(obj,TOKEN.CADUCADO,obj.value.reepuesta).then( x =>  {
@@ -426,7 +431,7 @@ var DescargaMasivaSat = function()
                              resolve(x);
 		})
 		.catch( err => {
-			                 console.log('[getTokenEstatusSAT] err='+err);
+			                 console.log('[DMS getTokenEstatusSAT] err='+err);
 				         Promise.resolve({ tokenEstatusSAT:TOKEN.NOSOLICITADO }); 
 		     });
                 });

@@ -625,7 +625,7 @@ function obtieneelUltimoTokenActivo() {
                     if (obj.value.estado===ESTADOREQ.AUTENTICADO) {
                        resolve(obj);
 		    } else {
-                       reject(obj);
+                       reject({'msg':'el token no esta autenticado',key:obj.key,estado:obj.value.estado });
 		    }
                });
         })

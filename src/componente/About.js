@@ -35,7 +35,6 @@ class About extends Component {
 		    if (event.data && event.data.action === 'VERSION') {
 		      console.log('Service Worker Version:', event.data.version);
 			    this.setState({APPVERSION:event.data.version}) ;
-		      // Optionally display the version in the UI
 		    }
 		  });
 		}

@@ -12,30 +12,32 @@ import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
 import About from './componente/About';
-import './fontawesome';;
+import './fontawesome';
 
-/*
+/* para mostrar el log en el browser
 const logContainer = document.getElementById('logContainer');
-
 function logToDocument(message) {
     const logMessage = document.createElement('div');
     logMessage.textContent = message;
     logContainer.appendChild(logMessage);
-
-    // Auto-scroll to the bottom
     logContainer.scrollTop = logContainer.scrollHeight;
 }
-
 (function() {
     const originalLog = console.log;
     console.log = function(...args) {
-        // Display logs on the document
         logToDocument(args.join(' '));
-        // Also call the original console.log
         originalLog.apply(console, args);
     };
 })();
 */
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data && event.data.action === 'log') {
+            console.log(event.data.message); // Call a function to display the log
+        }
+    });
+}
 
 
 class App extends Component {

@@ -13,6 +13,19 @@ if ("function" === typeof importScripts) {
    importScripts('Constantes.js');
    importScripts('encripta.js');
    importScripts('insertaDatos.js');
+	/* para mostrar el log en el browser   
+	const originalConsoleLog = console.log;
+	console.log = function (...args) {
+	    originalConsoleLog.apply(this, args);
+	    const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
+	    clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
+		clientList.forEach(client => {
+		    client.postMessage({ action: 'log', message }); // Send a structured message
+		});
+	    });
+	};
+	*/
+
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -40,9 +53,9 @@ if ("function" === typeof importScripts) {
 		    DMS= new DescargaMasivaSat(); 
 		    DMS.getTokenEstatusSAT().then( res => {
 			       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
-				       console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+				       console.log('[sw activate] va a autenticarse contra el SAT');
 				       dame_pwd.then(pwd => {
-				            DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') }); 
+				            DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw activate] genero el request de aut') }); 
 				       });
 			       } else {
 				       DMS=null;
@@ -54,7 +67,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"c3439e5ac89a7c5e0a8d6cda18335312","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"224d688a6dc3205e98b52c9083200b7d","url":"static/v4/Constantes.js"},{"revision":"e7336792ed1b33c07bc795e6522630f0","url":"static/v4/db.js"},{"revision":"13dc121556039b8d106745468ea97e3f","url":"static/v4/dbFiel.js"},{"revision":"9ee47f52d52b626820c308ec6db304d0","url":"static/v4/descargaMasivaSat.js"},{"revision":"b3455c1dc2e4ab6fa628e60df491357c","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"23d6a117a6fdbd48cdce4e2f06a2af5c","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"37be7d193517ea87ab967e708a4cca9d","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"de53ba719d2cbcc8b43f2c789b7fa400","url":"static/v4/static/js/main.43ec8634.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"f32bff7ece4c807bf0486c0a48934724","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"4941c9dc7a7f93e80887f93a9be5ae9c","url":"static/v4/Constantes.js"},{"revision":"2e3ec8e280431cc1210f4b62019fb919","url":"static/v4/db.js"},{"revision":"13dc121556039b8d106745468ea97e3f","url":"static/v4/dbFiel.js"},{"revision":"a999c9510dfe849499448e9a5400f586","url":"static/v4/descargaMasivaSat.js"},{"revision":"b3455c1dc2e4ab6fa628e60df491357c","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"72376defcec0684ed0f9b91d17c0855c","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"04b3b312d4775bf9dcff74df0b9ff426","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"c98c13c14c3cce5948f94f7d8de459a1","url":"static/v4/static/js/main.02f1ae0f.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -148,7 +161,7 @@ var syncRequest = estado => {
     }).then( requests => {
                   return Promise.all(
                          requests.map( (request) => {
-                                console.log('[syncRequest] syncRequest url='+request.value.url+' llave='+request.key+' estado='+estado);
+                                console.log('[syncRequest] url='+request.value.url+' llave='+request.key+' estado='+estado);
 
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
 					/* si se cumple solo va armar el soa para la peticion */
@@ -160,24 +173,22 @@ var syncRequest = estado => {
 				}
 
 
-                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // genera registro para que se  descargue las facturas
-                                     console.log('[syncRequest] verifica.php y respúesta');
-				     if  (request.value.respuesta.substring(0,9)=="Terminada")  {  
-                                         console.log('[syncRequest] verifica.php y respúesta y terminada');
+                                if (request.value.estado==ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD) { // genera registro para que se  descargue las facturas
+                                         console.log('[syncRequest] va a obtener el ultimo token activo');
 					 obtieneelUltimoTokenActivo().then( aut => {
-                                                 console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo');
-						 if ('respuesta' in aut.value) {
-                                                    console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo hay respuesta en el ultimo token');
-						    if (aut.value.respuesta!==null) {
-                                                         console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo hay respuesta en el ultimo token y no es nulo');
-							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired ,value:aut.value.respuesta.value }
-							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq }
-                                                         DMS.descargando(datos,request.value.respuesta.packagesIds,request.value.passdata.keySolicitud);
-						    }
-						 }
-					 }).catch( e=> { console.log('[syncRequest] no encontro un token activo para descargar');
+                                                         console.log('[syncRequest] download');
+							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired ,value:aut.value.respuesta.value };
+                                                         console.log('[syncRequest] download token');
+							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq };
+                                                         console.log('[syncRequest] download datos');
+                                                         DMS.descargando(datos,request).then( x=> { 
+                                                                console.log('[syncRequest] download DMS.descargando');
+								updestado(request,ESTADOREQ.SOLICITUDDESCARGANDO); 
+					                 });
+					 }).catch( e=> { console.error('[syncRequest] error='+JSON.stringify(e,true));
 					 });
-				     }
+
+					 return;
                                 }
 
                                 if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // no procesa las verificaciones ya terminadas
@@ -194,7 +205,7 @@ var syncRequest = estado => {
 							 DMS.verificando( datos,request.key);
 						    }
 						 }
-					 }).catch( e=> { console.log('[handleMessage] no encontro un token activo para verificar');
+					 }).catch( e=> { console.log('[syncRequest] no token para verificar e='+JSON.stringify(e,true));
 					 });
 
 				         postRequestUpd(request,"update-request","");   /* mensajea al cliente y aqui se genera el registro de verificacion */
@@ -208,13 +219,13 @@ var syncRequest = estado => {
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
-					console.log('[syncRequest] va hacer request url='+request.value.url+' llave='+request.key+' estado='+estado);
+					console.log('[syncRequest] url='+request.value.url+' key='+request.key+' es='+estado);
 					fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
 					.then( async response => {
 						  if (response.status===500) { 
 							  console.log('sw error 500');
 							  await updestado(request,ESTADOREQ.ERROR);
-							  reject({'error' : response.status });
+							  Promise.reject({'error' : response.status });
 						  } else { return response.json(); }
 					})
 					.then( async response => {
@@ -223,7 +234,7 @@ var syncRequest = estado => {
 					 })
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch(function(err)  { 
-						console.log('sw cacho error');
+						console.log('[fetch] error='+err);
 						return Promise.reject(err); 
 					})
                                 });
@@ -258,10 +269,10 @@ var enviaContra = (pwd) => {
 /* checa cual fue la respuesta del servidor */
 var querespuesta = (request,respuesta) => {
          if(respuesta===undefined) {
-		 console.log('[querepuesta] respuesta indefinida'+JSON.stringify(request));
+		 console.log('[querepuesta] respuesta indefinida'+JSON.stringify(request,true));
 		 debugger;
 	 }
-         console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
+         console.log('[querespuesta] id='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
             updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
             return;
@@ -299,7 +310,7 @@ var querespuesta = (request,respuesta) => {
 		       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,request.value.passdata.msg_v).then( () => {
 			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
 			       respuesta.statusRequest.message=request.value.passdata.msg_v;
-			       updSolicitud(respuesta,request.value.passdata.keySolicitud) 
+			       updSolicitud(respuesta,request.value) 
                                .then( () => {
 			            postRequestUpd(request,"se verifico",respuesta);
                                });
@@ -329,9 +340,9 @@ var querespuesta = (request,respuesta) => {
      updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
 };
 
-var updSolicitud = (respuesta,idKey) => {
+var updSolicitud = (respuesta,verificacionValue) => {
         return new Promise( (resolve, reject) => {
-		      selObjectByKey('request',idKey).then( obj => {
+		      selObjectByKey('request',verificacionValue.passdata.keySolicitud).then( obj => {
 			        var mensaje='';
 			        if (respuesta.statusRequest.message.substring(0,9)!=="Terminada") {
 				    mensaje = respuesta.statusRequest.message ;
@@ -347,15 +358,16 @@ var updSolicitud = (respuesta,idKey) => {
 				}
                                 if (respuesta.statusRequest.message.substring(0,9)==="Terminada") {
 				    mensaje = 'Facturas '+respuesta.numberCfdis;  
-                                    obj.estado=ESTADOREQ.SOLICITUDTERMINADA
+                                    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
                                     obj.passdata.msg_v=mensaje;
+                                    obj.folioReq=verificacionValue.folioReq;
 				}
                                 if (respuesta.statusRequest.message.substring(0,7)==="Vencida") {
                                     mensaje = 'Vencida ';
                                     obj.estado=ESTADOREQ.SOLICITUDVENCIDA
                                     obj.passdata.msg_v=mensaje;
                                 }
-				updObjectByKey('request',obj,idKey);
+				updObjectByKey('request',obj,verificacionValue.passdata.keySolicitud);
 		      }).then( () => { resolve() });
         });
 }
@@ -400,8 +412,8 @@ var revisaSiEstaAutenticado = () => {
                }
 	       DMS.getTokenEstatusSAT().then( res => {
                    if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO) {
-			       console.log('[sw-custom revisaSiEstaAutenticado] va a autenticarse contra el SAT');
-			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') });
+			       console.log('[sw revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw] genero el request de autentificacion') });
                    }
 	       });
 	    }
@@ -420,19 +432,29 @@ var revisaSiEstaAutenticado = () => {
 
 setInterval( () => {
        console.log('[setInterval] va a sincronizar');
+	try {
        syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
        syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
        syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
        syncRequest(ESTADOREQ.ACEPTADO);
        syncRequest(ESTADOREQ.INICIAL.DESCARGA);
        bajaVerificaciones();
        bajaTokenCaducado();
        bajaTokenInvalido();
        bajaRequiriendo();
+	} catch (err) {
+        console.error("Error in interval:", err);
+    }
 }, REVISA.ESTADOREQ * 1000);
 
 setInterval( () => {
-       revisaSiEstaAutenticado()
+	try {
+            revisaSiEstaAutenticado()
+	    } 
+	catch (err) {
+           console.error("Error in interval EstaAutenticado:", err);
+	};
 }, REVISA.VIGENCIATOKEN_SW * 1000);
 
 

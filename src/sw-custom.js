@@ -13,6 +13,19 @@ if ("function" === typeof importScripts) {
    importScripts('Constantes.js');
    importScripts('encripta.js');
    importScripts('insertaDatos.js');
+	/* para mostrar el log en el browser   
+	const originalConsoleLog = console.log;
+	console.log = function (...args) {
+	    originalConsoleLog.apply(this, args);
+	    const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
+	    clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
+		clientList.forEach(client => {
+		    client.postMessage({ action: 'log', message }); // Send a structured message
+		});
+	    });
+	};
+	*/
+
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -40,9 +53,9 @@ if ("function" === typeof importScripts) {
 		    DMS= new DescargaMasivaSat(); 
 		    DMS.getTokenEstatusSAT().then( res => {
 			       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
-				       console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+				       console.log('[sw activate] va a autenticarse contra el SAT');
 				       dame_pwd.then(pwd => {
-				            DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') }); 
+				            DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw activate] genero el request de aut') }); 
 				       });
 			       } else {
 				       DMS=null;
@@ -148,7 +161,7 @@ var syncRequest = estado => {
     }).then( requests => {
                   return Promise.all(
                          requests.map( (request) => {
-                                console.log('[syncRequest] syncRequest url='+request.value.url+' llave='+request.key+' estado='+estado);
+                                console.log('[syncRequest] url='+request.value.url+' llave='+request.key+' estado='+estado);
 
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
 					/* si se cumple solo va armar el soa para la peticion */
@@ -160,24 +173,22 @@ var syncRequest = estado => {
 				}
 
 
-                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // genera registro para que se  descargue las facturas
-                                     console.log('[syncRequest] verifica.php y respúesta');
-				     if  (request.value.respuesta.substring(0,9)=="Terminada")  {  
-                                         console.log('[syncRequest] verifica.php y respúesta y terminada');
+                                if (request.value.estado==ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD) { // genera registro para que se  descargue las facturas
+                                         console.log('[syncRequest] va a obtener el ultimo token activo');
 					 obtieneelUltimoTokenActivo().then( aut => {
-                                                 console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo');
-						 if ('respuesta' in aut.value) {
-                                                    console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo hay respuesta en el ultimo token');
-						    if (aut.value.respuesta!==null) {
-                                                         console.log('[syncRequest] verifica.php y respúesta, terminada encontro un un token activo hay respuesta en el ultimo token y no es nulo');
-							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired ,value:aut.value.respuesta.value }
-							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq }
-                                                         DMS.descargando(datos,request.value.respuesta.packagesIds,request.value.passdata.keySolicitud);
-						    }
-						 }
-					 }).catch( e=> { console.log('[syncRequest] no encontro un token activo para descargar');
+                                                         console.log('[syncRequest] download');
+							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired ,value:aut.value.respuesta.value };
+                                                         console.log('[syncRequest] download token');
+							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq };
+                                                         console.log('[syncRequest] download datos');
+                                                         DMS.descargando(datos,request).then( x=> { 
+                                                                console.log('[syncRequest] download DMS.descargando');
+								updestado(request,ESTADOREQ.SOLICITUDDESCARGANDO); 
+					                 });
+					 }).catch( e=> { console.error('[syncRequest] error='+JSON.stringify(e,true));
 					 });
-				     }
+
+					 return;
                                 }
 
                                 if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // no procesa las verificaciones ya terminadas
@@ -194,7 +205,7 @@ var syncRequest = estado => {
 							 DMS.verificando( datos,request.key);
 						    }
 						 }
-					 }).catch( e=> { console.log('[handleMessage] no encontro un token activo para verificar');
+					 }).catch( e=> { console.log('[syncRequest] no token para verificar e='+JSON.stringify(e,true));
 					 });
 
 				         postRequestUpd(request,"update-request","");   /* mensajea al cliente y aqui se genera el registro de verificacion */
@@ -208,13 +219,13 @@ var syncRequest = estado => {
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
-					console.log('[syncRequest] va hacer request url='+request.value.url+' llave='+request.key+' estado='+estado);
+					console.log('[syncRequest] url='+request.value.url+' key='+request.key+' es='+estado);
 					fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
 					.then( async response => {
 						  if (response.status===500) { 
 							  console.log('sw error 500');
 							  await updestado(request,ESTADOREQ.ERROR);
-							  reject({'error' : response.status });
+							  Promise.reject({'error' : response.status });
 						  } else { return response.json(); }
 					})
 					.then( async response => {
@@ -223,7 +234,7 @@ var syncRequest = estado => {
 					 })
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch(function(err)  { 
-						console.log('sw cacho error');
+						console.log('[fetch] error='+err);
 						return Promise.reject(err); 
 					})
                                 });
@@ -258,10 +269,10 @@ var enviaContra = (pwd) => {
 /* checa cual fue la respuesta del servidor */
 var querespuesta = (request,respuesta) => {
          if(respuesta===undefined) {
-		 console.log('[querepuesta] respuesta indefinida'+JSON.stringify(request));
+		 console.log('[querepuesta] respuesta indefinida'+JSON.stringify(request,true));
 		 debugger;
 	 }
-         console.log('[querespuesta] respuesta recibida del servidor id requerimiento='+request.key+' url='+request.value.url);
+         console.log('[querespuesta] id='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
             updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
             return;
@@ -299,7 +310,7 @@ var querespuesta = (request,respuesta) => {
 		       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,request.value.passdata.msg_v).then( () => {
 			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
 			       respuesta.statusRequest.message=request.value.passdata.msg_v;
-			       updSolicitud(respuesta,request.value.passdata.keySolicitud) 
+			       updSolicitud(respuesta,request.value) 
                                .then( () => {
 			            postRequestUpd(request,"se verifico",respuesta);
                                });
@@ -329,9 +340,9 @@ var querespuesta = (request,respuesta) => {
      updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
 };
 
-var updSolicitud = (respuesta,idKey) => {
+var updSolicitud = (respuesta,verificacionValue) => {
         return new Promise( (resolve, reject) => {
-		      selObjectByKey('request',idKey).then( obj => {
+		      selObjectByKey('request',verificacionValue.passdata.keySolicitud).then( obj => {
 			        var mensaje='';
 			        if (respuesta.statusRequest.message.substring(0,9)!=="Terminada") {
 				    mensaje = respuesta.statusRequest.message ;
@@ -347,15 +358,16 @@ var updSolicitud = (respuesta,idKey) => {
 				}
                                 if (respuesta.statusRequest.message.substring(0,9)==="Terminada") {
 				    mensaje = 'Facturas '+respuesta.numberCfdis;  
-                                    obj.estado=ESTADOREQ.SOLICITUDTERMINADA
+                                    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
                                     obj.passdata.msg_v=mensaje;
+                                    obj.folioReq=verificacionValue.folioReq;
 				}
                                 if (respuesta.statusRequest.message.substring(0,7)==="Vencida") {
                                     mensaje = 'Vencida ';
                                     obj.estado=ESTADOREQ.SOLICITUDVENCIDA
                                     obj.passdata.msg_v=mensaje;
                                 }
-				updObjectByKey('request',obj,idKey);
+				updObjectByKey('request',obj,verificacionValue.passdata.keySolicitud);
 		      }).then( () => { resolve() });
         });
 }
@@ -400,8 +412,8 @@ var revisaSiEstaAutenticado = () => {
                }
 	       DMS.getTokenEstatusSAT().then( res => {
                    if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO) {
-			       console.log('[sw-custom revisaSiEstaAutenticado] va a autenticarse contra el SAT');
-			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw-custom] genero el request de autentificacion') });
+			       console.log('[sw revisaSiEstaAutenticado] va a autenticarse contra el SAT');
+			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw] genero el request de autentificacion') });
                    }
 	       });
 	    }
@@ -420,19 +432,29 @@ var revisaSiEstaAutenticado = () => {
 
 setInterval( () => {
        console.log('[setInterval] va a sincronizar');
+	try {
        syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
        syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
        syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
        syncRequest(ESTADOREQ.ACEPTADO);
        syncRequest(ESTADOREQ.INICIAL.DESCARGA);
        bajaVerificaciones();
        bajaTokenCaducado();
        bajaTokenInvalido();
        bajaRequiriendo();
+	} catch (err) {
+        console.error("Error in interval:", err);
+    }
 }, REVISA.ESTADOREQ * 1000);
 
 setInterval( () => {
-       revisaSiEstaAutenticado()
+	try {
+            revisaSiEstaAutenticado()
+	    } 
+	catch (err) {
+           console.error("Error in interval EstaAutenticado:", err);
+	};
 }, REVISA.VIGENCIATOKEN_SW * 1000);
 
 
