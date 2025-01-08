@@ -28,6 +28,8 @@ class CargafaelMasiva extends Component {
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
     this.handleChangeini = this.handleChangeini.bind(this)
+    this.handleFocus = this.handleFocus.bind(this)
+    this.handleBlur = this.handleBlur.bind(this)
     this.handleChangefin = this.handleChangefin.bind(this)
     this.toggle =  this.toggle.bind(this)
     this.changeValue = this.changeValue.bind(this);
@@ -112,12 +114,6 @@ class CargafaelMasiva extends Component {
 		       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT || res.queda!==this.state.queda) {
 			   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT , queda:res.queda});
 		       }
-		      /* codigo que se pasa al sw
-		       if (res.tokenEstatusSAT===window.TOKEN.NOSOLICITADO || res.tokenEstatusSAT===window.TOKEN.CADUCADO || res.tokenEstatusSAT===window.ESTADOREQ.ERROR) {
-				  console.log('[revisaSiEstaAutenticado] va a autenticarse contra el SAT');
-				  this.autenticaContraSAT();
-		       }
-		       */
 	      });
 
   }
@@ -303,6 +299,18 @@ class CargafaelMasiva extends Component {
     })
   }
 
+  handleFocus() {
+    console.log('agarro el foco');
+    clearTimeout(estaAutenticadoInter);
+  }
+
+  handleBlur() {
+    console.log('Blur el foco');
+    estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+  }
+
+
+
   handleChangefin(value, formattedValue) {
      console.log('entro en handleChangefin');
     this.setState({
@@ -466,7 +474,7 @@ class CargafaelMasiva extends Component {
                       { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Inicial</Label>
-                            <DatePicker dayLabels={days} monthLabels={months} defaultValue={this.state.start} id="fechainicial" maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />
+                            <DatePicker dayLabels={days} monthLabels={months} onFocus={this.handleFocus} onBlur={this.handleBlur} defaultValue={this.state.start} id="fechainicial" maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />
                             { this.state.okfechai===false &&
                                 <div  className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
@@ -475,7 +483,7 @@ class CargafaelMasiva extends Component {
                           </div>
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Final</Label>
-                            <DatePicker dayLabels={days} monthLabels={months}  id="fechafinal" defaultValue={this.state.end} maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangefin(v, f)} />
+                            <DatePicker dayLabels={days} monthLabels={months}  id="fechafinal" onFocus={this.handleFocus} onBlur={this.handleBlur} defaultValue={this.state.end} maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangefin(v, f)} />
                             { this.state.okfechaf===false &&
                                 <div className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
