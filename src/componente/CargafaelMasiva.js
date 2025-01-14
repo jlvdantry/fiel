@@ -177,7 +177,7 @@ class CargafaelMasiva extends Component {
       /* maneja los mensaje provenientes del sw */
       handleMessage = (event) => {
 	      if (event.data.action!=='log')  {
-                      console.log('[handleMessage] ='+JSON.stringify(event.data.action,true));
+                      console.log('[hM] ='+JSON.stringify(event.data.action,true));
 		      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
 		      if (event.data.action==='CONTRA') {
 			      window.PWDFIEL=event.data.value;
@@ -300,19 +300,16 @@ class CargafaelMasiva extends Component {
   }
 
   handleFocus() {
-    console.log('agarro el foco');
     clearTimeout(estaAutenticadoInter);
   }
 
   handleBlur() {
-    console.log('Blur el foco');
     estaAutenticadoInter = setInterval(this.revisaSiEstaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
   }
 
 
 
   handleChangefin(value, formattedValue) {
-     console.log('entro en handleChangefin');
     this.setState({
       end: value, // ISO String, ex: "2016-11-19T12:00:00.000Z"
       formattedValueFin: formattedValue // Formatted String, ex: "11/19/2016"
@@ -341,25 +338,21 @@ class CargafaelMasiva extends Component {
 
           const onBlurRFCEmisor = (e) => {
                 if (this.state.RFCEmisorIsValid===true) {
-                    console.log('rfc correcto='+e.target.value);
 			  const matchingItems = this.state.RFCS.filter((x) =>
 			    x.label.toLowerCase().includes(e.target.value.toLowerCase())
 			  );
                           if (matchingItems.length===0) {
                               this.handle_inserta_catalogo('rfcs',this.state.RFCEmisor);
-                              console.log('no encontro el rfc='+e.target.value);
                           }
                 };
           }
           const onBlurRFCReceptor = (e) => {
                 if (this.state.RFCReceptorIsValid===true) {
-                    console.log('rfc correcto='+e.target.value);
                           const matchingItems = this.state.RFCS.filter((x) =>
                             x.label.toLowerCase().includes(e.target.value.toLowerCase())
                           );
                           if (matchingItems.length===0) {
                               this.handle_inserta_catalogo('rfcs',this.state.RFCReceptor);
-                              console.log('no encontro el rfc='+e.target.value);
                           }
                 };
           }
