@@ -1,4 +1,5 @@
 var DescargaMasivaSat = function()
+
 {
    this.mifiel = new _fiel();
    this.token = '';
@@ -312,7 +313,7 @@ var DescargaMasivaSat = function()
         var passdata={ keySolicitud:idKey };
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'VerificaSolicitudDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
                 inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
-                                console.log("[verifica_enviasoa] inserto key="+key.key);
+                                console.log("[v_e] inserto key="+key.key);
                 });
    }
 
@@ -409,6 +410,9 @@ var DescargaMasivaSat = function()
                              if (obj.value.estado===ESTADOREQ.REQUIRIENDO) {
                                      return { tokenEstatusSAT:ESTADOREQ.REQUIRIENDO };
                              }
+                             if (obj.value.estado===ESTADOREQ.ERRORFETCH) {
+                                     return { tokenEstatusSAT:ESTADOREQ.ERRORFETCH };
+                             }
 			     var actual=Math.floor(Date.now() / 1000);
 			     if ('respuesta' in obj.value && obj.value.respuesta!==null && obj.value.respuesta!==undefined) {
 				     if (actual<=obj.value.respuesta.expired) {
@@ -416,11 +420,11 @@ var DescargaMasivaSat = function()
 					 return { tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda }
 				     }
 				     if (actual>=obj.value.respuesta.expired ) {
-					 console.log('[DMS getTokenEstatusSAT] token caducado id='+obj.key);
+					 console.log('[DMS gTESAT] token caducado id='+obj.key);
                                          obj.value.respuesta.token='caducado'
 					 obj.value.respuesta.actual=actual;
 					 updestado(obj,TOKEN.CADUCADO,obj.value.reepuesta).then( x =>  {
-						resolve({ tokenEstatusSAT:TOKEN.CADUCADO }) 
+						return { tokenEstatusSAT:TOKEN.CADUCADO } 
 					 });
 				     }
 			     } else { 
@@ -431,7 +435,7 @@ var DescargaMasivaSat = function()
                              resolve(x);
 		})
 		.catch( err => {
-			                 console.log('[DMS getTokenEstatusSAT] err='+err);
+			                 console.log('[DMS gTESAT] err='+err);
 				         Promise.resolve({ tokenEstatusSAT:TOKEN.NOSOLICITADO }); 
 		     });
                 });

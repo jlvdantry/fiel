@@ -14,7 +14,6 @@ import CargafaelMasiva from './componente/CargafaelMasiva';
 import About from './componente/About';
 import './fontawesome';
 
-/* para mostrar el log en el browser
 const logContainer = document.getElementById('logContainer');
 function logToDocument(message) {
     const logMessage = document.createElement('div');
@@ -29,7 +28,6 @@ function logToDocument(message) {
         originalLog.apply(console, args);
     };
 })();
-*/
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', event => {
@@ -38,6 +36,18 @@ if ('serviceWorker' in navigator) {
         }
     });
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    console.log("[App.js] Tab is now hidden.");
+  } else {
+    console.log("[App.js] Tab is now visible.");
+    // Optionally send a message to the Service Worker
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ action: "TAB_VISIBLE" });
+    }
+  }
+});
 
 
 class App extends Component {

@@ -20,6 +20,7 @@ var  ESTADOREQ = {
 	, VERIFICANDO:'5001' /* estado de la verificacion antes de enviar la verficacion  */
 	, DESCARGADO:'5002'
 	, INSERTADO:'0'  /* Insertardo el requerimiento localmente */
+	, ERRORFETCH:'5003'
 	}; /* Estado del requerimiento */
 
 var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:3 }   // tiempo en que vigente el token proporcionado por el SAT, para controlar si esta aun viente el token
@@ -32,4 +33,4 @@ var  REVISA = {
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.388';
+var VERSION='1.0.401';

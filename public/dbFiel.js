@@ -101,7 +101,7 @@ function bajaVerificaciones()
                                        counter++; 
                                        if (counter>3)  {
 				          objectStore.delete(cursor1.primaryKey);	
-					  console.log('[bajaVerificaciones] registro borrado='+cursor1.primaryKey);
+					  console.log('[bV] registro borrado='+cursor1.primaryKey);
 				       }
 				       cursor1.continue();
 				    } else {
@@ -136,7 +136,7 @@ function bajaTokenInvalido()
                                        counter++;
                                        if (counter>3)  {
                                           objectStore.delete(cursor1.primaryKey);
-                                          console.log('[bajaTokenInvalido] registro borrado='+cursor1.primaryKey);
+                                          console.log('[bTI] registro borrado='+cursor1.primaryKey);
                                        }
                                        cursor1.continue();
                                     } else {
@@ -170,7 +170,7 @@ function bajaTokenCaducado()
                                        counter++;
                                        if (counter>3)  {
                                           objectStore.delete(cursor1.primaryKey);
-                                          console.log('[bajaTokenCaducado] registro borrado='+cursor1.primaryKey);
+                                          console.log('[bTC] registro borrado='+cursor1.primaryKey);
                                        }
                                        cursor1.continue();
                                     } else {
@@ -209,7 +209,7 @@ function bajaRequiriendo()
                                        var fr=cursor1.value.fecha+' '+hora+':'+minuto;
                                        var dif = differenceInMinutes(fh,fr);
                                        if  (dif > REQUIRIENDOMINUTOS) {
-					    console.log('[bajaRequiriendo] fecha hora='+fh);
+					    console.log('[bR] fecha hora='+fh);
                                             objectStore.delete(cursor1.primaryKey);
 				       }
                                        cursor1.continue();

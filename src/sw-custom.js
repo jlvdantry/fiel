@@ -7,13 +7,12 @@ importScripts('descargaMasivaSat.js');
 importScripts('encripta.js');
 console.log('[sw] entro');
 var DMS = null;
-var intervalId = null;
+var intervalSync = null;
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('Constantes.js');
    importScripts('encripta.js');
    importScripts('insertaDatos.js');
-	/* para mostrar el log en el browser   
 	const originalConsoleLog = console.log;
 	console.log = function (...args) {
 	    originalConsoleLog.apply(this, args);
@@ -24,8 +23,6 @@ if ("function" === typeof importScripts) {
 		});
 	    });
 	};
-	*/
-
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -159,10 +156,10 @@ var syncRequest = estado => {
           var req= await selObjects(objectStore, "estadoIndex", estado); 
 	  return req;
     }).then( requests => {
-                  return Promise.all(
-                         requests.map( (request) => {
-                                console.log('[syncRequest] url='+request.value.url+' llave='+request.key+' estado='+estado);
-
+                  console.log('[sR] estado='+estado+' requests='+requests.length);
+                  //return Promise.all(
+                         requests.map( request => {
+                                console.log('[sR] url='+request.value.url+' key='+request.key+' es='+estado);
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
 					/* si se cumple solo va armar el soa para la peticion */
 					dame_pwd().then( pwd => { 
@@ -172,22 +169,20 @@ var syncRequest = estado => {
 					return;
 				}
 
-
                                 if (request.value.estado==ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD) { // genera registro para que se  descargue las facturas
-                                         console.log('[syncRequest] va a obtener el ultimo token activo');
+                                         console.log('[sR] va a obtener el ultimo token activo');
 					 obtieneelUltimoTokenActivo().then( aut => {
-                                                         console.log('[syncRequest] download');
+                                                         console.log('[sR] download');
 							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired ,value:aut.value.respuesta.value };
-                                                         console.log('[syncRequest] download token');
+                                                         console.log('[sR] download token');
 							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq };
-                                                         console.log('[syncRequest] download datos');
+                                                         console.log('[sR] download datos');
                                                          DMS.descargando(datos,request).then( x=> { 
-                                                                console.log('[syncRequest] download DMS.descargando');
+                                                                console.log('[sR] download DMS.descargando');
 								updestado(request,ESTADOREQ.SOLICITUDDESCARGANDO); 
 					                 });
-					 }).catch( e=> { console.error('[syncRequest] error='+JSON.stringify(e,true));
+					 }).catch( e=> { console.error('[sR] error='+JSON.stringify(e,true));
 					 });
-
 					 return;
                                 }
 
@@ -205,9 +200,8 @@ var syncRequest = estado => {
 							 DMS.verificando( datos,request.key);
 						    }
 						 }
-					 }).catch( e=> { console.log('[syncRequest] no token para verificar e='+JSON.stringify(e,true));
+					 }).catch( e=> { console.log('[sR] no token para verificar e='+JSON.stringify(e,true));
 					 });
-
 				         postRequestUpd(request,"update-request","");   /* mensajea al cliente y aqui se genera el registro de verificacion */
                                          return; //si fue aceptada la solicitud deberia de mandar la verificacion
                                 }
@@ -219,7 +213,7 @@ var syncRequest = estado => {
 				const jsonHeaders = request.value.header;
 				const headers = new Headers(jsonHeaders);
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
-					console.log('[syncRequest] url='+request.value.url+' key='+request.key+' es='+estado);
+					console.log('[sR] url='+request.value.url+' key='+request.key+' es='+estado);
 					fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
 					.then( async response => {
 						  if (response.status===500) { 
@@ -233,14 +227,15 @@ var syncRequest = estado => {
 						  return response;
 					 })
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
-					.catch(function(err)  { 
+					.catch( async err => { 
 						console.log('[fetch] error='+err);
+						await updestado(request,ESTADOREQ.ERRORFETCH, err); 
 						return Promise.reject(err); 
 					})
-                                });
-                         })
-                   );
-    });
+                                });  // fin updestado
+                         });  // fin del map
+                    //); // promise all
+    }); // fin requests
 };
 
 
@@ -269,10 +264,9 @@ var enviaContra = (pwd) => {
 /* checa cual fue la respuesta del servidor */
 var querespuesta = (request,respuesta) => {
          if(respuesta===undefined) {
-		 console.log('[querepuesta] respuesta indefinida'+JSON.stringify(request,true));
-		 debugger;
+		 console.log('[qr] respuesta indefinida'+JSON.stringify(request,true));
 	 }
-         console.log('[querespuesta] id='+request.key+' url='+request.value.url);
+         console.log('[qr] id='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
             updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
             return;
@@ -400,10 +394,14 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.action === 'setContra') {
 	  encripta_pw(event.data.PWDFIEL);
   }
+  if (event.data && event.data.action === 'TAB_VISIBLE') {
+	  console.log('intervalSync='+intervalSync);
+  }
 });
 
 /* checa si ya se tecleo el pwd de la privada */
 var revisaSiEstaAutenticado = () => {
+	console.log('[rSEA] entro');
 	dame_pwd().then(pwd => {
 	    if (pwd!==null)  { /* ya se tecleo la pwd */
 	       if (DMS===null) {
@@ -411,12 +409,15 @@ var revisaSiEstaAutenticado = () => {
 		   DMS= new DescargaMasivaSat();
                }
 	       DMS.getTokenEstatusSAT().then( res => {
-                   if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO) {
-			       console.log('[sw revisaSiEstaAutenticado] va a autenticarse contra el SAT');
-			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw] genero el request de autentificacion') });
+	           console.log('[rSEA] estatus token='+res.tokenEstatusSAT);
+                   if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
+		      ) {
+			       console.log('[rSEA] va a autenticarse contra el SAT');
+			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });
                    }
 	       });
 	    }
+	}).catch(er => { console.log('[rSEA] error en dame_pwd '+er)
 	});
 }
 
@@ -430,8 +431,8 @@ var revisaSiEstaAutenticado = () => {
         });
 
 
-setInterval( () => {
-       console.log('[setInterval] va a sincronizar');
+intervalSync = setInterval( () => {
+       console.log('[sI] va a sincronizar');
 	try {
        syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
        syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
@@ -444,7 +445,7 @@ setInterval( () => {
        bajaTokenInvalido();
        bajaRequiriendo();
 	} catch (err) {
-        console.error("Error in interval:", err);
+        console.log("Error in interval:", err);
     }
 }, REVISA.ESTADOREQ * 1000);
 
@@ -453,7 +454,7 @@ setInterval( () => {
             revisaSiEstaAutenticado()
 	    } 
 	catch (err) {
-           console.error("Error in interval EstaAutenticado:", err);
+           console.log("Error in interval EstaAutenticado:", err);
 	};
 }, REVISA.VIGENCIATOKEN_SW * 1000);
 
