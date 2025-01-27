@@ -12,6 +12,7 @@ import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
 import About from './componente/About';
+import Config from './componente/Config';
 import './fontawesome';
 
 const logContainer = document.getElementById('logContainer');
@@ -63,6 +64,7 @@ class App extends Component {
 	  <Route path="/cargafaelMasiva" component={CargafaelMasiva}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>
+	  <Route path="/config" component={Config}/>
 	  <Route path="/about" component={About}/>
           <Redirect to="/"/>
         </Route>
