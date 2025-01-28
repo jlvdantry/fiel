@@ -49,14 +49,16 @@
    /* obtiene la pwd */
    dame_pwd = ()  => {
         return new Promise(function (resolve, reject) {
+		var   desencriptado  = null;
                 lee_llaves().then(x => {
                         const privateKey = forge.pki.privateKeyFromPem(x.value.pr);
                         // Encrypt the message with the public key
-		        encryptedBase64=x.value.pwd;	
-			const encryptedBytes = forge.util.decode64(encryptedBase64);
-				
-			const decrypted = privateKey.decrypt(encryptedBytes, 'RSA-OAEP');
-                        resolve(decrypted);
+			if (x.value.pwd!==undefined) {
+		                encryptedBase64=x.value.pwd;	
+				const encryptedBytes = forge.util.decode64(encryptedBase64);
+				desencriptado = privateKey.decrypt(encryptedBytes, 'RSA-OAEP');
+                        } 
+                        resolve(desencriptado);
                 });
         })
    }
