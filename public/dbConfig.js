@@ -24,14 +24,12 @@ function insertaOActualizaConfig(obj,file)
         })
 }
 
-/*
-function damePublica() {
+function dameMuestraLog() {
         return new Promise( (resolve, reject) => {
-		selObjectUlt('request','url','fiel').then( fiel => {
-			resolve (fiel.value.publica)
+		selObjectUlt('request','url','Config').then( fiel => {
+			resolve (fiel.value.Log.muestra)
 		}).then( pub => { resolve(pub); })
 		.catch( err => { reject (null) })
         })
 }
-*/
 
