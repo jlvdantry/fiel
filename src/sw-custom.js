@@ -2,27 +2,30 @@ SW_VERSION = '1.0.290';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
+importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
 importScripts('encripta.js');
 console.log('[sw] entro');
 var DMS = null;
 var intervalSync = null;
+
+
+        const originalConsoleLog = console.log;
+        console.log = function (...args) {
+            //originalConsoleLog.apply(this, args);
+            const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
+            clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
+                clientList.forEach(client => {
+                    client.postMessage({ action: 'log', message }); // Send a structured message
+                });
+            });
+       };
+
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('Constantes.js');
-   importScripts('encripta.js');
    importScripts('insertaDatos.js');
-	const originalConsoleLog = console.log;
-	console.log = function (...args) {
-	    originalConsoleLog.apply(this, args);
-	    const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
-	    clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
-		clientList.forEach(client => {
-		    client.postMessage({ action: 'log', message }); // Send a structured message
-		});
-	    });
-	};
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -44,7 +47,7 @@ if ("function" === typeof importScripts) {
 
 
 	self.addEventListener('activate', event => {
-		console.log('[activate] ');
+		console.log('[activate] '+event.target.state);
 		event.waitUntil(self.clients.claim());
                 if (DMS===null) { 
 		    DMS= new DescargaMasivaSat(); 
@@ -381,7 +384,7 @@ var borraverificaciones = () => {
 
 
 self.addEventListener('message', (event) => {
-  console.log('recibio message el sw event='+JSON.stringify(event.data.action,true));
+  console.log('recibio message el sw event='+JSON.stringify(event.data.action,true)+' clientID='+event.source.id);
   if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
       action: 'VERSION',
@@ -396,12 +399,18 @@ self.addEventListener('message', (event) => {
   }
   if (event.data && event.data.action === 'TAB_VISIBLE') {
 	  console.log('intervalSync='+intervalSync);
+	  estacorriendoIntevalo();
+  }
+  if (event.data && event.data.action === 'START_INTERVALO') {
+	  console.log('START_INTERVALO');
+                ponIntervaloRequest();
+                ponIntervaloAutenticacion();
   }
 });
 
 /* checa si ya se tecleo el pwd de la privada */
 var revisaSiEstaAutenticado = () => {
-	console.log('[rSEA] entro');
+	console.log('[sw rSEA] entro');
 	dame_pwd().then(pwd => {
 	    if (pwd!==null)  { /* ya se tecleo la pwd */
 	       if (DMS===null) {
@@ -409,15 +418,15 @@ var revisaSiEstaAutenticado = () => {
 		   DMS= new DescargaMasivaSat();
                }
 	       DMS.getTokenEstatusSAT().then( res => {
-	           console.log('[rSEA] estatus token='+res.tokenEstatusSAT);
+	           console.log('[sw rSEA] estatus token='+res.tokenEstatusSAT);
                    if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
 		      ) {
-			       console.log('[rSEA] va a autenticarse contra el SAT');
+			       console.log('[sw rSEA] va a autenticarse contra el SAT');
 			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });
                    }
 	       });
 	    }
-	}).catch(er => { console.log('[rSEA] error en dame_pwd '+er)
+	}).catch(er => { console.log('[sw rSEA] error en dame_pwd '+er)
 	});
 }
 
@@ -431,32 +440,49 @@ var revisaSiEstaAutenticado = () => {
         });
 
 
-intervalSync = setInterval( () => {
-       console.log('[sI] va a sincronizar');
+var ponIntervaloRequest = () => setInterval( () => {
+       console.log("[sw sI] va a sincronizar=");
+	var obj = { fechatiempo: Date.now() };
+	insertaOActualizaInterval(obj,'Inter1');
 	try {
-       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
-       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
-       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
-       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
-       syncRequest(ESTADOREQ.ACEPTADO);
-       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
-       bajaVerificaciones();
-       bajaTokenCaducado();
-       bajaTokenInvalido();
-       bajaRequiriendo();
+	       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
+	       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
+	       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+	       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
+	       syncRequest(ESTADOREQ.ACEPTADO);
+	       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
+	       bajaVerificaciones();
+	       bajaTokenCaducado();
+	       bajaTokenInvalido();
+	       bajaRequiriendo();
 	} catch (err) {
         console.log("Error in interval:", err);
     }
 }, REVISA.ESTADOREQ * 1000);
 
-setInterval( () => {
-	try {
-            revisaSiEstaAutenticado()
-	    } 
+var ponIntervaloAutenticacion = () => setInterval( () => {
+	var obj = { fechatiempo: Date.now() };
+	insertaOActualizaInterval(obj,'Inter2');
+	try { revisaSiEstaAutenticado() } 
 	catch (err) {
            console.log("Error in interval EstaAutenticado:", err);
 	};
 }, REVISA.VIGENCIATOKEN_SW * 1000);
 
 
+var  estacorriendoIntevalo = (inter) => {
+	dameInterval('Inter1').then( x => {
+		var tiempo = Date.now() - x;
+		if (tiempo > REVISA.ESTADOREQ * 1000) { // no esta corriendo el intervalo
+			ponIntervaloRequest();
+		}
+	});
+        dameInterval('Inter2').then( x => {
+                var tiempo = Date.now() - x;
+                if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo
+                        ponIntervaloAutenticacion();
+                }
+        });
+
+}
 

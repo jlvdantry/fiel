@@ -27,10 +27,10 @@ var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:
      // NOGENERADO ya se solicito pero aun no se ha generado
      // NOSOLICITADO no se ha solicitado
 var  REVISA = { 
-	  VIGENCIATOKEN : 1 /* cada cuando se revisa si el token esta vigente en el cargafaelMasiva browser*/
-	, ESTADOREQ:10   /* cada cuando se revisa el estado del requerimiento */
+	  VIGENCIATOKEN   : 1 /* cada cuando se revisa si el token esta vigente en el cargafaelMasiva browser*/
+	, ESTADOREQ       :20   /* cada cuando se revisa el estado del requerimiento */
 	, VIGENCIATOKEN_SW:10   /* revisa si el token esta activo caso contrario intenta conectarse */
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.414';
+var VERSION='1.0.447';

@@ -2,27 +2,30 @@ SW_VERSION = '1.0.290';
 importScripts('utils.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
+importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
 importScripts('encripta.js');
 console.log('[sw] entro');
 var DMS = null;
 var intervalSync = null;
+
+
+        const originalConsoleLog = console.log;
+        console.log = function (...args) {
+            //originalConsoleLog.apply(this, args);
+            const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
+            clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
+                clientList.forEach(client => {
+                    client.postMessage({ action: 'log', message }); // Send a structured message
+                });
+            });
+       };
+
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
    importScripts('Constantes.js');
-   importScripts('encripta.js');
    importScripts('insertaDatos.js');
-	const originalConsoleLog = console.log;
-	console.log = function (...args) {
-	    originalConsoleLog.apply(this, args);
-	    const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
-	    clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
-		clientList.forEach(client => {
-		    client.postMessage({ action: 'log', message }); // Send a structured message
-		});
-	    });
-	};
   // Global workbox
   if (workbox) {
     console.log("Workbox is loaded");
@@ -44,7 +47,7 @@ if ("function" === typeof importScripts) {
 
 
 	self.addEventListener('activate', event => {
-		console.log('[activate] ');
+		console.log('[activate] '+event.target.state);
 		event.waitUntil(self.clients.claim());
                 if (DMS===null) { 
 		    DMS= new DescargaMasivaSat(); 
@@ -64,7 +67,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"d557e9214cfec05e07f4706c50c0d3b4","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"1b02897535a960633d550396ec385547","url":"static/v4/Constantes.js"},{"revision":"2e3ec8e280431cc1210f4b62019fb919","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"74826b18af11e14125cd90be9b4b6b54","url":"static/v4/dbFiel.js"},{"revision":"bd1a166409c685ed886f67fbe3f4120f","url":"static/v4/descargaMasivaSat.js"},{"revision":"1445780258df12b5ec8304b7a3e03043","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"72376defcec0684ed0f9b91d17c0855c","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"4a16fd76f719a76a353936172bb13630","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"b130c79a5f52d1a0bdd2fed1199aac45","url":"static/v4/static/js/main.c5b73b6d.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"be49759af040cf6ab018db9e921c2957","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"0979fe9486bbc0c573252312cc2485af","url":"static/v4/Constantes.js"},{"revision":"2e3ec8e280431cc1210f4b62019fb919","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"74826b18af11e14125cd90be9b4b6b54","url":"static/v4/dbFiel.js"},{"revision":"b8638880645334861908dc71998263a5","url":"static/v4/dbInterval.js"},{"revision":"ff7f1e3377cc960566922d684497c930","url":"static/v4/descargaMasivaSat.js"},{"revision":"1445780258df12b5ec8304b7a3e03043","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"72376defcec0684ed0f9b91d17c0855c","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"2f1d03ba101375747625dd4c7458dac1","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"52ecd2fd1cc2958c1b6af3a8349f4e1e","url":"static/v4/static/js/main.fd17d3c2.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -381,7 +384,7 @@ var borraverificaciones = () => {
 
 
 self.addEventListener('message', (event) => {
-  console.log('recibio message el sw event='+JSON.stringify(event.data.action,true));
+  console.log('recibio message el sw event='+JSON.stringify(event.data.action,true)+' clientID='+event.source.id);
   if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
       action: 'VERSION',
@@ -396,12 +399,18 @@ self.addEventListener('message', (event) => {
   }
   if (event.data && event.data.action === 'TAB_VISIBLE') {
 	  console.log('intervalSync='+intervalSync);
+	  estacorriendoIntevalo();
+  }
+  if (event.data && event.data.action === 'START_INTERVALO') {
+	  console.log('START_INTERVALO');
+                ponIntervaloRequest();
+                ponIntervaloAutenticacion();
   }
 });
 
 /* checa si ya se tecleo el pwd de la privada */
 var revisaSiEstaAutenticado = () => {
-	console.log('[rSEA] entro');
+	console.log('[sw rSEA] entro');
 	dame_pwd().then(pwd => {
 	    if (pwd!==null)  { /* ya se tecleo la pwd */
 	       if (DMS===null) {
@@ -409,15 +418,15 @@ var revisaSiEstaAutenticado = () => {
 		   DMS= new DescargaMasivaSat();
                }
 	       DMS.getTokenEstatusSAT().then( res => {
-	           console.log('[rSEA] estatus token='+res.tokenEstatusSAT);
+	           console.log('[sw rSEA] estatus token='+res.tokenEstatusSAT);
                    if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
 		      ) {
-			       console.log('[rSEA] va a autenticarse contra el SAT');
+			       console.log('[sw rSEA] va a autenticarse contra el SAT');
 			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });
                    }
 	       });
 	    }
-	}).catch(er => { console.log('[rSEA] error en dame_pwd '+er)
+	}).catch(er => { console.log('[sw rSEA] error en dame_pwd '+er)
 	});
 }
 
@@ -431,32 +440,49 @@ var revisaSiEstaAutenticado = () => {
         });
 
 
-intervalSync = setInterval( () => {
-       console.log('[sI] va a sincronizar');
+var ponIntervaloRequest = () => setInterval( () => {
+       console.log("[sw sI] va a sincronizar=");
+	var obj = { fechatiempo: Date.now() };
+	insertaOActualizaInterval(obj,'Inter1');
 	try {
-       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
-       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
-       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
-       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
-       syncRequest(ESTADOREQ.ACEPTADO);
-       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
-       bajaVerificaciones();
-       bajaTokenCaducado();
-       bajaTokenInvalido();
-       bajaRequiriendo();
+	       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
+	       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
+	       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+	       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
+	       syncRequest(ESTADOREQ.ACEPTADO);
+	       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
+	       bajaVerificaciones();
+	       bajaTokenCaducado();
+	       bajaTokenInvalido();
+	       bajaRequiriendo();
 	} catch (err) {
         console.log("Error in interval:", err);
     }
 }, REVISA.ESTADOREQ * 1000);
 
-setInterval( () => {
-	try {
-            revisaSiEstaAutenticado()
-	    } 
+var ponIntervaloAutenticacion = () => setInterval( () => {
+	var obj = { fechatiempo: Date.now() };
+	insertaOActualizaInterval(obj,'Inter2');
+	try { revisaSiEstaAutenticado() } 
 	catch (err) {
            console.log("Error in interval EstaAutenticado:", err);
 	};
 }, REVISA.VIGENCIATOKEN_SW * 1000);
 
 
+var  estacorriendoIntevalo = (inter) => {
+	dameInterval('Inter1').then( x => {
+		var tiempo = Date.now() - x;
+		if (tiempo > REVISA.ESTADOREQ * 1000) { // no esta corriendo el intervalo
+			ponIntervaloRequest();
+		}
+	});
+        dameInterval('Inter2').then( x => {
+                var tiempo = Date.now() - x;
+                if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo
+                        ponIntervaloAutenticacion();
+                }
+        });
+
+}
 

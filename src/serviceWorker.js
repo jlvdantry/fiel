@@ -92,6 +92,10 @@ function registerValidSW(swUrl, config) {
               }
             }
           }
+          if (installingWorker.state === 'activated') {
+		      console.log('va a mandar mensaje de START_INTERVALO');
+                      registration.active.postMessage({ action: 'START_INTERVALO' });
+          }
         };
       };
     })

@@ -241,7 +241,7 @@ var DescargaMasivaSat = function()
         var url=this.urlproxy;
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'SolicitaDescarga','token_value':token.value,'token_created':token.created,'token_expired':token.expired};
                 update_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITUD,hs1,soa,idkey).then( key => {
-                                console.log("[solicita_enviasoa] actualizo key="+key);
+                                console.log("[DMS SE]  actualizo key="+key);
                 });
    }
 
@@ -250,7 +250,7 @@ var DescargaMasivaSat = function()
         var passdata = { keySolicitud : keySolicitud }
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Descargar','token_value':token.value,'token_created':token.created,'token_expired':token.expired,'packageId':packageId};
                 inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
-                                console.log("[download_enviasoa] inserta request de download");
+                                console.log("[DMS DE] inserta request de download");
                 });
 
 
@@ -327,7 +327,7 @@ var DescargaMasivaSat = function()
 				      request.value.certificado=res.certificado;
 				      request.value.token=res.token;
 				      this.armaBodySol(request.value);
-				      console.log('[solicita_armasoa] armo el body key='+idkey);	
+				      console.log('[DMS SA] armo el body key='+idkey);	
 				      this.solicita_enviasoa(this.xmltoken,request.value.token,request.value.passdata,idkey)
 				   }
 				   if (res.tokenEstatusSAT===TOKEN.CADUCADO) { 
