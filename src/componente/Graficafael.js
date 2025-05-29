@@ -44,7 +44,6 @@ class Graficafael extends Component {
   }
 
     handleResize() {
-	    console.log('[handleResize] entro');
 	    this.setState({isMobile : (window.innerWidth < 768 ? true : false)});
     }
 

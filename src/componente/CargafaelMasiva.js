@@ -136,16 +136,16 @@ class CargafaelMasiva extends Component {
 			 var token = { created: a.value.respuesta.created,expired:a.value.respuesta.expired,value:a.value.respuesta.value }
 			 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:a.folioReq}));
 			 window.leeSolicitudesVerificando().then( req =>  {
-			       console.log('[haysolicitudesVerificando] total de solicitudes verificando='+req.length)
+			       console.log('[CFM] total de solicitudes verificando='+req.length)
 				    req.forEach( e => {
 					    this.setState(state => ({ folioReq:e.value.folioReq}));
-					    console.log('[haysolicitudesVerificando] '+JSON.stringify(e.key));
+					    console.log('[CFM] '+JSON.stringify(e.key));
 					    DMS.verificando(this.state,e.key)
 				    }	     
 				    );
 
 			 });
-		 }).catch( e => { console.log('[haysolicitudesVerificando] no encontro un token activo');
+		 }).catch( e => { console.log('[CFM] no encontro un token activo');
 		 });
   }
  

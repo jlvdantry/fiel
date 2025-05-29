@@ -58,14 +58,19 @@ function registerValidSW(swUrl, config) {
     .register(swUrl)
     .then(registration => {
       console.log('[rVSW] paso registration');
+      registration.active.postMessage({ action: 'START_INTERVALO' });
+      window.dameMuestraLog().then( x => {
+        if (x===true) { document.querySelector('#logContainer').classList.remove("d-none") } else { document.querySelector('#logContainer').classList.add("d-none") };
+      });
+
       registration.onupdatefound = () => {
-        console.log('[onupdatefound] entro ');
+        console.log('[rVSM onupdatefound] entro ');
         const installingWorker = registration.installing;
         if (installingWorker == null) {
           return;
         }
         installingWorker.onstatechange = () => {
-          console.log('[onstatechange] cambio onstate installingWorker.state='+installingWorker.state);
+          console.log('[rVSM onstatechange] cambio onstate ='+installingWorker.state);
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
               // At this point, the updated precached content has been fetched,

@@ -159,7 +159,7 @@ var syncRequest = estado => {
           var req= await selObjects(objectStore, "estadoIndex", estado); 
 	  return req;
     }).then( requests => {
-                  console.log('[sR] estado='+estado+' requests='+requests.length);
+                  //console.log('[sR] estado='+estado+' requests='+requests.length);
                   //return Promise.all(
                          requests.map( request => {
                                 console.log('[sR] url='+request.value.url+' key='+request.key+' es='+estado);
@@ -231,7 +231,7 @@ var syncRequest = estado => {
 					 })
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch( async err => { 
-						console.log('[fetch] error='+err);
+						console.error('[fetch] error='+err);
 						await updestado(request,ESTADOREQ.ERRORFETCH, err); 
 						return Promise.reject(err); 
 					})
@@ -334,7 +334,15 @@ var querespuesta = (request,respuesta) => {
                        });
                        return;
          }
-     updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta);
+	               request.value.passdata.msg_d=respuesta.msg;
+                       updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+                               updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
+                               updSolicitudDownload(respuesta.msg,request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
+                               .then( () => {
+                                    postRequestUpd(request,respuesta.msg,respuesta);
+                               });
+                       });
+
 };
 
 var updSolicitud = (respuesta,verificacionValue) => {
@@ -403,14 +411,14 @@ self.addEventListener('message', (event) => {
   }
   if (event.data && event.data.action === 'START_INTERVALO') {
 	  console.log('START_INTERVALO');
-                ponIntervaloRequest();
-                ponIntervaloAutenticacion();
+                //ponIntervaloRequest();
+                //ponIntervaloAutenticacion();
+	  estacorriendoIntevalo();
   }
 });
 
 /* checa si ya se tecleo el pwd de la privada */
 var revisaSiEstaAutenticado = () => {
-	console.log('[sw rSEA] entro');
 	dame_pwd().then(pwd => {
 	    if (pwd!==null)  { /* ya se tecleo la pwd */
 	       if (DMS===null) {
@@ -471,15 +479,18 @@ var ponIntervaloAutenticacion = () => setInterval( () => {
 
 
 var  estacorriendoIntevalo = (inter) => {
+	console.log('[eCI]');
 	dameInterval('Inter1').then( x => {
 		var tiempo = Date.now() - x;
 		if (tiempo > REVISA.ESTADOREQ * 1000) { // no esta corriendo el intervalo
+	                console.log('[eCI] va a poner intervalor Inter1 tiempo='+tiempo+' DN='+(REVISA.ESTADOREQ * 1000));
 			ponIntervaloRequest();
 		}
 	});
         dameInterval('Inter2').then( x => {
                 var tiempo = Date.now() - x;
                 if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo
+	                console.log('[eCI] va a poner intervalor Inter2 tiempo='+tiempo+' DN='+(REVISA.VIGENCIATOKEN_SW * 1000));
                         ponIntervaloAutenticacion();
                 }
         });

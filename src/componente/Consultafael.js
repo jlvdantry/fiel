@@ -41,7 +41,6 @@ class Consultafael extends Component {
   }
 
   consulta(){
-        console.log('[Consultafael.js] consulta entro');
         var that=this;
         window.leefacturas().then(function(facturas) {
                                                             console.log('[Consultafael.js] consulta='+facturas.length);

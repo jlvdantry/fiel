@@ -22,12 +22,26 @@ function logToDocument(message) {
     logContainer.appendChild(logMessage);
     logContainer.scrollTop = logContainer.scrollHeight;
 }
+function logToDocumentE(message) {
+    const logMessageE = document.createElement('div');
+    logMessageE.classList.add('text-danger');
+    logMessageE.textContent = message;
+    logContainer.appendChild(logMessageE);
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
 (function() {
     const originalLog = console.log;
+    const originalLogE = console.error;
     console.log = function(...args) {
         logToDocument(args.join(' '));
         originalLog.apply(console, args);
     };
+    console.error = function(...args) {
+        logToDocumentE(args.join(' '));
+        originalLogE.apply(console, args);
+    };
+
 })();
 
 if ('serviceWorker' in navigator) {
