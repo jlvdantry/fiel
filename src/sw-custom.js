@@ -10,10 +10,9 @@ console.log('[sw] entro');
 var DMS = null;
 var intervalSync = null;
 
-
+/*
         const originalConsoleLog = console.log;
         console.log = function (...args) {
-            //originalConsoleLog.apply(this, args);
             const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
             clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
                 clientList.forEach(client => {
@@ -21,6 +20,7 @@ var intervalSync = null;
                 });
             });
        };
+       */
 
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
@@ -220,7 +220,7 @@ var syncRequest = estado => {
 					fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
 					.then( async response => {
 						  if (response.status===500) { 
-							  console.log('sw error 500');
+							  console.log('[sr] error 500');
 							  await updestado(request,ESTADOREQ.ERROR);
 							  Promise.reject({'error' : response.status });
 						  } else { return response.json(); }
@@ -231,7 +231,7 @@ var syncRequest = estado => {
 					 })
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch( async err => { 
-						console.error('[fetch] error='+err);
+						console.log('[fetch] error='+err);
 						await updestado(request,ESTADOREQ.ERRORFETCH, err); 
 						return Promise.reject(err); 
 					})
@@ -426,8 +426,8 @@ var revisaSiEstaAutenticado = () => {
 		   DMS= new DescargaMasivaSat();
                }
 	       DMS.getTokenEstatusSAT().then( res => {
-	           console.log('[sw rSEA] estatus token='+res.tokenEstatusSAT);
-                   if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
+	           console.log('[sw rSEA] estatus token='+(res!==undefined ? res.tokenEstatusSAT : 'indefinido'));
+                   if (res.tokenEstatusSAT===undefined || res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
 		      ) {
 			       console.log('[sw rSEA] va a autenticarse contra el SAT');
 			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });

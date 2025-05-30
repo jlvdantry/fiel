@@ -589,7 +589,7 @@ function leeSolicitudesCorrectas() {
 				         if ('msg_v' in e.value.passdata) {
 						 e.value.passdata.msg=e.value.passdata.msg_v;
 					 }
-                                         if ('msg_d' in e.value.passdata) {
+                                         if ('msg_d' in e.value.passdata & e.value.passdata.msg_d!==undefined) {
                                                  e.value.passdata.msg=e.value.passdata.msg_d;
                                          }
 

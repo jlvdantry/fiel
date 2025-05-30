@@ -15,6 +15,7 @@ import About from './componente/About';
 import Config from './componente/Config';
 import './fontawesome';
 
+/*
 const logContainer = document.getElementById('logContainer');
 function logToDocument(message) {
     const logMessage = document.createElement('div');
@@ -29,7 +30,9 @@ function logToDocumentE(message) {
     logContainer.appendChild(logMessageE);
     logContainer.scrollTop = logContainer.scrollHeight;
 }
+*/
 
+/*
 (function() {
     const originalLog = console.log;
     const originalLogE = console.error;
@@ -43,6 +46,7 @@ function logToDocumentE(message) {
     };
 
 })();
+*/
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', event => {

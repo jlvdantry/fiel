@@ -32,7 +32,7 @@ class ServiceConsumer
         $headers = $this->createHeaders($soapAction, $token);
         $request = $this->createRequest($uri, $body, $headers);
         $exception = null;
-        //echo __METHOD__.print_r($request,true);
+        echo __METHOD__.print_r($request,true);
         try {
             $response = $this->runRequest($webclient, $request);
         } catch (WebClientException $webClientException) {
