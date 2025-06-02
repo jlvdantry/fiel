@@ -29,7 +29,7 @@ function dameInterval(file) {
 		selObjectUlt('request','url',file).then( x => {
 			resolve (x.value[file].fechatiempo)
 		}).then( pub => { resolve(pub); })
-		.catch( err => { reject (null) })
+		.catch( err => { reject (err) })
         })
 }
 

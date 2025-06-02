@@ -58,10 +58,10 @@ function registerValidSW(swUrl, config) {
     .register(swUrl)
     .then(registration => {
       console.log('[rVSW] paso registration');
-      registration.active.postMessage({ action: 'START_INTERVALO' });
+      //registration.active.postMessage({ action: 'START_INTERVALO' });
       window.dameMuestraLog().then( x => {
         if (x===true) { document.querySelector('#logContainer').classList.remove("d-none") } else { document.querySelector('#logContainer').classList.add("d-none") };
-      });
+      }).catch(x=> { console.log('[rVSW] no encontro registro para mostrarlog') });
 
       registration.onupdatefound = () => {
         console.log('[rVSM onupdatefound] entro ');

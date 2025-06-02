@@ -478,7 +478,7 @@ var ponIntervaloAutenticacion = () => setInterval( () => {
 }, REVISA.VIGENCIATOKEN_SW * 1000);
 
 
-var  estacorriendoIntevalo = (inter) => {
+var  estacorriendoIntevalo = () => {
 	console.log('[eCI]');
 	dameInterval('Inter1').then( x => {
 		var tiempo = Date.now() - x;
@@ -486,14 +486,14 @@ var  estacorriendoIntevalo = (inter) => {
 	                console.log('[eCI] va a poner intervalor Inter1 tiempo='+tiempo+' DN='+(REVISA.ESTADOREQ * 1000));
 			ponIntervaloRequest();
 		}
-	});
+	}).catch(msg=> { if (msg=='No encontro registro') { ponIntervaloRequest(); } else { console.log('error al poner intervalo'); }});
         dameInterval('Inter2').then( x => {
                 var tiempo = Date.now() - x;
                 if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo
 	                console.log('[eCI] va a poner intervalor Inter2 tiempo='+tiempo+' DN='+(REVISA.VIGENCIATOKEN_SW * 1000));
                         ponIntervaloAutenticacion();
                 }
-        });
+        }).catch(msg=> { if (msg=='No encontro registro') { ponIntervaloAutenticacion(); } else { console.log('error al poner intervalo de autenticacion'); }});
 
 }
 

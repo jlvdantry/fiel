@@ -29,6 +29,7 @@ class ServiceConsumer
 
     public function execute(WebClientInterface $webclient, string $soapAction, string $uri, string $body, ?Token $token): string
     {
+        $path='C:\Bitnami\wappstack-7.3.31-0\apache2\htdocs\fiel-dev\tmp\log';
         $headers = $this->createHeaders($soapAction, $token);
         $request = $this->createRequest($uri, $body, $headers);
         $exception = null;
@@ -38,6 +39,11 @@ class ServiceConsumer
             $exception = $webClientException;
             $response = $webClientException->getResponse();
         }
+        error_log(__METHOD__.' uri='.print_r($uri,true).PHP_EOL,3,$path);
+        error_log(__METHOD__.' soapAction='.print_r($soapAction,true).PHP_EOL,3,$path);
+        error_log(__METHOD__.' body='.print_r($body,true).PHP_EOL,3,$path);
+        error_log(__METHOD__.' token='.print_r($token,true).PHP_EOL,3,$path);
+        error_log(__FUNCTION__.' response='.print_r($response,true).PHP_EOL,3,$path);
         $this->checkErrors($request, $response, $exception);
         return $response->getBody();
     }
