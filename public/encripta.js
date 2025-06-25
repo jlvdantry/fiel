@@ -59,7 +59,7 @@
 				desencriptado = privateKey.decrypt(encryptedBytes, 'RSA-OAEP');
                         } 
                         resolve(desencriptado);
-                });
+                }).catch ( err => { console.log(err);});
         })
    }
 

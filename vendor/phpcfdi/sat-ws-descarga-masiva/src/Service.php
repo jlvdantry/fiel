@@ -143,7 +143,7 @@ class Service
     {
         $queryTranslator = new QueryTranslator();
         $responseBody = $this->consume(
-            'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga',
+            'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescargaRecibidos',
             $this->endpoints->getQuery(),
             $soapBody,
             $token

@@ -216,7 +216,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
            resolve(objects);
         }
 
-        cursor.onerror = function(event) {
+        cursor.onerror = (event) => {
                console.log('[db.js] selObjectUlt error ');
                var json = { };
                json.value=0;
@@ -224,7 +224,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
                resolve(json);
         }
 
-        cursor.onsuccess = function(event,indexname,indexvalue) {
+        cursor.onsuccess = (event) =>  {
             var cursor1 = event.target.result;
             var json = { };
             if (cursor1) {
@@ -232,7 +232,7 @@ var selObjectUlt = function(objectStore, indexname, indexvalue,direction='next')
                json.key  =cursor1.primaryKey;
                resolve(json);
             } else {
-              reject('No encontro registro');
+              reject('No encontro registro indexname='+indexname+' value='+indexvalue);
             };
         };
    });
@@ -386,7 +386,7 @@ function inserta_catalogo(catalogo,label)
 
 /* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
    cuando se hacer un requermiento */
-function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
+function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,urlSAT)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
@@ -397,6 +397,7 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
                 json.idmenu=idmenu;
                 json.header=header;
                 json.body=body;
+                json.urlSAT=urlSAT;
                 json=datos_comunes(json);
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'request', "readwrite");
@@ -413,7 +414,7 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body)
 
 /* funcion que actualiza los datos en la tabla de request 
    cuando se hacer un requermiento */
-function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey)
+function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey,urlSAT)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
@@ -425,6 +426,7 @@ function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey)
                 json.header=header;
                 json.body=body;
                 json=datos_comunes(json);
+                json.urlSAT=urlSAT;
                 updObjectByKey('request', json, idkey).then( () => {
                                     resolve(idkey) ; })
                         .catch(function(err) {
@@ -592,6 +594,9 @@ function leeSolicitudesCorrectas() {
                                          if ('msg_d' in e.value.passdata & e.value.passdata.msg_d!==undefined) {
                                                  e.value.passdata.msg=e.value.passdata.msg_d;
                                          }
+				         if (e.value.estado==ESTADOREQ.ERRORFETCH) {
+						 e.value.passdata.msg='Error en el servidor [fetch]';
+					 }
 
                                          solicitudesCorrectas.push(e.value.passdata) 
                           } }

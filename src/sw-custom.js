@@ -1,11 +1,11 @@
 SW_VERSION = '1.0.290';
 importScripts('utils.js');
+importScripts('encripta.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
 importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
-importScripts('encripta.js');
 console.log('[sw] entro');
 var DMS = null;
 var intervalSync = null;
@@ -54,7 +54,7 @@ if ("function" === typeof importScripts) {
 		    DMS.getTokenEstatusSAT().then( res => {
 			       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
 				       console.log('[sw activate] va a autenticarse contra el SAT');
-				       dame_pwd.then(pwd => {
+				       dame_pwd().then(pwd => {
 				            DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw activate] genero el request de aut') }); 
 				       });
 			       } else {
@@ -164,9 +164,9 @@ var syncRequest = estado => {
                          requests.map( request => {
                                 console.log('[sR] url='+request.value.url+' key='+request.key+' es='+estado);
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
+                                        if (DMS===null) { DMS= new DescargaMasivaSat(); }
 					/* si se cumple solo va armar el soa para la peticion */
 					dame_pwd().then( pwd => { 
-                                                 if (DMS===null) { DMS= new DescargaMasivaSat(); }
 						 DMS.solicita_armasoa(request,request.key,pwd) 
 					});
 					return;
@@ -176,7 +176,7 @@ var syncRequest = estado => {
                                          console.log('[sR] va a obtener el ultimo token activo');
 					 obtieneelUltimoTokenActivo().then( aut => {
                                                          console.log('[sR] download');
-							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired ,value:aut.value.respuesta.value };
+							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires ,value:aut.value.respuesta.value };
                                                          console.log('[sR] download token');
 							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq };
                                                          console.log('[sR] download datos');
@@ -197,7 +197,7 @@ var syncRequest = estado => {
 					 obtieneelUltimoTokenActivo().then( aut => {
 						 if ('respuesta' in aut.value) {
 						    if (aut.value.respuesta!==null) {
-							 var token = { created: aut.value.respuesta.created, expired:aut.value.respuesta.expired
+							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires
 									       ,value:aut.value.respuesta.value }
 							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq }
 							 DMS.verificando( datos,request.key);
@@ -214,10 +214,12 @@ var syncRequest = estado => {
                                 }
 
 				const jsonHeaders = request.value.header;
-				const headers = new Headers(jsonHeaders);
+				const HEADERS = new Headers(jsonHeaders);
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
 					console.log('[sR] url='+request.value.url+' key='+request.key+' es='+estado);
-					fetch(request.value.url,{ method : 'post', headers: headers, body   : request.value.body })
+					body={envelope:request.value.body,urlSAT:request.value.urlSAT,headers:JSON.stringify(jsonHeaders)};
+					headerf={'content-type':'application/json'};
+					fetch('proxySAT.php',{method : 'post', headers: headerf, body   : JSON.stringify(body) })
 					.then( async response => {
 						  if (response.status===500) { 
 							  console.log('[sr] error 500');
@@ -275,7 +277,7 @@ var querespuesta = (request,respuesta) => {
             return;
          }
 
-         if("created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autenticado y que se cuenta con un token */
+         if("Created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autenticado y que se cuenta con un token */
             respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
             respuesta.expiredLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
             updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
@@ -427,12 +429,14 @@ var revisaSiEstaAutenticado = () => {
                }
 	       DMS.getTokenEstatusSAT().then( res => {
 	           console.log('[sw rSEA] estatus token='+(res!==undefined ? res.tokenEstatusSAT : 'indefinido'));
-                   if (res===undefined || res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
+                   if (res===undefined || res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO 
+			               || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO 
+			               || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
 		      ) {
 			       console.log('[sw rSEA] va a autenticarse contra el SAT');
 			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });
                    }
-	       });
+	       }).catch(er => { console.log('[sw rSEA] error en getTokenEstatusSAT '+er);}) 
 	    }
 	}).catch(er => { console.log('[sw rSEA] error en dame_pwd '+er)
 	});
@@ -486,14 +490,19 @@ var  estacorriendoIntevalo = () => {
 	                console.log('[eCI] va a poner intervalor Inter1 tiempo='+tiempo+' DN='+(REVISA.ESTADOREQ * 1000));
 			ponIntervaloRequest();
 		}
-	}).catch(msg=> { if (msg=='No encontro registro') { ponIntervaloRequest(); } else { console.log('error al poner intervalo'); }});
+	}).catch(msg=> { 
+		if (msg.substring(0,20)=='No encontro registro') { ponIntervaloRequest(); } 
+		else { console.log('error al poner intervalo de sincronizacion msg='+msg); }
+	});
         dameInterval('Inter2').then( x => {
                 var tiempo = Date.now() - x;
                 if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo
 	                console.log('[eCI] va a poner intervalor Inter2 tiempo='+tiempo+' DN='+(REVISA.VIGENCIATOKEN_SW * 1000));
                         ponIntervaloAutenticacion();
                 }
-        }).catch(msg=> { if (msg=='No encontro registro') { ponIntervaloAutenticacion(); } else { console.log('error al poner intervalo de autenticacion'); }});
+        }).catch(msg=> { if (msg.substring(0,20)=='No encontro registro') { ponIntervaloAutenticacion(); } 
+		else { console.log('error al poner intervalo de autenticacion msg='+msg); }
+	});
 
 }
 

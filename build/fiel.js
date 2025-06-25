@@ -8,15 +8,15 @@ var _fiel = function()
   this.cer1 = "";
   this.privada = {};
   this.publica = {};
-  //console.log('[_fiel] instancio');
+  console.log('[_fiel] instancio');
 
   damePrivada().then(privada => { 
 	  this.privada = privada; 
-  }).catch(er => { this.privada.key = null;console.log('[_fiel] aun no esta cargada la privada') });
+  }).catch(er => { this.privada.key = null;console.error('[_fiel] aun no esta cargada la privada') });
 
   damePublica().then(publica => { 
 	  this.publica = publica; 
-  }).catch(er => { this.publica.cer = null;console.log('[_fiel] aun no esta cargada la publica') });
+  }).catch(er => { this.publica.cer = null;console.error('[_fiel] aun no esta cargada la publica') });
 
   this.leefael = (evt) =>
   {

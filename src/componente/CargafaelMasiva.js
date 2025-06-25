@@ -111,6 +111,7 @@ class CargafaelMasiva extends Component {
   /* revisa si esta autenticado recibe el objeto del aplicativo */
   revisaSiEstaAutenticado = () => {
 	      DMS.getTokenEstatusSAT().then( res => {
+		      //console.log('[rSEA] res='+JSON.stringify(res));
 		      if (res!==undefined) {
 			       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT || res.queda!==this.state.queda) {
 				   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT , queda:res.queda});
@@ -135,7 +136,7 @@ class CargafaelMasiva extends Component {
   /* hay solicitudes en estado de verificando */
   haysolicitudesVerificando () {
 	         window.obtieneelUltimoTokenActivo().then ( a =>  {
-			 var token = { created: a.value.respuesta.created,expired:a.value.respuesta.expired,value:a.value.respuesta.value }
+			 var token = { created: a.value.respuesta.created,Expires:a.value.respuesta.Expires,value:a.value.respuesta.value }
 			 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:a.folioReq}));
 			 window.leeSolicitudesVerificando().then( req =>  {
 			       console.log('[CFM] total de solicitudes verificando='+req.length)

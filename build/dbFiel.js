@@ -68,6 +68,7 @@ function inserta_solicitud(passdata)
                 var json= { };
                 json.estado=window.ESTADOREQ.INICIAL.SOLICITUD;
                 json.url='/solicita.php';
+                json.urlSAT=ENDPOINTSSAT.SOLICITUD;
                 json.passdata=passdata;
                 json=datos_comunes(json);
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
