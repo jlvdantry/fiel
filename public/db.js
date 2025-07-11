@@ -390,8 +390,8 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,urlSAT)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
-                json.estado=wlmovto;
                 json.url=wlurl;
+                json.estado=wlmovto;
                 json.passdata=passdata;
                 json.forma=forma;
                 json.idmenu=idmenu;
@@ -430,7 +430,7 @@ function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey,ur
                 updObjectByKey('request', json, idkey).then( () => {
                                     resolve(idkey) ; })
                         .catch(function(err) {
-                                console.log("[inserta_request] Database error: "+err.message);
+                                console.log("[update_request] Database error: "+err.message);
                 });
         });
 }
@@ -472,7 +472,7 @@ function inserta_factura(faeljson)
                                        }
                                 })
                         }).catch(function(err) {
-                                console.log("[inserta_request] Database error: "+err.message);
+                                console.log("[inserta_factura] Database error: "+err.message);
                 });
         })
 }

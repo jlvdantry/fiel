@@ -49,19 +49,6 @@ if ("function" === typeof importScripts) {
 	self.addEventListener('activate', event => {
 		console.log('[activate] '+event.target.state);
 		event.waitUntil(self.clients.claim());
-                if (DMS===null) { 
-		    DMS= new DescargaMasivaSat(); 
-		    DMS.getTokenEstatusSAT().then( res => {
-			       if (res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO || res.tokenEstatusSAT===ESTADOREQ.ERROR) {
-				       console.log('[sw activate] va a autenticarse contra el SAT');
-				       dame_pwd().then(pwd => {
-				            DMS.autenticate_armasoa(pwd).then( x => { console.log('[sw activate] genero el request de aut') }); 
-				       });
-			       } else {
-				       DMS=null;
-			       }
-		    });
-		}
 	});
 
 
@@ -144,7 +131,7 @@ self.addEventListener("sync", event => {
     };
     if (event.tag === "verifica") {
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL.VERIFICA));
-       event.waitUntil(syncRequest(ESTADOREQ.ACEPTADO));
+       event.waitUntil(syncRequest(ESTADOREQ.SOLICITUDACEPTAD));
     };
     if (event.tag === "solicita") {
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL.DESCARGA));
@@ -176,7 +163,7 @@ var syncRequest = estado => {
                                          console.log('[sR] va a obtener el ultimo token activo');
 					 obtieneelUltimoTokenActivo().then( aut => {
                                                          console.log('[sR] download');
-							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires ,value:aut.value.respuesta.value };
+							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires ,token:aut.value.respuesta.token };
                                                          console.log('[sR] download token');
 							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq };
                                                          console.log('[sR] download datos');
@@ -193,12 +180,12 @@ var syncRequest = estado => {
                                      if  (request.value.respuesta.substring(0,9)=="Rechazada") {  return; }
                                 }
 
-                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.ACEPTADO) {  // genera el registro de verificacion
+                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.SOLICITUDACEPTADA) {  // genera el registro de verificacion
 					 obtieneelUltimoTokenActivo().then( aut => {
 						 if ('respuesta' in aut.value) {
 						    if (aut.value.respuesta!==null) {
 							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires
-									       ,value:aut.value.respuesta.value }
+									       ,token:aut.value.respuesta.token }
 							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq }
 							 DMS.verificando( datos,request.key);
 						    }
@@ -287,13 +274,12 @@ var querespuesta = (request,respuesta) => {
             return;
          }
 
-         if("status" in respuesta) {
-            if ("code" in respuesta.status) {
+         if("status" in respuesta & "CodEstatus" in respuesta) {
                if (request.value.url=='/solicita.php') {
-		       updestado(request,respuesta.status.code,respuesta.status.message)   // se supoone que aqui se acepto la solicitud
+		       updestado(request,respuesta.CodEstatus,respuesta.Mensaje)   // se supone que aqui se acepto la solicitud
                        .then( (r) => { 
-		                 request.value.passdata.msg=respuesta.status.message;
-		                 "requestId" in respuesta ? request.value.folioReq=respuesta.requestId : null;
+		                 request.value.passdata.msg=respuesta.Mensaje;
+		                 "IdSolicitud" in respuesta ? request.value.folioReq=respuesta.IdSolicitud : null;
 		                 updObjectByKey("request",request.value,request.key); /* actualiza el folio del requerimiento de la solicitud */
                               })
                        .then ( () => {
@@ -301,32 +287,41 @@ var querespuesta = (request,respuesta) => {
                              });
 		       return;
                }
-               if (request.value.url=='/verifica.php' & respuesta.status.code==ESTADOREQ.ACEPTADO) {
+               if (request.value.url=='/verifica.php')  {
+
+		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) {
 		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
-		       request.value.passdata.msg_v=respuesta.statusRequest.message + ' ' + request.value.passdata.intentos;
-		       "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
-		       respuesta.codeRequest.value==5004 ? request.value.passdata.msg_v=respuesta.codeRequest.message.substring(0,29) : null; // no se encontro informacion
-		       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,request.value.passdata.msg_v).then( () => {
-			       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
-			       respuesta.statusRequest.message=request.value.passdata.msg_v;
-			       updSolicitud(respuesta,request.value) 
-                               .then( () => {
-			            postRequestUpd(request,"se verifico",respuesta);
+		       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
+		       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,respuesta.Mensaje).then( () => {
+				     updSolicitud(respuesta,request.value)
+				       .then( () => {
+					postRequestUpd(request,"se verifico",respuesta);
+				       });
+
                                });
-                       });
+		    }
+		    //   "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
+		    //   respuesta.codeRequest.value==5004 ? request.value.passdata.msg_v=respuesta.codeRequest.message.substring(0,29) : null; // no se encontro informacion
+		    //   updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,request.value.passdata.msg_v).then( () => {
+		//	       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
+		//	       respuesta.statusRequest.message=request.value.passdata.msg_v;
+		//	       updSolicitud(respuesta,request.value) 
+                 //              .then( () => {
+		//	            postRequestUpd(request,"se verifico",respuesta);
+                 //              });
+                 //      });
 		       return;
                }
-               if (request.value.url=='/verifica.php' & respuesta.status.code==ESTADOREQ.TOKENINVALIDO) {  // token invalido seguramente porque ya expiro
-                       updestado(request,ESTADOREQ.TOKENINVALIDO,respuesta.status.message).then ( () => {;
-                                    postRequestUpd(request,"token-invalido",respuesta);
-		       });
-		       return;
-               }
-            }
+//               if (request.value.url=='/verifica.php' & respuesta.CodEstatus==ESTADOREQ.TOKENINVALIDO) {  // token invalido seguramente porque ya expiro
+//                       updestado(request,ESTADOREQ.TOKENINVALIDO,respuesta.Mensaje).then ( () => {;
+//                                    postRequestUpd(request,"token-invalido",respuesta);
+//		       });
+//		       return;
+//               }
          }
 
-         if(respuesta.msg=="El paquete se descargo") {
-		       request.value.passdata.msg_d=respuesta.msg;
+         if(respuesta.Mensaje=="El paquete se descargo") {
+		       request.value.passdata.msg_d=respuesta.Mensaje;
                        updestado(request,ESTADOREQ.DESCARGADO,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
                                updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
                                updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
@@ -336,12 +331,12 @@ var querespuesta = (request,respuesta) => {
                        });
                        return;
          }
-	               request.value.passdata.msg_d=respuesta.msg;
+	               request.value.passdata.msg_d=respuesta.Mensaje;
                        updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
                                updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-                               updSolicitudDownload(respuesta.msg,request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
+                               updSolicitudDownload(respuesta.Mensaje,request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
                                .then( () => {
-                                    postRequestUpd(request,respuesta.msg,respuesta);
+                                    postRequestUpd(request,respuesta.Mensaje,respuesta);
                                });
                        });
 
@@ -351,28 +346,39 @@ var updSolicitud = (respuesta,verificacionValue) => {
         return new Promise( (resolve, reject) => {
 		      selObjectByKey('request',verificacionValue.passdata.keySolicitud).then( obj => {
 			        var mensaje='';
-			        if (respuesta.statusRequest.message.substring(0,9)!=="Terminada") {
-				    mensaje = respuesta.statusRequest.message ;
-                                    if (mensaje=="No se encontró la información") {
+			        if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.TERMINADA) {
+                                   if(respuesta.NumeroCFDIs==0) {
+					    mensaje = 'No se encontro informacion'
 					    obj.estado=ESTADOREQ.SOLICITUDSININFORMACION;
 					    obj.passdata.msg_v=mensaje;
-				    }	    
-				    else  { 
+				   }	    
+                                   else {
+					    mensaje = 'Facturas '+respuesta.numberCfdis;  
+					    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
+					    obj.passdata.msg_v=mensaje;
+					    obj.folioReq=verificacionValue.folioReq;
+				   }
+				}
+			        if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) { 
 					    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
-					    obj.passdata.msg_v="Verificacione(s): "+obj.passdata.intentos;
-					    obj.estado=ESTADOREQ.ACEPTADO; 
-				    }
+					    obj.passdata.msg_v="Aceptada, Verificacione(s): "+obj.passdata.intentos;
 				}
-                                if (respuesta.statusRequest.message.substring(0,9)==="Terminada") {
-				    mensaje = 'Facturas '+respuesta.numberCfdis;  
-                                    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
-                                    obj.passdata.msg_v=mensaje;
-                                    obj.folioReq=verificacionValue.folioReq;
+			        if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ENPROCESO) { 
+					    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
+					    obj.passdata.msg_v="EN proceso, Verificacione(s): "+obj.passdata.intentos;
 				}
-                                if (respuesta.statusRequest.message.substring(0,7)==="Vencida") {
-                                    mensaje = 'Vencida ';
-                                    obj.estado=ESTADOREQ.SOLICITUDVENCIDA
-                                    obj.passdata.msg_v=mensaje;
+
+                                if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.VENCIDA) {
+				    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
+				    obj.passdata.msg_v="Vencida, Verificacione(s): "+obj.passdata.intentos;
+                                }
+                                if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ERROR) {
+				    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
+				    obj.passdata.msg_v="Error, Verificacione(s): "+obj.passdata.intentos;
+                                }
+                                if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.RECHAZADA) {
+				    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
+				    obj.passdata.msg_v="Rechazada, Verificacione(s): "+obj.passdata.intentos;
                                 }
 				updObjectByKey('request',obj,verificacionValue.passdata.keySolicitud);
 		      }).then( () => { resolve() });
@@ -413,8 +419,6 @@ self.addEventListener('message', (event) => {
   }
   if (event.data && event.data.action === 'START_INTERVALO') {
 	  console.log('START_INTERVALO');
-                //ponIntervaloRequest();
-                //ponIntervaloAutenticacion();
 	  estacorriendoIntevalo();
   }
 });
@@ -433,7 +437,7 @@ var revisaSiEstaAutenticado = () => {
 			               || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO 
 			               || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
 		      ) {
-			       console.log('[sw rSEA] va a autenticarse contra el SAT');
+			       console.log('[sw rSEA] va a generar el request de autenticacion');
 			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });
                    }
 	       }).catch(er => { console.log('[sw rSEA] error en getTokenEstatusSAT '+er);}) 
@@ -452,38 +456,54 @@ var revisaSiEstaAutenticado = () => {
         });
 
 
-var ponIntervaloRequest = () => setInterval( () => {
-       console.log("[sw sI] va a sincronizar=");
-	var obj = { fechatiempo: Date.now() };
-	insertaOActualizaInterval(obj,'Inter1');
-	try {
-	       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
-	       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
-	       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
-	       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
-	       syncRequest(ESTADOREQ.ACEPTADO);
-	       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
-	       bajaVerificaciones();
-	       bajaTokenCaducado();
-	       bajaTokenInvalido();
-	       bajaRequiriendo();
-	} catch (err) {
-        console.log("Error in interval:", err);
-    }
-}, REVISA.ESTADOREQ * 1000);
+var ponIntervaloRequest = () => {
+	lee_llaves().then(x => {
 
-var ponIntervaloAutenticacion = () => setInterval( () => {
-	var obj = { fechatiempo: Date.now() };
-	insertaOActualizaInterval(obj,'Inter2');
-	try { revisaSiEstaAutenticado() } 
-	catch (err) {
-           console.log("Error in interval EstaAutenticado:", err);
-	};
-}, REVISA.VIGENCIATOKEN_SW * 1000);
+              if ('validada' in x.value) {
+			console.log("[sw sI] va a pone intervalo de sincronizacion diferentes estados");
+			setInterval( () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
+				var obj = { fechatiempo: Date.now() };
+				insertaOActualizaInterval(obj,'Inter1');
+				try {
+				       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
+				       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
+				       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+				       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
+				       syncRequest(ESTADOREQ.SOLICITUDACEPTADA);
+				       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
+				       bajaVerificaciones();
+				       bajaTokenCaducado();
+				       bajaTokenInvalido();
+				       bajaRequiriendo();
+				} catch (err) {
+				console.log("Error in interval:", err);
+			    }
+			}, REVISA.ESTADOREQ * 1000);
+	      }
+
+         }).catch ( err => { console.log(err);});
+}
+
+var ponIntervaloAutenticacion = () => {
+        lee_llaves().then(x => {
+              if ('validada' in x.value) {
+			console.log("[sw sI] pone intervalo para revisar si esta autenticado");
+			setInterval( () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
+				var obj = { fechatiempo: Date.now() };
+				insertaOActualizaInterval(obj,'Inter2');
+				try { revisaSiEstaAutenticado() } 
+				catch (err) {
+				   console.log("Error in interval EstaAutenticado:", err);
+				};
+			}, REVISA.VIGENCIATOKEN_SW * 1000);
+	      }
+
+         }).catch ( err => { console.log(err);});
+}
 
 
-var  estacorriendoIntevalo = () => {
-	console.log('[eCI]');
+var  estacorriendoIntevalo = () => {    // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
+	console.log('[eCI Estan corriendo los intervalos de tiempo]');
 	dameInterval('Inter1').then( x => {
 		var tiempo = Date.now() - x;
 		if (tiempo > REVISA.ESTADOREQ * 1000) { // no esta corriendo el intervalo
@@ -494,6 +514,7 @@ var  estacorriendoIntevalo = () => {
 		if (msg.substring(0,20)=='No encontro registro') { ponIntervaloRequest(); } 
 		else { console.log('error al poner intervalo de sincronizacion msg='+msg); }
 	});
+
         dameInterval('Inter2').then( x => {
                 var tiempo = Date.now() - x;
                 if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo

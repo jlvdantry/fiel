@@ -136,7 +136,7 @@ class CargafaelMasiva extends Component {
   /* hay solicitudes en estado de verificando */
   haysolicitudesVerificando () {
 	         window.obtieneelUltimoTokenActivo().then ( a =>  {
-			 var token = { created: a.value.respuesta.created,Expires:a.value.respuesta.Expires,value:a.value.respuesta.value }
+			 var token = { created: a.value.respuesta.created,Expires:a.value.respuesta.Expires,token:a.value.respuesta.token }
 			 this.setState(state => ({ token:token,pwdfiel:window.PWDFIEL, folioReq:a.folioReq}));
 			 window.leeSolicitudesVerificando().then( req =>  {
 			       console.log('[CFM] total de solicitudes verificando='+req.length)

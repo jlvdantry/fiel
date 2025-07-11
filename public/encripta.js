@@ -8,7 +8,7 @@
                 const keypair = forge.pki.rsa.generateKeyPair({ bits: 2048, e: 0x10001 });
                 const publicKeyPem = forge.pki.publicKeyToPem(keypair.publicKey);
                 const privateKeyPem = forge.pki.privateKeyToPem(keypair.privateKey);
-                obj={ 'pu' : publicKeyPem, 'pr':privateKeyPem , 'url':'_X_' };
+                obj={ 'url':'_X_', 'pu' : publicKeyPem, 'pr':privateKeyPem };
                 inserta_llaves(obj).then( res => {
                             console.log('alta llaves='+res);
                 });
@@ -78,6 +78,7 @@
 			// Base64 encode the encrypted data for easy display
 			const encryptedBase64 = forge.util.encode64(encrypted);
 			x.value.pwd=encryptedBase64;
+			x.value.validada=true;   // indica que la fiel ya fue validada localmente
 			guarda_pwd(x);
                 });
    }

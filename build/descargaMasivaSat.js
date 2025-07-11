@@ -56,10 +56,10 @@ var DescargaMasivaSat = function()
     * arma el body para solicita facturas
     */
    this.armaBodySol = function (estado) {
-          var solicitud = { 'EstadoComprobante' : 'Vigente', 'TipoSolicitud' : estado.passdata.TipoSolicitud,'FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin, 
-               'RfcReceptor': estado.passdata.RFCReceptor
+          var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin, 
+               'RfcReceptor': estado.passdata.RFCReceptor, 'TipoSolicitud' : estado.passdata.TipoSolicitud
               };
-          var solicitudAttributesAsText='EstadoComprobante="Vigente"'+' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"'+'" RfcReceptor="'+solicitud.RfcReceptor;
+          var solicitudAttributesAsText='EstadoComprobante="Vigente"'+' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'"'+' RfcReceptor="'+solicitud.RfcReceptor+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
           //var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor>'+solicitud.RfcReceptor+'</des:RfcReceptor></des:RfcReceptores>';
 	  this.vuuid=this.uuid();
           this.toDigestXml =  '<des:SolicitaDescargaRecibidos xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
@@ -67,7 +67,7 @@ var DescargaMasivaSat = function()
                     //xmlRfcReceived+
                 '</des:solicitud>'+
             '</des:SolicitaDescargaRecibidos>';
-          this.datofirmado=this.creafirma(this.toDigestXml);
+          this.datofirmado=this.creafirma(this.toDigestXml,"");
           this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
         '<s:Header/>'+
                 '<s:Body>'+
@@ -100,7 +100,7 @@ var DescargaMasivaSat = function()
                 '<des:solicitud IdSolicitud="'+xmlRequestId+'" RfcSolicitante="'+xmlRfc+'">'+
                 '</des:solicitud>'+
             '</des:VerificaSolicitudDescarga>';
-          this.datofirmado=this.creafirma(this.toDigestXml);
+          this.datofirmado=this.creafirma(this.toDigestXml,"");
           this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
         '<s:Header/>'+
                 '<s:Body>'+
@@ -119,7 +119,7 @@ var DescargaMasivaSat = function()
             '</s:Envelope>';
            this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc';
            this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
-           this.urlproxy='/verifica.php';
+           this.urlproxy=ENDPOINTSSAT.VERIFICA;
    }
 
 	/* Arma el body para descargar las facturas 
@@ -131,7 +131,7 @@ var DescargaMasivaSat = function()
                 '<des:peticionDescarga IdPaquete="'+IdPaquete+'" RfcSolicitante="'+xmlRfc+'">'+
                 '</des:peticionDescarga>'+
             '</des:PeticionDescargaMasivaTercerosEntrada>';
-          this.datofirmado=this.creafirma(this.toDigestXml);
+          this.datofirmado=this.creafirma(this.toDigestXml,"");
           this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
         '<s:Header/>'+
                 '<s:Body>'+
@@ -184,7 +184,7 @@ var DescargaMasivaSat = function()
 	'<s:Header>'+
 		'<o:Security xmlns:o="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" s:mustUnderstand="1">'+
                        this.toDigestXml_+
-			'<o:BinarySecurityToken EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" u:Id="uuid-'+this.vuuid+'-1">'+
+			'<o:BinarySecurityToken EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" u:Id="uuid-'+this.vuuid+'-4">'+
                        this.cer.certificado+
                          '</o:BinarySecurityToken>'+
 			'<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">'+
@@ -196,7 +196,7 @@ var DescargaMasivaSat = function()
 					'<o:SecurityTokenReference>'+
 						'<o:Reference URI="#uuid-'+
                                    this.vuuid+
-                                        '-1" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3"/>'+
+                                        '-4" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3"/>'+
 					'</o:SecurityTokenReference>'+
 				'</KeyInfo>'+
 			'</Signature>'+
@@ -231,17 +231,17 @@ var DescargaMasivaSat = function()
    this.autenticate_enviasoa= function (res,pwd) {
 	        url='/autentica.php';
 	        res.urlSAT=this.urlproxy;
-                var hs1={ mode: 'no-cors', 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':SOAPACTION.AUTENTICA};
-                inserta_request(url,res.cer,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.AUTENTICA,hs1,res.soap,res.urlSAT).then( key => {
+                var hs1={ 'Content-Type': 'text/xml;charset=UTF-8','SOAPAction':SOAPACTION.AUTENTICA,'Cache-Control':'no-cache'};
+                inserta_request(url ,res.cer ,MENUS.DESCARGAMASIVA ,FORMA.DESCARGAMASIVA ,MOVIMIENTO.AUTENTICA ,hs1, res.soap ,res.urlSAT).then( key => {
                                 console.log("[autenticate_enviasoa] request de autenticacion");
                 });
    }
 
    this.solicitaRecibidos_enviasoa= async function (soa,token,passdata,idkey) {
-        var url='solicita.php';
+        var url='/solicita.php';
         var urlSAT=ENDPOINTSSAT.SOLICITUD;
-        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*'
-		,'SOAPAction':SOAPACTION.SOLICITUDRECIBIDOS,'Autorization':'WRAP access_token='+token.token};
+        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8'
+		,'SOAPAction':SOAPACTION.SOLICITUDRECIBIDOS,'Authorization':'WRAP access_token="'+token.token+'"','Cache-Control':'no-cache','Connection':'keep-alive'};
                 update_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITUD,hs1,soa,idkey,urlSAT).then( key => {
                                 console.log("[DMS SE]  actualizo key="+key);
                 });
@@ -311,10 +311,12 @@ var DescargaMasivaSat = function()
 
 
    this.verifica_enviasoa= function (soa,token,idKey) {
-        var url=this.urlproxy;
+        var url='/verifica.php';
+        var urlSAT=this.urlproxy;
         var passdata={ keySolicitud:idKey };
-        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'VerificaSolicitudDescarga','token_value':token.value,'token_Created':token.Created,'token_Expires':token.Expires};
-                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa).then( key => {
+        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8'
+                ,'SOAPAction':SOAPACTION.VERIFICA,'Authorization':'WRAP access_token="'+token.token+'"','Cache-Control':'no-cache','Connection':'keep-alive'};
+                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa,urlSAT).then( key => {
                                 console.log("[v_e] inserto key="+key.key);
                 });
    }
@@ -403,18 +405,6 @@ var DescargaMasivaSat = function()
    this.getTokenEstatusSAT = () => {
                 return new Promise( (resolve, reject) => {
                      selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
-			     if (obj.value.estado===ESTADOREQ.ERROR) {
-				     return { tokenEstatusSAT:ESTADOREQ.ERROR };
-			     }
-			     if (obj.value.estado===TOKEN.CADUCADO) {
-				     return { tokenEstatusSAT:TOKEN.CADUCADO };
-			     }
-                             if (obj.value.estado===ESTADOREQ.REQUIRIENDO) {
-                                     return { tokenEstatusSAT:ESTADOREQ.REQUIRIENDO };
-                             }
-                             if (obj.value.estado===ESTADOREQ.ERRORFETCH) {
-                                     return { tokenEstatusSAT:ESTADOREQ.ERRORFETCH };
-                             }
 			     var actual=Math.floor(Date.now() / 1000);
 			     if ('respuesta' in obj.value && obj.value.respuesta!==null && obj.value.respuesta!==undefined) {
 				     if (actual<=obj.value.respuesta.Expires) {
@@ -430,7 +420,7 @@ var DescargaMasivaSat = function()
 					 });
 				     }
 			     } else { 
-					 return { tokenEstatusSAT:TOKEN.NOGENERADO }; 
+					 return { tokenEstatusSAT:obj.value.estado }; 
 			     } 
 		})
                 .then( x => {

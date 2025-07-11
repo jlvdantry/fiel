@@ -32,7 +32,7 @@ class Valida extends Component {
   yaCargoFirmaDMS() {
 	  if (DMS.mifiel.privada!==null & DMS.mifiel.publica!==null) {
                  clearInterval(timer);
-                 DMS.autenticate_armasoa(window.PWDFIEL).then( x => { console.log('paso autenticate_armasoa'); });
+                 DMS.autenticate_armasoa(window.PWDFIEL).then( x => { console.log('paso la validacin de la firma lccalmente'); });
           }
   }
 
