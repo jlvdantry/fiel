@@ -146,10 +146,8 @@ var syncRequest = estado => {
           var req= await selObjects(objectStore, "estadoIndex", estado); 
 	  return req;
     }).then( requests => {
-                  //console.log('[sR] estado='+estado+' requests='+requests.length);
-                  //return Promise.all(
                          requests.map( request => {
-                                console.log('[sR] url='+request.value.url+' key='+request.key+' es='+estado);
+                                console.log('[sR] url='+request.value.url+' key='+request.key+' es r='+estado+' estado reg='+request.value.estado);
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
                                         if (DMS===null) { DMS= new DescargaMasivaSat(); }
 					/* si se cumple solo va armar el soa para la peticion */
@@ -203,7 +201,6 @@ var syncRequest = estado => {
 				const jsonHeaders = request.value.header;
 				const HEADERS = new Headers(jsonHeaders);
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
-					console.log('[sR] url='+request.value.url+' key='+request.key+' es='+estado);
 					body={envelope:request.value.body,urlSAT:request.value.urlSAT,headers:JSON.stringify(jsonHeaders)};
 					headerf={'content-type':'application/json'};
 					fetch('proxySAT.php',{method : 'post', headers: headerf, body   : JSON.stringify(body) })
@@ -300,24 +297,20 @@ var querespuesta = (request,respuesta) => {
 
                                });
 		    }
-		    //   "packagesIds" in respuesta ? request.value.folioReq=respuesta.packagesIds : null;
-		    //   respuesta.codeRequest.value==5004 ? request.value.passdata.msg_v=respuesta.codeRequest.message.substring(0,29) : null; // no se encontro informacion
-		    //   updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,request.value.passdata.msg_v).then( () => {
-		//	       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la verificacion en el request de la verificacion 
-		//	       respuesta.statusRequest.message=request.value.passdata.msg_v;
-		//	       updSolicitud(respuesta,request.value) 
-                 //              .then( () => {
-		//	            postRequestUpd(request,"se verifico",respuesta);
-                 //              });
-                 //      });
+		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.TERMINADA) {
+                       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
+                       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
+                       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,respuesta.Mensaje).then( () => {
+                                     updSolicitud(respuesta,request.value)
+                                       .then( () => {
+                                        postRequestUpd(request,"se verifico, NumeroCFDIs?"+respuesta.NumeroCFDIs,respuesta);
+                                       });
+
+                               });
+
+		    }
 		       return;
                }
-//               if (request.value.url=='/verifica.php' & respuesta.CodEstatus==ESTADOREQ.TOKENINVALIDO) {  // token invalido seguramente porque ya expiro
-//                       updestado(request,ESTADOREQ.TOKENINVALIDO,respuesta.Mensaje).then ( () => {;
-//                                    postRequestUpd(request,"token-invalido",respuesta);
-//		       });
-//		       return;
-//               }
          }
 
          if(respuesta.Mensaje=="El paquete se descargo") {
@@ -353,7 +346,7 @@ var updSolicitud = (respuesta,verificacionValue) => {
 					    obj.passdata.msg_v=mensaje;
 				   }	    
                                    else {
-					    mensaje = 'Facturas '+respuesta.numberCfdis;  
+					    mensaje = 'Facturas '+respuesta.NumeroCFDIs;  
 					    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
 					    obj.passdata.msg_v=mensaje;
 					    obj.folioReq=verificacionValue.folioReq;

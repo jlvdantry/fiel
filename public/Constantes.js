@@ -23,7 +23,7 @@ var  ESTADOREQ = {
 	, RESPUESTADESCONOCIDA:'99'
 	, RECIBIDO:'1'   /* recibio respuesta del servidor */
 	, ERROR:500
-	, SOLICITUDACEPTADA:'5000'   /* la solicitud y/o verificacion fue aceptada por el sat */
+	, SOLICITUDACEPTADA:'5000'   /* desde la version 1.5 este estats lo maneja la solicitud asi como la verificacion */
 	, REQUIRIENDO:'2'   /* se va a requerir  el servicor */
 	, TOKENINVALIDO:'300'
 	, VERIFICANDO:'5001' /* estado de la verificacion antes de enviar la verficacion  */
@@ -42,7 +42,7 @@ var  REVISA = {
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.553';
+var VERSION='1.0.554.7';
 var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
 	            ,SOLICITUD:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc'
 	            ,VERIFICA: 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc'

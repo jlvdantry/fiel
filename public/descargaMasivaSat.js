@@ -317,7 +317,8 @@ var DescargaMasivaSat = function()
         var hs1={ 'Content-Type': 'text/xml;charset=UTF-8'
                 ,'SOAPAction':SOAPACTION.VERIFICA,'Authorization':'WRAP access_token="'+token.token+'"','Cache-Control':'no-cache','Connection':'keep-alive'};
                 inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.VERIFICA,hs1,soa,urlSAT).then( key => {
-                                console.log("[v_e] inserto key="+key.key);
+                                console.log("[DMS] inserto verificacion key="+key.key);
+
                 });
    }
 
@@ -345,7 +346,7 @@ var DescargaMasivaSat = function()
 
    }
 
-   this.verificando = async function (estado,idKey) {
+   this.verificando = async (estado,idKey) =>  {
                  var resv=this.verifica_armasoa(estado,idKey);
    }
 
@@ -354,7 +355,7 @@ var DescargaMasivaSat = function()
    }
 
 
-   this.verifica_armasoa = function (estado,idKey) {
+   this.verifica_armasoa = (estado,idKey) => {  /* no crear un nuevo registro de verificacion si ya hay uno para la solicitud y en estado de verificando */
                 this.mifiel.validafiellocal(estado.pwdfiel).then( res => {
 			this.cer = this.mifiel.damecertificadofiel();
 			if (res.ok) {
