@@ -125,7 +125,7 @@ var DescargaMasivaSat = function()
 	/* Arma el body para descargar las facturas 
 	 */
    this.armaBodyDownload = function (datos,solicitud) {
-          var IdPaquete =  solicitud.value.folioReq[0];
+          var IdPaquete =  solicitud.value.folioReq;
           var xmlRfc = datos.firma.rfc;
           this.toDigestXml =  '<des:PeticionDescargaMasivaTercerosEntrada xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:peticionDescarga IdPaquete="'+IdPaquete+'" RfcSolicitante="'+xmlRfc+'">'+
@@ -150,7 +150,7 @@ var DescargaMasivaSat = function()
             '</s:Envelope>';
            this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc';
            this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
-           this.urlproxy='/download.php';
+           this.urlproxy=ENDPOINTSSAT.DESCARGA;
    }
 
 
@@ -248,10 +248,12 @@ var DescargaMasivaSat = function()
    }
 
    this.download_enviasoa= function (soa,token,packageId,keySolicitud) {
-        var url=this.urlproxy;
+        var url='/download.php';
+        var urlSAT=ENDPOINTSSAT.DESCARGA;
         var passdata = { keySolicitud : keySolicitud }
-        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8', 'Accept': 'text/xml','Accept-Charset':'utf-8','Cache-Control':'no-cache','Access-Control-Allow-Origin':'*','SOAPAction':'Descargar','token_value':token.value,'token_Created':token.Created,'token_Expires':token.Expires,'packageId':packageId};
-                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.DESCARGA,hs1,soa).then( key => {
+        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8'
+		,'SOAPAction':SOAPACTION.DESCARGA,'Authorization':'WRAP access_token="'+token.token+'"','Cache-Control':'no-cache','Connection':'keep-alive'};
+                inserta_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.DESCARGA,hs1,soa,urlSAT).then( key => {
                                 console.log("[DMS DE] inserta request de download");
                 });
 

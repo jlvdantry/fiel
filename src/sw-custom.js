@@ -349,7 +349,6 @@ var updSolicitud = (respuesta,verificacionValue) => {
 					    mensaje = 'Facturas '+respuesta.NumeroCFDIs;  
 					    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
 					    obj.passdata.msg_v=mensaje;
-					    obj.folioReq=verificacionValue.folioReq;
 				   }
 				}
 			        if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) { 

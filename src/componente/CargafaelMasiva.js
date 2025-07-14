@@ -20,10 +20,10 @@ class CargafaelMasiva extends Component {
     super(props);
     this.nextPath = this.nextPath.bind(this);
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()).toISOString(),end:new Date().toISOString(),formattedValueIni:null
-                   ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'por rango de fechas',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
+                   ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'Emitidos',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
-                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false,queda:''
+                   ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false,queda:'',RFC_FIEL:''
     };
     this.cargar = this.cargar.bind(this);
     this.showHide = this.showHide.bind(this)
@@ -172,7 +172,9 @@ class CargafaelMasiva extends Component {
              if ('pwd' in pwd.value) {
                      this.setState({ tecleoPWD:true });
                      this.dame_pwdSW();
-                     window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }); });
+                     window.leeSolicitudesCorrectas().then( a => { 
+			     this.setState({ solicitudes: a }); 
+		     });
                      window.leeRFCS().then( a => { this.setState({ RFCS: a }) });
              }
       });
@@ -180,7 +182,6 @@ class CargafaelMasiva extends Component {
       /* maneja los mensaje provenientes del sw */
       handleMessage = (event) => {
 	      if (event.data.action!=='log')  {
-                      console.log('[hM] ='+JSON.stringify(event.data.action,true));
 		      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
 		      if (event.data.action==='CONTRA') {
 			      window.PWDFIEL=event.data.value;
@@ -201,6 +202,12 @@ class CargafaelMasiva extends Component {
 		      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
               }
       };
+            window.dameRfc().then( rfc => {
+                    if (rfc!==null) {
+                               this.setState({RFC_FIEL:rfc,RFCEmisor:rfc}); 
+                    }
+            });
+
 
       navigator.serviceWorker.addEventListener('message', handleMessage);
 
@@ -229,7 +236,6 @@ class CargafaelMasiva extends Component {
 
 
 
-    if (this.state.dropdownValue==='por rango de fechas') {
 
        this.setState({start:document.querySelector('#fechainicial').value});
        if (this.state.start===null || this.state.start==='') {
@@ -274,7 +280,6 @@ class CargafaelMasiva extends Component {
        if (this.state.RFCEmisorIsValid===false || this.state.RFCReceptorIsValid===false) {
            return;
        }
-    }
     this.setState({isDisabled:true});
     this.inserta_solicitud();
   }
@@ -374,10 +379,11 @@ class CargafaelMasiva extends Component {
                           <div className="col-lg-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" >
-						   Solicitud {this.state.dropdownValue} 
+						   {this.state.dropdownValue} 
 				      </DropdownToggle>
 				      <DropdownMenu>
-					<DropdownItem onClick={this.changeValue} >por rango de fechas</DropdownItem>
+					<DropdownItem onClick={this.changeValue} >Emitidos</DropdownItem>
+					<DropdownItem onClick={this.changeValue} >Recibidos</DropdownItem>
 					<DropdownItem onClick={this.changeValue} >por folio</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
@@ -401,7 +407,7 @@ class CargafaelMasiva extends Component {
 	              { this.state.tokenEstatusSAT!==window.TOKEN.ACTIVO &&  <Label className="text-danger">Esta desconectado con el SAT</Label> }
 		      </FormGroup>
 
-                      { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
+                      { this.state.dropdownValue!=='por folio' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
 				<Label>RFC Emisor</Label>
                                 <div className="col-lg-12 px-0">
@@ -467,7 +473,7 @@ class CargafaelMasiva extends Component {
                       </FormGroup> }
 
 
-                      { this.state.dropdownValue==='por rango de fechas' && <FormGroup className="container row col-lg-12">
+                      { this.state.dropdownValue!=='por folo' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Inicial</Label>
                             <DatePicker dayLabels={days} monthLabels={months} onFocus={this.handleFocus} onBlur={this.handleBlur} defaultValue={this.state.start} id="fechainicial" maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />

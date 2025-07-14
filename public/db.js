@@ -418,8 +418,8 @@ function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey,ur
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
-                json.estado=wlmovto;
                 json.url=wlurl;
+                json.estado=wlmovto;
                 json.passdata=passdata;
                 json.forma=forma;
                 json.idmenu=idmenu;
@@ -597,6 +597,7 @@ function leeSolicitudesCorrectas() {
 				         if (e.value.estado==ESTADOREQ.ERRORFETCH) {
 						 e.value.passdata.msg='Error en el servidor [fetch]';
 					 }
+				         e.value.passdata.fila=e.key;
 
                                          solicitudesCorrectas.push(e.value.passdata) 
                           } }
