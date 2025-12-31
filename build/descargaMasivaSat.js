@@ -53,9 +53,9 @@ var DescargaMasivaSat = function()
    } 
 
    /*
-    * arma el body para solicita facturas
+    * arma el body para solicita facturas recibidos
     */
-   this.armaBodySol = function (estado) {
+   this.armaBodySolRec = function (estado) {
           var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin, 
                'RfcReceptor': estado.passdata.RFCReceptor, 'TipoSolicitud' : estado.passdata.TipoSolicitud
               };
@@ -85,9 +85,54 @@ var DescargaMasivaSat = function()
                     '</des:SolicitaDescargaRecibidos>'+
                 '</s:Body>'+
             '</s:Envelope>';
-           this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc';
+           this.urlAutenticate=ENDPOINTSSAT.SOLICITUD;
            this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
 
+   }
+
+   /*
+    * arma el body para solicita facturas emitidos 
+    */
+   this.armaBodySolEmi = function (estado) {
+          var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin,
+               'RfcEmisor': estado.passdata.RFCEmisor, 'TipoSolicitud' : estado.passdata.TipoSolicitud,'RfcSolicitante':estado.passdata.RFCEmisor
+              };
+          var solicitudAttributesAsText='EstadoComprobante="Vigente"'+' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'"'+' RfcEmisor="'+solicitud.RfcEmisor+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"'+' RfcSolicitante="'+estado.passdata.RFCEmisor+'"';
+          var xmlRfcReceived='<des:RfcReceptores></des:RfcReceptores>';
+          this.vuuid=this.uuid();
+          this.toDigestXml =  '<des:SolicitaDescargaEmitidos xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
+                '<des:solicitud '+solicitudAttributesAsText+'>'+
+                    xmlRfcReceived+
+                '</des:solicitud>'+
+            '</des:SolicitaDescargaEmitidos>';
+          this.datofirmado=this.creafirma(this.toDigestXml,"");
+          this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
+        '<s:Header/>'+
+                '<s:Body>'+
+                    '<des:SolicitaDescargaEmitidos>'+
+                        '<des:solicitud '+solicitudAttributesAsText+'>'+
+                            xmlRfcReceived+
+                        '<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">'+
+                                this.datofirmado.signedinfo+
+                                '<SignatureValue>'+
+                                this.datofirmado.sello+
+                                '</SignatureValue>'+
+                                this.datofirmado.keyInfo+
+                        '</Signature>'+
+                        '</des:solicitud>'+
+                    '</des:SolicitaDescargaEmitidos>'+
+                '</s:Body>'+
+            '</s:Envelope>';
+           this.urlAutenticate=ENDPOINTSSAT.SOLICITUD;
+           this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+
+   }
+
+   /*
+    * arma el body para solicita facturas por folio
+    */
+
+   this.armaBodySolFol = function (estado) {
    }
 
 	/* 
@@ -351,7 +396,21 @@ var DescargaMasivaSat = function()
 				   if (res.tokenEstatusSAT===TOKEN.ACTIVO) { 
 				      request.value.certificado=res.certificado;
 				      request.value.token=res.token;
-				      this.armaBodySol(request.value);
+                                      if (request.value.passdata.TipoDescarga==='Recibidos') {
+				          this.armaBodySolRec(request.value);
+				      }
+                                      else {
+                                          if (request.value.passdata.TipoDescarga==='Emitidos') {
+				             this.armaBodySolEmi(request.value);
+					  } else {
+					      if (request.value.passdata.TipoDescarga==='por folio') {
+				                 this.armaBodySolFol(request.value);
+				              } else {
+					         console.error('[DMS SA] Tipo de Descarga desconocido='+request.value.passdata.TipoDescarga);
+                                                 return;
+					      }
+					  }
+				      }
 				      console.log('[DMS SA] armo el body key='+idkey);	
 				      this.solicita_enviasoa(this.xmltoken,request.value.token,request.value.passdata,idkey)
 				   }
