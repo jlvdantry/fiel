@@ -67,7 +67,7 @@ class Misfacturas extends Component {
       <div>
              <Graficafael ref={this.changeGrafica}/>
 	     <div className="text-center mt-2">Total de facturas <b>{this.state.totalfacturas}</b></div>
-	     <DataGridFacturas className="mt-2" filas={this.state.facturas}/>  }
+	     <DataGridFacturas className="mt-2" filas={this.state.facturas}/>  
       </div> 
     );
   }
