@@ -1,5 +1,7 @@
 export function  ExtraeComprobantes(fact,RFC) {
-			var datosFactura=fact.map( (x,index) => {
+		 var datosFactura=fact.map( (x,index) => {
+			 try {
+		
 			       var datoFactura={};
 			       var descripcion='';
 			       var ivaAcreditado=0;
@@ -12,7 +14,8 @@ export function  ExtraeComprobantes(fact,RFC) {
 			       var total=Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
 
                                if (x.value.passdata["cfdi:Comprobante"].hasOwnProperty("cfdi:Impuestos")) {
-			          iva=  Number(x.value.passdata["cfdi:Comprobante"]["cfdi:Impuestos"]["@attributes"].TotalImpuestosTrasladados).toLocaleString('en-US');
+			          iva=  try { Number(x.value.passdata["cfdi:Comprobante"]["cfdi:Impuestos"]["@attributes"].TotalImpuestosTrasladados).toLocaleString('en-US') } 
+				                catch (err) { 0 };
 			       }
 
 			       var fechaPago=null;
@@ -47,9 +50,12 @@ export function  ExtraeComprobantes(fact,RFC) {
 				                    ,"Iva Acreditado": ivaAcreditado
 						    ,"Egreso": egreso
 						  };
-	                      console.log('[ExtraeComprobantes]  datoFactura='+JSON.stringify(datoFactura,true));
 			      return datoFactura;
+			 }
+			 catch (err) { console.log('[ExtraeComprobantes]  err='+err+" "+JSON.stringify(x.value,true));
+			 }
 			});
+	        //console.log('[ExtraeComprobantes]  datosFactura='+JSON.stringify(datosFactura,true));
 	        return datosFactura;
 };
 
