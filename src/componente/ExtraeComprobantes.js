@@ -14,8 +14,8 @@ export function  ExtraeComprobantes(fact,RFC) {
 			       var total=Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Total).toLocaleString('en-US');
 
                                if (x.value.passdata["cfdi:Comprobante"].hasOwnProperty("cfdi:Impuestos")) {
-			          iva=  try { Number(x.value.passdata["cfdi:Comprobante"]["cfdi:Impuestos"]["@attributes"].TotalImpuestosTrasladados).toLocaleString('en-US') } 
-				                catch (err) { 0 };
+			          try { iva = Number(x.value.passdata["cfdi:Comprobante"]["cfdi:Impuestos"]["@attributes"].TotalImpuestosTrasladados).toLocaleString('en-US') } 
+				                catch (err) { iva=0 };
 			       }
 
 			       var fechaPago=null;
