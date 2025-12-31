@@ -61,7 +61,8 @@ if (curl_errno($ch)) {
 
         //echo json_encode($xml);
 	$regresa=[ "status"=>$httpCode, "xml"=>$response ];
-	$stringR=str_replace('xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"','',$response);
+	$stringR1=str_replace('xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"','',$response);
+	$stringR=str_replace('xmlns:h="http://DescargaMasivaTerceros.sat.gob.mx"','',$stringR1);
         $stringX=str_replace('xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"','',$stringR);
         $stringO=str_replace('xmlns:o="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"','',$stringX);
 
@@ -90,12 +91,36 @@ if (curl_errno($ch)) {
 			$regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"IdSolicitud"=>$SDRR->IdSolicitud ];
 			 echo json_encode($regresa);
 		}
+                if (isset($res->{'s:Body'}->{'SolicitaDescargaEmitidosResponse'})) {
+                        $SDRR=$res->{'s:Body'}->{'SolicitaDescargaEmitidosResponse'}->{'SolicitaDescargaEmitidosResult'}->{'@attributes'};
+                        error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        $regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"IdSolicitud"=>$SDRR->IdSolicitud ];
+                         echo json_encode($regresa);
+                }
+                if (isset($res->{'s:Body'}->{'SolicitaDescargaFolioResponse'})) {
+                        $SDRR=$res->{'s:Body'}->{'SolicitaDescargaFolioResponse'}->{'SolicitaDescargaFolioResult'}->{'@attributes'};
+                        error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        $regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"IdSolicitud"=>$SDRR->IdSolicitud ];
+                         echo json_encode($regresa);
+                }
 		if (isset($res->{'s:Body'}->{'VerificaSolicitudDescargaResponse'})) {
 			$SDRR=$res->{'s:Body'}->{'VerificaSolicitudDescargaResponse'}->{'VerificaSolicitudDescargaResult'}->{'@attributes'};
+			$IdsPaquetes=$res->{'s:Body'}->{'VerificaSolicitudDescargaResponse'}->{'VerificaSolicitudDescargaResult'}->{'IdsPaquetes'};
                         error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
-			$regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"EstadoSolicitud"=>$SDRR->EstadoSolicitud, "CodigoEstadoSolicitud"=>$SDRR->CodigoEstadoSolicitud,"NumeroCFDIs"=>$SDRR->NumeroCFDIs];
+			$regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"EstadoSolicitud"=>$SDRR->EstadoSolicitud, "CodigoEstadoSolicitud"=>$SDRR->CodigoEstadoSolicitud,"NumeroCFDIs"=>$SDRR->NumeroCFDIs,"IdsPaquetes"=>$IdsPaquetes];
+                        error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' regresa='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
 			 echo json_encode($regresa);
 		}
+                if (isset($res->{'s:Body'}->{'RespuestaDescargaMasivaTercerosSalida'})) {
+                        $SDRR=$res->{'s:Header'}->{'h:respuesta'}->{'@attributes'};
+                        $respuesta=$res->{'s:Header'};
+                        $Paquete=$res->{'s:Body'}->{'RespuestaDescargaMasivaTercerosSalida'}->{'Paquete'};
+                        error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' download SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' download s:header='.print_r($respuesta,true).' '.PHP_EOL,3,$path);
+                        //error_log(date('Y-m-d H:i:s', time())." ".__FILE__.' download paquete='.$Paquete.' '.PHP_EOL,3,$path);
+                        $regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"Paquete"=>$Paquete];
+                        echo json_encode($regresa);
+                }
 	}
 
     } catch (Exception $e) {

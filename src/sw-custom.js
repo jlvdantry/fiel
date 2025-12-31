@@ -309,29 +309,33 @@ var querespuesta = (request,respuesta) => {
                                });
 
 		    }
-		       return;
+		    return;
                }
-         }
+               if (request.value.url=='/download.php')  {
+			 if(respuesta.Mensaje=="Solicitud Aceptada") {
+				       request.value.passdata.msg_d=respuesta.Mensaje;
+				       var respuestax=respuesta;
+				       delete respuesta.paquete;
+				       updestado(request,ESTADOREQ.DESCARGADO,respuestax).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
+					       updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
+					       .then( () => {
+						    postRequestUpd(request,"se descargo",respuesta);
+					       });
+				       });
+				       return;
+			 }
+				       request.value.passdata.msg_d=respuesta.Mensaje;
+				       updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
+				               updSolicitudDownload(respuesta.Mensaje,request.value.passdata.keySolicitud)  //actualiza el resulta de la descarga en el request de la solicitud
+					       .then( () => {
+						    postRequestUpd(request,respuesta.Mensaje,respuesta);
+					       });
+				       });
 
-         if(respuesta.Mensaje=="El paquete se descargo") {
-		       request.value.passdata.msg_d=respuesta.Mensaje;
-                       updestado(request,ESTADOREQ.DESCARGADO,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
-                               updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-                               updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
-                               .then( () => {
-                                    postRequestUpd(request,"se descargo",respuesta);
-                               });
-                       });
-                       return;
+	       }
          }
-	               request.value.passdata.msg_d=respuesta.Mensaje;
-                       updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
-                               updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-                               updSolicitudDownload(respuesta.Mensaje,request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
-                               .then( () => {
-                                    postRequestUpd(request,respuesta.Mensaje,respuesta);
-                               });
-                       });
 
 };
 
@@ -349,6 +353,7 @@ var updSolicitud = (respuesta,verificacionValue) => {
 					    mensaje = 'Facturas '+respuesta.NumeroCFDIs;  
 					    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
 					    obj.passdata.msg_v=mensaje;
+					    obj.passdata.IdsPaquetes=respuesta.IdsPaquetes;
 				   }
 				}
 			        if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) { 

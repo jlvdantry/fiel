@@ -53,9 +53,9 @@ var DescargaMasivaSat = function()
    } 
 
    /*
-    * arma el body para solicita facturas
+    * arma el body para solicita facturas recibidos
     */
-   this.armaBodySol = function (estado) {
+   this.armaBodySolRec = function (estado) {
           var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin, 
                'RfcReceptor': estado.passdata.RFCReceptor, 'TipoSolicitud' : estado.passdata.TipoSolicitud
               };
@@ -88,6 +88,20 @@ var DescargaMasivaSat = function()
            this.urlAutenticate='https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc';
            this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
 
+   }
+
+   /*
+    * arma el body para solicita facturas emitidos 
+    */
+
+   this.armaBodySolEmi = function (estado) {
+   }
+
+   /*
+    * arma el body para solicita facturas por folio
+    */
+
+   this.armaBodySolFol = function (estado) {
    }
 
 	/* 
@@ -125,7 +139,7 @@ var DescargaMasivaSat = function()
 	/* Arma el body para descargar las facturas 
 	 */
    this.armaBodyDownload = function (datos,solicitud) {
-          var IdPaquete =  solicitud.value.folioReq;
+          var IdPaquete =  solicitud.value.passdata.IdsPaquetes;
           var xmlRfc = datos.firma.rfc;
           this.toDigestXml =  '<des:PeticionDescargaMasivaTercerosEntrada xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:peticionDescarga IdPaquete="'+IdPaquete+'" RfcSolicitante="'+xmlRfc+'">'+
@@ -237,11 +251,29 @@ var DescargaMasivaSat = function()
                 });
    }
 
-   this.solicitaRecibidos_enviasoa= async function (soa,token,passdata,idkey) {
+   this.solicita_enviasoa= async function (soa,token,passdata,idkey) {
         var url='/solicita.php';
         var urlSAT=ENDPOINTSSAT.SOLICITUD;
-        var hs1={ 'Content-Type': 'text/xml;charset=UTF-8'
-		,'SOAPAction':SOAPACTION.SOLICITUDRECIBIDOS,'Authorization':'WRAP access_token="'+token.token+'"','Cache-Control':'no-cache','Connection':'keep-alive'};
+        var acccion="";
+        switch(passdata.TipoDescarga) {
+		case "Recibidos":
+			accion=SOAPACTION.SOLICITUDRECIBIDOS;
+			break;
+		case "Emitidos":
+			accion=SOAPACTION.SOLICITUDEMITIDOS;
+			break;
+		case "Folio":
+			accion=SOAPACTION.SOLICITUDFOLIO;
+			break;
+                default:
+			accion='';
+	}
+        var hs1={ 
+		'Content-Type'  : 'text/xml;charset=UTF-8'
+		,'SOAPAction'   : accion
+		,'Authorization': 'WRAP access_token="'+token.token+'"'
+		,'Cache-Control': 'no-cache','Connection':'keep-alive'
+	};
                 update_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITUD,hs1,soa,idkey,urlSAT).then( key => {
                                 console.log("[DMS SE]  actualizo key="+key);
                 });
@@ -333,9 +365,21 @@ var DescargaMasivaSat = function()
 				   if (res.tokenEstatusSAT===TOKEN.ACTIVO) { 
 				      request.value.certificado=res.certificado;
 				      request.value.token=res.token;
-				      this.armaBodySol(request.value);
+                                      if (request.value.passdata.TipoDescarga='Recibidos') {
+				          this.armaBodySolRec(request.value);
+                                      else
+                                          if (request.value.passdata.TipoDescarga='Emitidos') {
+				             this.armaBodySolEmi(request.value);
+					  } else
+					      if (request.value.passdata.TipoDescarga='por folio') {
+				                 this.armaBodySolFol(request.value);
+				              } else {
+					         console.error('[DMS SA] Tipo de Descarga desconocido='+request.value.passdata.TipoDescarga);
+                                                 return;
+					      }
+				      }
 				      console.log('[DMS SA] armo el body key='+idkey);	
-				      this.solicitaRecibidos_enviasoa(this.xmltoken,request.value.token,request.value.passdata,idkey)
+				      this.solicita_enviasoa(this.xmltoken,request.value.token,request.value.passdata,idkey)
 				   }
 				   if (res.tokenEstatusSAT===TOKEN.CADUCADO) { 
 				   }

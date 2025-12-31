@@ -20,7 +20,7 @@ class CargafaelMasiva extends Component {
     super(props);
     this.nextPath = this.nextPath.bind(this);
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()).toISOString(),end:new Date().toISOString(),formattedValueIni:null
-                   ,formattedValueFin:null,dropdownOpen:false,dropdownValue:'Emitidos',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
+                   ,formattedValueFin:null,dropdownOpen:false,TipoDescarga:'Emitidos',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
                    ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false,queda:'',RFC_FIEL:''
@@ -56,7 +56,13 @@ class CargafaelMasiva extends Component {
     }
 
     changeValue(e) {
-        this.setState({dropdownValue: e.currentTarget.textContent});
+        if (e.currentTarget.textContent==='Emitidos') {
+           this.setState({TipoDescarga: e.currentTarget.textContent,RFCEmisor:this.state.RFC_FIEL,RFCReceptor:''});
+	}
+        if (e.currentTarget.textContent==='Recibidos') {
+           this.setState({TipoDescarga: e.currentTarget.textContent,RFCReceptor:this.state.RFC_FIEL,RFCEmisor:''});
+        }
+
     }
 
 
@@ -196,17 +202,17 @@ class CargafaelMasiva extends Component {
 		      if (event.data.action==='token-invalido') { this.haysolicitudesVerificando() }
 
 		      if (event.data.request.value.url==="/download.php") {
-				 DMS.leezip(event.data.respuesta.xml);
+				 DMS.leezip(event.data.respuesta.Paquete);
 		      }
 
 		      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
               }
       };
-            window.dameRfc().then( rfc => {
+      window.dameRfc().then( rfc => {
                     if (rfc!==null) {
-                               this.setState({RFC_FIEL:rfc,RFCEmisor:rfc}); 
+                               this.setState({RFC_FIEL:rfc,RFCEmisor:rfc,end:window.get_fechahora()}); 
                     }
-            });
+      });
 
 
       navigator.serviceWorker.addEventListener('message', handleMessage);
@@ -224,7 +230,7 @@ class CargafaelMasiva extends Component {
 
   cargar() {
 
-    if (this.state.dropdownValue==='por folio') {
+    if (this.state.TipoDescarga==='por folio') {
        this.setState({folio:document.querySelector('#folio').value});
        if (this.state.folio==='') {
            this.setState({okfolio:false});
@@ -287,7 +293,9 @@ class CargafaelMasiva extends Component {
   /* inserta una solicitud en request */
   inserta_solicitud() {
                       var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
-                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor,'TipoSolicitud':this.state.TipoSolicitud };
+                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor,'TipoSolicitud':this.state.TipoSolicitud 
+			                ,TipoDescarga:this.state.TipoDescarga
+		      };
 	              window.inserta_solicitud(passdata).then(idkey => {
                                window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a, isDisabled:false }) });
 		      });
@@ -379,7 +387,7 @@ class CargafaelMasiva extends Component {
                           <div className="col-lg-12 d-flex justify-content-center">
 				<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}  className="d-flex justify-content-center mb-2" >
 				      <DropdownToggle caret color="primary" >
-						   {this.state.dropdownValue} 
+						   {this.state.TipoDescarga} 
 				      </DropdownToggle>
 				      <DropdownMenu>
 					<DropdownItem onClick={this.changeValue} >Emitidos</DropdownItem>
@@ -407,7 +415,7 @@ class CargafaelMasiva extends Component {
 	              { this.state.tokenEstatusSAT!==window.TOKEN.ACTIVO &&  <Label className="text-danger">Esta desconectado con el SAT</Label> }
 		      </FormGroup>
 
-                      { this.state.dropdownValue!=='por folio' && <FormGroup className="container row col-lg-12">
+                      { this.state.TipoDescarga!=='por folio' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
 				<Label>RFC Emisor</Label>
                                 <div className="col-lg-12 px-0">
@@ -473,7 +481,7 @@ class CargafaelMasiva extends Component {
                       </FormGroup> }
 
 
-                      { this.state.dropdownValue!=='por folo' && <FormGroup className="container row col-lg-12">
+                      { this.state.TipoDescarga!=='por folo' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Inicial</Label>
                             <DatePicker dayLabels={days} monthLabels={months} onFocus={this.handleFocus} onBlur={this.handleBlur} defaultValue={this.state.start} id="fechainicial" maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />
@@ -494,7 +502,7 @@ class CargafaelMasiva extends Component {
                           </div>
                       </FormGroup> }
 
-                      { this.state.dropdownValue==='por folio' && <FormGroup className="container row col-lg-12">
+                      { this.state.TipoDescarga==='por folio' && <FormGroup className="container row col-lg-12">
 				<InputGroup>
 					<Input type="input" name="password" id="folio" placeholder="Folio de la factura" />
 				</InputGroup>

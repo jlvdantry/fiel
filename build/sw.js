@@ -54,7 +54,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"702722ef955a8887c070614bf8863da3","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"d185b943cce15e93c8994ce6319126d5","url":"static/v4/Constantes.js"},{"revision":"d30e883f893f2710834f85ba2ca57f8f","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"e54e76ba54ab62558967c13096a3b7fc","url":"static/v4/dbFiel.js"},{"revision":"973515fb20a2b55033ad0beec08e3366","url":"static/v4/dbInterval.js"},{"revision":"b94383177152967d81c8ac6f0c44e584","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"075ed0cee5f4d1dab1458337ddf696e9","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"835f9bdc529cca67db3db6e861afd16c","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"1aff952cc6acba9457e6862d2705d6d4","url":"static/v4/static/js/main.85056b41.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"ab85cb8246d2970228a3ac19fed90038","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"32b489aa2d19b65f58b32784371f124d","url":"static/v4/Constantes.js"},{"revision":"d30e883f893f2710834f85ba2ca57f8f","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"b80b386f9ba7785f40ef962d88535a17","url":"static/v4/dbFiel.js"},{"revision":"973515fb20a2b55033ad0beec08e3366","url":"static/v4/dbInterval.js"},{"revision":"a10783200f98b743a5e307208d974abb","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"075ed0cee5f4d1dab1458337ddf696e9","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"952888d0bb255a8184f7909294f557e0","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"1b9b84cfeb4f6c499f1ac85d365a9a18","url":"static/v4/static/js/main.97879fb0.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -309,29 +309,33 @@ var querespuesta = (request,respuesta) => {
                                });
 
 		    }
-		       return;
+		    return;
                }
-         }
+               if (request.value.url=='/download.php')  {
+			 if(respuesta.Mensaje=="Solicitud Aceptada") {
+				       request.value.passdata.msg_d=respuesta.Mensaje;
+				       var respuestax=respuesta;
+				       delete respuesta.paquete;
+				       updestado(request,ESTADOREQ.DESCARGADO,respuestax).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
+					       updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
+					       .then( () => {
+						    postRequestUpd(request,"se descargo",respuesta);
+					       });
+				       });
+				       return;
+			 }
+				       request.value.passdata.msg_d=respuesta.Mensaje;
+				       updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
+				               updSolicitudDownload(respuesta.Mensaje,request.value.passdata.keySolicitud)  //actualiza el resulta de la descarga en el request de la solicitud
+					       .then( () => {
+						    postRequestUpd(request,respuesta.Mensaje,respuesta);
+					       });
+				       });
 
-         if(respuesta.Mensaje=="El paquete se descargo") {
-		       request.value.passdata.msg_d=respuesta.Mensaje;
-                       updestado(request,ESTADOREQ.DESCARGADO,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
-                               updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-                               updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
-                               .then( () => {
-                                    postRequestUpd(request,"se descargo",respuesta);
-                               });
-                       });
-                       return;
+	       }
          }
-	               request.value.passdata.msg_d=respuesta.Mensaje;
-                       updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
-                               updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-                               updSolicitudDownload(respuesta.Mensaje,request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
-                               .then( () => {
-                                    postRequestUpd(request,respuesta.Mensaje,respuesta);
-                               });
-                       });
 
 };
 
@@ -349,6 +353,7 @@ var updSolicitud = (respuesta,verificacionValue) => {
 					    mensaje = 'Facturas '+respuesta.NumeroCFDIs;  
 					    obj.estado=ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD
 					    obj.passdata.msg_v=mensaje;
+					    obj.passdata.IdsPaquetes=respuesta.IdsPaquetes;
 				   }
 				}
 			        if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) { 
