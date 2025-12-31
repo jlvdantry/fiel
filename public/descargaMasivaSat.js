@@ -98,7 +98,7 @@ var DescargaMasivaSat = function()
                'RfcEmisor': estado.passdata.RFCEmisor, 'TipoSolicitud' : estado.passdata.TipoSolicitud,'RfcSolicitante':estado.passdata.RFCEmisor
               };
           var solicitudAttributesAsText='EstadoComprobante="Vigente"'+' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'"'+' RfcEmisor="'+solicitud.RfcEmisor+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"'+' RfcSolicitante="'+estado.passdata.RFCEmisor+'"';
-          var xmlRfcReceived='<des:RfcReceptores></des:RfcReceptores>';
+          var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor>'+solicitud.RfcReceptor+'</des:RfcReceptor></des:RfcReceptores>';
           this.vuuid=this.uuid();
           this.toDigestXml =  '<des:SolicitaDescargaEmitidos xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
                 '<des:solicitud '+solicitudAttributesAsText+'>'+

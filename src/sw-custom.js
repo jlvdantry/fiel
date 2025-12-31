@@ -297,6 +297,17 @@ var querespuesta = (request,respuesta) => {
 
                                });
 		    }
+                    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.RECHAZADA) {
+                       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
+                       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
+                       updestado(request,ESTADOREQ.EstadoSolicitud,respuesta.Mensaje).then( () => {
+                                     updSolicitud(respuesta,request.value)
+                                       .then( () => {
+                                        postRequestUpd(request,"No hay informacion",respuesta);
+                                       });
+
+                               });
+                    }
 		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.TERMINADA) {
                        request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
                        request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
@@ -366,16 +377,19 @@ var updSolicitud = (respuesta,verificacionValue) => {
 				}
 
                                 if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.VENCIDA) {
+				    obj.estado=respuesta.EstadoSolicitud;
 				    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
 				    obj.passdata.msg_v="Vencida, Verificacione(s): "+obj.passdata.intentos;
                                 }
                                 if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ERROR) {
+				    obj.estado=respuesta.EstadoSolicitud;
 				    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
 				    obj.passdata.msg_v="Error, Verificacione(s): "+obj.passdata.intentos;
                                 }
                                 if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.RECHAZADA) {
+				    obj.estado=respuesta.EstadoSolicitud;
 				    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
-				    obj.passdata.msg_v="Rechazada, Verificacione(s): "+obj.passdata.intentos;
+				    obj.passdata.msg_v="Rechazada, No se encontro informacion: "+obj.passdata.intentos;
                                 }
 				updObjectByKey('request',obj,verificacionValue.passdata.keySolicitud);
 		      }).then( () => { resolve() });
