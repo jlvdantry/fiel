@@ -26,11 +26,13 @@ export function  ExtraeComprobantes(fact,RFC) {
 				  if (tc==='E' ) { ingreso=total; egreso=0; ivaAcreditado=0; ivaCobrado=iva; }
 				  if (tc==='I' ) { ingreso=0; egreso=total; ivaAcreditado=iva  ; ivaCobrado=0 }
 				  if (tc==='N') { ingreso=total; egreso=0;  ivaAcreditado=0  ; ivaCobrado=0 }
+				  if (tc==='P') { ingreso=0; egreso=0;  ivaAcreditado=0  ; ivaCobrado=0 }
 			       }
 			       if (RFC===rfcEmisor) {
 				  if (tc==='E' ) { ingreso=0; egreso=total; ivaAcreditado=iva; ivaCobrado=0; }
 				  if (tc==='I') { ingreso=total; egreso=0;  ivaAcreditado=0  ; ivaCobrado=iva}
 				  if (tc==='N') { ingreso=0; egreso=total;  ivaAcreditado=0  ; ivaCobrado=0 }
+				  if (tc==='P') { ingreso=0; egreso=0;  ivaAcreditado=0  ; ivaCobrado=0 }
 			       }
 			       if (x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
 				       if ( x.value.passdata["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
