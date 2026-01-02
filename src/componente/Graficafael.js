@@ -151,41 +151,110 @@ class Graficafael extends Component {
     render() {
         const { dropdownValue } = this.state;
         // ... (tus opciones de gráfica se mantienen igual)
+	    
+
+    var options={};
+    if (dropdownValue==='Barras Horizontales') {
+       options={    indexAxis: 'y',
+                    elements: {
+                            bar: {
+                              borderWidth: 2,
+                            },
+                    },
+                    responsive:true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                            legend: {
+                              position: 'top',
+                            },
+                            title: {
+                              display: true,
+                              text: 'Ingresos y Egresos',
+                            },
+                   },
+                   locale: 'es-MX'
+                }
+    }
+    if (dropdownValue==='Barras Verticales') {
+       options={
+                    elements: {
+                            bar: {
+                              borderWidth: 2,
+                            },
+                    },
+                    responsive:true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                            legend: {
+                              position: 'top',
+                            },
+                            title: {
+                              display: true,
+                              text: 'Ingresos y Egresos',
+                            },
+                   },
+                   locale: 'es-MX'
+              }
+    }
+    if (dropdownValue==='Dona' || dropdownValue==='Pie') {
+       options={
+         responsive:true,
+         maintainAspectRatio: false,
+         elements: {
+              center: {
+                legend: { display: true, position: "right" },
+                text: "Red is 2/3 the total numbers",
+                color: "#FF6384", // Default is #000000
+                fontStyle: "Arial", // Default is Arial
+                sidePadding: 20, // Default is 20 (as a percentage)
+                minFontSize: 20, // Default is 20 (in px), set to false and text will not wrap.
+                lineHeight: 25 // Default is 25 (in px), used for when text wraps
+              }
+            },
+         locale: 'es-MX'
+       }
+    }
+
         return (
             <Card className="p-2 m-2">
                 <h2 className="text-center mb-3">Grafica de Ingresos y Egresos</h2>
-                <div className="d-flex justify-content-around mb-2">
+                <div className="row g-2 justify-content-center align-items-center ">
+                    <div className="col-12 col-md-auto text-center mb-2">
+			    <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} >
+				<DropdownToggle caret color="primary">Grafica {dropdownValue}</DropdownToggle>
+				<DropdownMenu>
+				    <DropdownItem onClick={this.changeValue}>Barras Horizontales</DropdownItem>
+				    <DropdownItem onClick={this.changeValue}>Barras Verticales</DropdownItem>
+				    <DropdownItem onClick={this.changeValue}>Pie</DropdownItem>
+				    <DropdownItem onClick={this.changeValue}>Dona</DropdownItem>
+				</DropdownMenu>
+			    </Dropdown>
+		    </div>
 
-                    <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                        <DropdownToggle caret color="primary">Grafica {dropdownValue}</DropdownToggle>
-                        <DropdownMenu>
-                            <DropdownItem onClick={this.changeValue}>Barras Horizontales</DropdownItem>
-                            <DropdownItem onClick={this.changeValue}>Barras Verticales</DropdownItem>
-                            <DropdownItem onClick={this.changeValue}>Pie</DropdownItem>
-                            <DropdownItem onClick={this.changeValue}>Dona</DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
+                    <div className="col-12 col-md-auto text-center mb-2">
+			    <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear} >
+			      <DropdownToggle caret color="primary">
+					 Filtrar por  {this.state.dropdownValueYear}
+			      </DropdownToggle>
+			      <DropdownMenu>
+				<DropdownItem onClick={this.changeValueYear} >Año Emisión Actual</DropdownItem>
+				<DropdownItem onClick={this.changeValueYear} >Año Emisión Anterior</DropdownItem>
+				<DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
+				<DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
+			      </DropdownMenu>
+			    </Dropdown>
+		    </div>
 
-		    <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear}>
-		      <DropdownToggle caret color="primary">
-				 Filtrar por  {this.state.dropdownValueYear}
-		      </DropdownToggle>
-		      <DropdownMenu>
-			<DropdownItem onClick={this.changeValueYear} >Año Emisión Actual</DropdownItem>
-			<DropdownItem onClick={this.changeValueYear} >Año Emisión Anterior</DropdownItem>
-			<DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
-			<DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
-		      </DropdownMenu>
-		    </Dropdown>
-
-		    <button className="border-0 " onClick={this.exportaExcel} >
-			<FontAwesomeIcon size="2x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
-		    </button>
+                    <div className="col-12 col-md-auto text-center mb-2">
+			    <button className="border-0 " onClick={this.exportaExcel} >
+				<FontAwesomeIcon size="2x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
+			    </button>
+		    </div>
 
                 </div>
                 {this.state.data.labels && (
                     <CardBody style={{ height: '400px' }}>
-                        {this.state.dropdownValue.includes('Barras') && <Bar data={this.state.data} options={{ responsive: true, maintainAspectRatio: false }} />}
+                        {this.state.dropdownValue.includes('Barras') && <Bar data={this.state.data} options={options} />}
                         {this.state.dropdownValue === 'Dona' && <Doughnut data={this.state.data} />}
                         {this.state.dropdownValue === 'Pie' && <Pie data={this.state.data} />}
                     </CardBody>
