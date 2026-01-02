@@ -155,6 +155,7 @@ class Graficafael extends Component {
             <Card className="p-2 m-2">
                 <h2 className="text-center mb-3">Grafica de Ingresos y Egresos</h2>
                 <div className="d-flex justify-content-around mb-2">
+
                     <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
                         <DropdownToggle caret color="primary">Grafica {dropdownValue}</DropdownToggle>
                         <DropdownMenu>
@@ -164,21 +165,22 @@ class Graficafael extends Component {
                             <DropdownItem onClick={this.changeValue}>Dona</DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
-                                <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear}  className="d-flex justify-content-center mt-2" >
-                                      <DropdownToggle caret color="primary">
-                                                 Filtrar por  {this.state.dropdownValueYear}
-                                      </DropdownToggle>
-                                      <DropdownMenu>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Emisión Actual</DropdownItem>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Emisión Anterior</DropdownItem>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
-                                        <DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
-                                      </DropdownMenu>
-                                </Dropdown>
 
-                                <button className="border-0 mt-2" onClick={this.exportaExcel} >
-                                        <FontAwesomeIcon size="3x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
-                                </button>
+		    <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear}>
+		      <DropdownToggle caret color="primary">
+				 Filtrar por  {this.state.dropdownValueYear}
+		      </DropdownToggle>
+		      <DropdownMenu>
+			<DropdownItem onClick={this.changeValueYear} >Año Emisión Actual</DropdownItem>
+			<DropdownItem onClick={this.changeValueYear} >Año Emisión Anterior</DropdownItem>
+			<DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
+			<DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
+		      </DropdownMenu>
+		    </Dropdown>
+
+		    <button className="border-0 " onClick={this.exportaExcel} >
+			<FontAwesomeIcon size="2x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} />
+		    </button>
 
                 </div>
                 {this.state.data.labels && (
