@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import 'react-data-grid/lib/styles.css';
 import DG from 'react-data-grid';
+import { useFamilyFiltro } from './FamilyFiltros';
+import { ExtraeComprobantes as EC } from './ExtraeComprobantes';
 
 const columns = [
   { key: 'Emisor', name: 'RFC Emisor', minWidth: 16, flex: 3 },
@@ -15,46 +17,58 @@ const columns = [
   { key: 'Iva Cobrado', name: 'ivaCobrado', minWidth: 20, flex: 3 }
 ];
 
-export default  function DataGridFacturas(props) {
+export default function DataGridFacturas(props) {
   const [isMobile, setIsMobile] = useState(false);
+  // 1. Creamos un estado para el RFC
+  const [rfc, setRfc] = useState('');
 
-  // Check if the screen size is mobile
+  // 2. Obtenemos las facturas del store de Zustand
+  const facturasRaw = useFamilyFiltro((state) => state.facturasProcesadas);
+
   useEffect(() => {
+    // 3. Función asíncrona para obtener el RFC al montar el componente
+    const obtenerDatosIniciales = async () => {
+      const rfcObtenido = await window.dameRfc();
+      setRfc(rfcObtenido);
+    };
+
+    obtenerDatosIniciales();
+
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768); // Adjust 768px as your mobile threshold
+      setIsMobile(window.innerWidth <= 768);
     };
-
-    handleResize(); // Check once when the component loads
-    window.addEventListener("resize", handleResize); // Add listener for screen resize
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Render grid for desktop/tablet view
+  // 4. Procesamos las filas solo si ya tenemos el RFC y las facturas
+  // Usamos useFamilyFiltro con el nombre de variable correcto (sharedFiltro)
+  const filasAMostrar = (rfc && facturasRaw) ? EC(facturasRaw, rfc) : [];
+
   const renderGrid = () => (
     <div style={{ width: "100%", height: "400px" }}>
-      <DG columns={columns} rows={props.filas} />
+      <DG columns={columns} rows={filasAMostrar} />
     </div>
   );
 
-  // Render mobile-friendly list view (column data as rows)
   const renderMobileView = () => (
     <div>
-      {props.filas.map((row, rowIndex) => (
-            <div className="card mb-2">
-		<div key={rowIndex} className="card-body">
-	        { columns.map((rowc, rowIndexc) => (
-			  <div className="row  justify-content-between"><div><b>{ rowc.name}:</b></div> <div>{ row[rowc.key] }</div></div>
-                  ))
-		}
-		</div>
-	    </div>
+      {filasAMostrar.map((row, rowIndex) => (
+        <div key={rowIndex} className="card mb-2">
+          <div className="card-body">
+            {columns.map((rowc, colIndex) => (
+              <div key={colIndex} className="row justify-content-between">
+                <div><b>{rowc.name}:</b></div> 
+                <div>{row[rowc.key]}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );
 
   return <div>{isMobile ? renderMobileView() : renderGrid()}</div>;
 }
-
