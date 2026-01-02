@@ -91,11 +91,11 @@ class Graficafael extends Component {
         this.setState({ data: {} });
         window.leefacturas(this.state.filtro).then(cuantas => {
             
-            // USAMOS LA PROP QUE VIENE DEL HOOK
-            this.props.setSharedFiltro(cuantas);
 
             var datae = Array(12).fill(0); var datai = Array(12).fill(0); var datan = Array(12).fill(0);
             const RFC = this.state.rfc;
+            let totalI = 0;
+            let totalE = 0;
 
             cuantas.map((x) => {
                 var ingreso = 0, egreso = 0;
@@ -114,9 +114,22 @@ class Graficafael extends Component {
                     if (tc === 'I') ingreso = total;
                     if (tc === 'N') egreso = total;
                 }
-                datai[mes] += ingreso; datae[mes] += egreso; datan[mes] += (ingreso - egreso);
-                return null;
+		    // Accumulate grand totals
+		    totalI += ingreso;
+		    totalE += egreso;
+
+		    datai[mes] += ingreso; 
+		    datae[mes] += egreso; 
+		    datan[mes] += (ingreso - egreso);
+		    return null;
+
             });
+
+            // Push values to the store via the Wrapper props
+            this.props.setSharedFiltro(cuantas);
+            if(this.props.setTotals) this.props.setTotals(totalI, totalE);
+
+
 
             // Lógica de colores y actualización de estado de la gráfica...
             const randomColor = () => `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`;
@@ -186,13 +199,13 @@ const GraficafaelWrapper = (props) => {
     // Escuchamos la acción para guardar datos
     const setSharedFiltro = useFamilyFiltro((state) => state.setSharedFiltro);
     // Aquí sí podemos usar el Hook porque esto es una Función
-    const facturasProcesadas = useFamilyFiltro((state) => state.facturasProcesadas );
+    const setTotals = useFamilyFiltro((state) => state.setTotals); // Add this line	
 
     return (
         <Graficafael 
             {...props} 
             setSharedFiltro={setSharedFiltro} 
-            facturasExternas={facturasProcesadas} 
+            setTotals={setTotals} // Pass it down
         />
     );
     

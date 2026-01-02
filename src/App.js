@@ -6,7 +6,7 @@ import Ayuda from './componente/Ayuda';
 import Master from './componente/Master';
 import Carga from './componente/Carga';
 import Mifiel from './componente/Mifiel';
-import Misfacturas from './componente/Misfacturas';
+import MisfacturasWrapper from './componente/Misfacturas';
 import Valida from './componente/Valida';
 import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
@@ -78,7 +78,7 @@ class App extends Component {
 	  <Route path="/carga" component={Carga}/>
 	  <Route path="/validar" component={Valida}/>
 	  <Route path="/mifiel" component={Mifiel}/>
-	  <Route path="/misfacturas" component={Misfacturas}/>
+	  <Route path="/misfacturas" component={MisfacturasWrapper}/>
 	  <Route path="/cargafaelMasiva" component={CargafaelMasiva}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>

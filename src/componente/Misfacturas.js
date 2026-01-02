@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Graficafael from './Graficafael';
 import DataGridFacturas from './DataGridFacturas';
 import { ExtraeComprobantes as EC } from './ExtraeComprobantes';
+import { useFamilyFiltro } from './FamilyFiltros';
 
 class Misfacturas extends Component {
   constructor(props){
@@ -50,16 +51,44 @@ class Misfacturas extends Component {
   }
 
   render() {
+    // Access the totals passed from the Wrapper below
+    const { totalIngreso, totalEgreso } = this.props;
     return (
       <div>
+	     <div className="row text-center mt-3 mx-2">
+		 <div className="col-md-4">
+		     <h6 className="text-muted">Total Ingresos</h6>
+		     <h4 className="text-success">${totalIngreso.toLocaleString()}</h4>
+		 </div>
+		 <div className="col-md-4">
+		     <h6 className="text-muted">Total Egresos</h6>
+		     <h4 className="text-danger">${totalEgreso.toLocaleString()}</h4>
+		 </div>
+		 <div className="col-md-4">
+		     <h6 className="text-muted">Neto</h6>
+		     <h4 className="text-primary">${(totalIngreso - totalEgreso).toLocaleString()}</h4>
+		 </div>
+	     </div>
              <Graficafael />
-	         <div className="text-center mt-2">
-                 Total de facturas <b>{this.state.totalfacturas}</b>
-             </div>
-	         <DataGridFacturas className="mt-2" />  
+	     <div className="text-center mt-2"> Total de facturas <b>{this.state.totalfacturas}</b> </div>
+	     <DataGridFacturas className="mt-2" />  
       </div> 
     );
   }
 }
 
-export default Misfacturas;
+// THE WRAPPER: This allows the Class Component to use the Hook
+const MisfacturasWrapper = (props) => {
+    const totalIngreso = useFamilyFiltro((state) => state.totalIngreso);
+    const totalEgreso = useFamilyFiltro((state) => state.totalEgreso);
+
+    return (
+        <Misfacturas
+            {...props}
+            totalIngreso={totalIngreso}
+            totalEgreso={totalEgreso}
+        />
+    );
+};
+
+export default MisfacturasWrapper;
