@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import 'react-data-grid/lib/styles.css';
 import DG from 'react-data-grid';
 import { useFamilyFiltro } from './FamilyFiltros';
@@ -25,6 +25,16 @@ export default function DataGridFacturas(props) {
   // 2. Obtenemos las facturas del store de Zustand
   const facturasRaw = useFamilyFiltro((state) => state.facturasProcesadas);
 
+  // --- OPTIMIZACIÓN CON useMemo ---
+  // Las filas solo se recalculan si cambia 'facturasRaw' o 'rfc'
+  const filasAMostrar = useMemo(() => {
+    if (rfc && facturasRaw && facturasRaw.length > 0) {
+      console.log("Optimizando: Procesando facturas con EC...");
+      return EC(facturasRaw, rfc);
+    }
+    return [];
+  }, [facturasRaw, rfc]); 
+
   useEffect(() => {
     // 3. Función asíncrona para obtener el RFC al montar el componente
     const obtenerDatosIniciales = async () => {
@@ -43,9 +53,6 @@ export default function DataGridFacturas(props) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 4. Procesamos las filas solo si ya tenemos el RFC y las facturas
-  // Usamos useFamilyFiltro con el nombre de variable correcto (sharedFiltro)
-  const filasAMostrar = (rfc && facturasRaw) ? EC(facturasRaw, rfc) : [];
 
   const renderGrid = () => (
     <div style={{ width: "100%", height: "400px" }}>
