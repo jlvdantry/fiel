@@ -52,7 +52,7 @@ class Misfacturas extends Component {
 
   render() {
     // Access the totals passed from the Wrapper below
-    const { totalIngreso, totalEgreso } = this.props;
+    const { totalIngreso, totalEgreso, facturasProcesadas } = this.props;
     return (
       <div>
 	     <div className="row text-center mt-3 mx-2">
@@ -70,7 +70,7 @@ class Misfacturas extends Component {
 		 </div>
 	     </div>
              <Graficafael />
-	     <div className="text-center mt-2"> Total de facturas <b>{this.state.totalfacturas}</b> </div>
+	     <div className="text-center mt-2"> Total de facturas <b>{facturasProcesadas.length}</b> </div>
 	     <DataGridFacturas className="mt-2" />  
       </div> 
     );
@@ -79,6 +79,7 @@ class Misfacturas extends Component {
 
 // THE WRAPPER: This allows the Class Component to use the Hook
 const MisfacturasWrapper = (props) => {
+    const facturasProcesadas = useFamilyFiltro((state) => state.facturasProcesadas);
     const totalIngreso = useFamilyFiltro((state) => state.totalIngreso);
     const totalEgreso = useFamilyFiltro((state) => state.totalEgreso);
 
@@ -87,6 +88,7 @@ const MisfacturasWrapper = (props) => {
             {...props}
             totalIngreso={totalIngreso}
             totalEgreso={totalEgreso}
+            facturasProcesadas={facturasProcesadas}
         />
     );
 };

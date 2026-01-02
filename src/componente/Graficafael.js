@@ -81,10 +81,8 @@ class Graficafael extends Component {
     }
 
     exportaExcel() {
-        window.leefacturas().then((cuantas) => {
-            const datosFactura = ExtraeComprobantes(cuantas, this.state.rfc);
+            const datosFactura = ExtraeComprobantes(this.props.facturasProcesadas, this.state.rfc);
             exportToExcel(datosFactura, 'MisFacturas');
-        });
     }
 
     actuaFacturas() {
@@ -158,7 +156,7 @@ class Graficafael extends Component {
        options={    indexAxis: 'y',
                     elements: {
                             bar: {
-                              borderWidth: 2,
+                              borderWidth: 1,
                             },
                     },
                     responsive:true,
@@ -179,7 +177,7 @@ class Graficafael extends Component {
        options={
                     elements: {
                             bar: {
-                              borderWidth: 2,
+                              borderWidth: 1,
                             },
                     },
                     responsive:true,
@@ -271,12 +269,14 @@ const GraficafaelWrapper = (props) => {
     const setSharedFiltro = useFamilyFiltro((state) => state.setSharedFiltro);
     // Aquí sí podemos usar el Hook porque esto es una Función
     const setTotals = useFamilyFiltro((state) => state.setTotals); // Add this line	
+    const facturasProcesadas = useFamilyFiltro((state) => state.facturasProcesadas); // Add this line	
 
     return (
         <Graficafael 
             {...props} 
             setSharedFiltro={setSharedFiltro} 
             setTotals={setTotals} // Pass it down
+            facturasProcesadas={facturasProcesadas} // Pass it down
         />
     );
     
