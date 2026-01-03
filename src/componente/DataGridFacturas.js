@@ -56,7 +56,7 @@ export default function DataGridFacturas(props) {
 
   const renderGrid = () => (
     <div style={{ width: "100%", height: "400px" }}>
-      <DG columns={columns} rows={filasAMostrar} />
+      <DG columns={columns} rows={filasAMostrar || []} />
     </div>
   );
 

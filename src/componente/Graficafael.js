@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Card, CardBody, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Doughnut, Bar, Pie } from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,9 +21,9 @@ class Graficafael extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: {}, dropdownOpenYear: false, dropdownOpen: false, dropdownValueYear: 'Año Emisión Actual', dropdownValue: 'Barras Horizontales',
+            data: {}, dropdownOpenYear: false, dropdownOpen: false, dropdownValueYear: '', dropdownValue: 'Barras Horizontales',
             refresca: true, exportaExcel: false, datosExcel: null, filtroYearValue: 0, filtro: '', isMobile: false,
-            rfc: '' // Guardaremos el RFC aquí
+            rfc: '', years:[]
         }
         this.toggle = this.toggle.bind(this);
         this.toggleYear = this.toggleYear.bind(this);
@@ -32,7 +31,7 @@ class Graficafael extends Component {
         this.changeValueYear = this.changeValueYear.bind(this);
         this.actuaFacturas = this.actuaFacturas.bind(this);
         this.exportaExcel = this.exportaExcel.bind(this);
-        this.queYear = this.queYear.bind(this);
+        this.queYears = this.queYears.bind(this);
         this.handleResize = this.handleResize.bind(this);
     }
 
@@ -40,9 +39,8 @@ class Graficafael extends Component {
         // Obtenemos el RFC de forma asíncrona dentro del ciclo de vida
         const rfcObtenido = await window.dameRfc();
         this.setState({ rfc: rfcObtenido }, () => {
-            this.queYear();
+            this.queYears();
         });
-        
         this.handleResize();
         window.addEventListener("resize", this.handleResize);
     }
@@ -63,21 +61,25 @@ class Graficafael extends Component {
     }
 
     changeValueYear(e) {
-        this.setState({ dropdownValueYear: e.currentTarget.textContent }, () => this.queYear());
+        this.setState({ dropdownValueYear: e.currentTarget.textContent , filtro:{dato: 'url_yearEmision', valor: ['factura',e.currentTarget.textContent] }, data: {} }
+		      ,() => this.actuaFacturas());
     }
 
-    queYear() {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear().toString();
-        const lastYear = (currentDate.getFullYear() - 1).toString();
-        let nuevoFiltro = '';
+    queYears() {
+        window.leefacturas().then(cuantas => {
 
-        if (this.state.dropdownValueYear === 'Año Emisión Actual') nuevoFiltro = { dato: 'url_yearEmision', valor: ['factura', currentYear] };
-        if (this.state.dropdownValueYear === 'Año Emisión Anterior') nuevoFiltro = { dato: 'url_yearEmision', valor: ['factura', lastYear] };
-        if (this.state.dropdownValueYear === 'Año Pago Actual') nuevoFiltro = { dato: 'url_yearPago', valor: ['factura', currentYear] };
-        if (this.state.dropdownValueYear === 'Año Pago Anterior') nuevoFiltro = { dato: 'url_yearPago', valor: ['factura', lastYear] };
-
-        this.setState({ filtro: nuevoFiltro }, () => this.actuaFacturas());
+            // 1. Create a Set to store unique dates
+            const uniqueYearsSet = new Set();
+            let year=0;
+            cuantas.forEach((x) => {
+                const fullDate = x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha;
+                year=fullDate.substring(0, 4);
+                uniqueYearsSet.add(year);
+	    })
+            const uniqueYearsArray = Array.from(uniqueYearsSet).sort((a, b) => b - a);
+            let firstYear= uniqueYearsArray.length===0 ? '' : uniqueYearsArray[0];
+            this.setState({ years:uniqueYearsArray,dropdownValueYear: firstYear,filtro:{dato: 'url_yearEmision', valor: ['factura',firstYear]}},()  => this.actuaFacturas() );
+	});
     }
 
     exportaExcel() {
@@ -86,10 +88,7 @@ class Graficafael extends Component {
     }
 
     actuaFacturas() {
-        this.setState({ data: {} });
         window.leefacturas(this.state.filtro).then(cuantas => {
-            
-
             var datae = Array(12).fill(0); var datai = Array(12).fill(0); var datan = Array(12).fill(0);
             const RFC = this.state.rfc;
             let totalI = 0;
@@ -131,7 +130,6 @@ class Graficafael extends Component {
 
             // Lógica de colores y actualización de estado de la gráfica...
             const randomColor = () => `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`;
-            const colors = Array(12).fill().map(() => randomColor());
 
             this.setState({
                 data: {
@@ -147,7 +145,7 @@ class Graficafael extends Component {
     }
 
     render() {
-        const { dropdownValue } = this.state;
+        const  dropdownValue  = this.state.dropdownValue;
         // ... (tus opciones de gráfica se mantienen igual)
 	    
 
@@ -232,15 +230,19 @@ class Graficafael extends Component {
                     <div className="col-12 col-md-auto text-center mb-2">
 			    <Dropdown isOpen={this.state.dropdownOpenYear} toggle={this.toggleYear} >
 			      <DropdownToggle caret color="primary">
-					 Filtrar por  {this.state.dropdownValueYear}
+					 {this.state.dropdownValueYear}
 			      </DropdownToggle>
-			      <DropdownMenu>
-				<DropdownItem onClick={this.changeValueYear} >Año Emisión Actual</DropdownItem>
-				<DropdownItem onClick={this.changeValueYear} >Año Emisión Anterior</DropdownItem>
-				<DropdownItem onClick={this.changeValueYear} >Año Pago Actual</DropdownItem>
-				<DropdownItem onClick={this.changeValueYear} >Año Pago Anterior</DropdownItem>
-			      </DropdownMenu>
-			    </Dropdown>
+				<DropdownMenu>
+				    {this.state.years.map((x) => (
+					<DropdownItem 
+					    key={x} 
+					    onClick={this.changeValueYear}
+					>
+					    {x}
+					</DropdownItem>
+				    ))}
+				</DropdownMenu>
+			     </Dropdown>
 		    </div>
 
                     <div className="col-12 col-md-auto text-center mb-2">
@@ -252,7 +254,8 @@ class Graficafael extends Component {
                 </div>
                 {this.state.data.labels && (
                     <CardBody style={{ height: '400px' }}>
-                        {this.state.dropdownValue.includes('Barras') && <Bar data={this.state.data} options={options} />}
+                        {this.state.dropdownValue === 'Barras Horizontales' && <Bar data={this.state.data} options={options} />}
+                        {this.state.dropdownValue === 'Barras Verticales' && <Bar data={this.state.data} options={options} />}
                         {this.state.dropdownValue === 'Dona' && <Doughnut data={this.state.data} />}
                         {this.state.dropdownValue === 'Pie' && <Pie data={this.state.data} />}
                     </CardBody>
