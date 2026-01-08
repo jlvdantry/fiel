@@ -20,7 +20,7 @@ class CargafaelMasiva extends Component {
     super(props);
     this.nextPath = this.nextPath.bind(this);
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()).toISOString(),end:new Date().toISOString(),formattedValueIni:null
-                   ,formattedValueFin:null,dropdownOpen:false,TipoDescarga:'Emitidos',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
+                   ,formattedValueFin:null,dropdownOpen:false,TipoDescarga:'Recibidos',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
                    ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
                    ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false,queda:'',RFC_FIEL:''
@@ -208,9 +208,10 @@ class CargafaelMasiva extends Component {
 		      window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a }) });
               }
       };
+
       window.dameRfc().then( rfc => {
                     if (rfc!==null) {
-                               this.setState({RFC_FIEL:rfc,RFCEmisor:rfc,end:window.get_fechahora()}); 
+                               this.setState({RFC_FIEL:rfc,RFCReceptor:rfc,end:window.get_fechahora()}); 
                     }
       });
 
@@ -265,13 +266,15 @@ class CargafaelMasiva extends Component {
        } else {
            this.setState({okfechaf:true});
        }
+
        this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
-       if (this.state.RFCEmisor===null || this.state.RFCEmisor==='') {
+       if ((this.state.RFCEmisor===null || this.state.RFCEmisor==='') & this.TipoDescarga==='Emitidos') {
            this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio' });
            return;
        } else {
            this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
        }
+
        this.setState({RFCReceptor:document.querySelector('#RFCReceptor').value});
        if (this.state.RFCReceptor===null || this.state.RFCReceptors==='') {
            this.setState({okRFCReceptor:false,msgRFCReceptor:'El RFC del receptor es obligatoria' });
@@ -341,11 +344,6 @@ class CargafaelMasiva extends Component {
 
 
   render() {
-	 const wrapperStyle = {
-	    'position': 'relative', // Adjust position as needed
-	    'width': '100%',        // Adjust width as needed
-	    'z-index': '1000'
-	  };
 	 const wrapperStyle1 = {
 	    'position': 'relative', // Adjust position as needed
 	    'width': '100%',        // Adjust width as needed
@@ -429,7 +427,12 @@ class CargafaelMasiva extends Component {
 						value={this.state.RFCEmisor}
 						onChange={this.cambioRFCEmisor}
 						onSelect={ value => this.selectRFCEmisor(value)}
-                                                wrapperStyle={wrapperStyle} 
+                                                wrapperStyle={{
+                                                      ...wrapperStyle1,
+                                                      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
+                                                      opacity: this.state.TipoDescarga === "Recibidos" ? 0.6 : 1
+                                                }}
+
 					      />
                                 </div>
                                 { this.state.okRFCEmisor===false &&
@@ -459,7 +462,11 @@ class CargafaelMasiva extends Component {
                                                 value={this.state.RFCReceptor}
                                                 onChange={this.cambioRFCReceptor}
                                                 onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
-                                                wrapperStyle={wrapperStyle1}
+						wrapperStyle={{
+						      ...wrapperStyle1,
+						      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
+						      opacity: this.state.TipoDescarga === "Recibidos" ? 0.6 : 1
+						}}
                                               />
                                 </div>
 
@@ -481,7 +488,7 @@ class CargafaelMasiva extends Component {
                       </FormGroup> }
 
 
-                      { this.state.TipoDescarga!=='por folo' && <FormGroup className="container row col-lg-12">
+                      { this.state.TipoDescarga!=='por folio' && <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Inicial</Label>
                             <DatePicker dayLabels={days} monthLabels={months} onFocus={this.handleFocus} onBlur={this.handleBlur} defaultValue={this.state.start} id="fechainicial" maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />

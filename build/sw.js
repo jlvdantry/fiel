@@ -6,6 +6,7 @@ importScripts('dbFiel.js');
 importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
+importScripts('tareasPendientes.js');
 console.log('[sw] entro');
 var DMS = null;
 var intervalSync = null;
@@ -46,15 +47,24 @@ if ("function" === typeof importScripts) {
     });
 
 
-	self.addEventListener('activate', event => {
+    self.addEventListener('activate', event => {
 		console.log('[activate] '+event.target.state);
 		event.waitUntil(self.clients.claim());
-	});
+    });
+
+    // Dentro de sw-custom.js
+    self.addEventListener('periodicsync', (event) => {
+	    if (event.tag === 'check-sat-status') {
+		// waitUntil es vital para que el navegador no mate al SW 
+		// antes de que terminen las peticiones al SAT
+		event.waitUntil(procesarTareasPendientes());
+	    }
+    });
 
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"7bb7379d8ec2b62ae2eb6a3f4bdd2cff","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"b489ddcd1519b2f8eb00d3fbad2362f3","url":"static/v4/Constantes.js"},{"revision":"d30e883f893f2710834f85ba2ca57f8f","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"b80b386f9ba7785f40ef962d88535a17","url":"static/v4/dbFiel.js"},{"revision":"973515fb20a2b55033ad0beec08e3366","url":"static/v4/dbInterval.js"},{"revision":"ccea16d7063285e31f1c787e483e3d9c","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"075ed0cee5f4d1dab1458337ddf696e9","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"36e48f3616fe83989575ca6d0b71acc4","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"e6e67f2a3c564e07ec8e9e6d15f03d7d","url":"static/v4/static/js/main.938e20d7.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"3abfd1abf28920e85f9e426535367e90","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"29def63047641a6eb305d409835701e7","url":"static/v4/Constantes.js"},{"revision":"d30e883f893f2710834f85ba2ca57f8f","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"b80b386f9ba7785f40ef962d88535a17","url":"static/v4/dbFiel.js"},{"revision":"973515fb20a2b55033ad0beec08e3366","url":"static/v4/dbInterval.js"},{"revision":"ccea16d7063285e31f1c787e483e3d9c","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"075ed0cee5f4d1dab1458337ddf696e9","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"ee0c5b9e836e8df047c4266ada1f5a89","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"96828f2cdca09dcc44fc23d236e1fe85","url":"static/v4/static/js/main.4c76ac99.js"},{"revision":"9690adbd7f5b417fae4604a9e2febbef","url":"static/v4/tareasPendientes.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -469,26 +479,12 @@ var revisaSiEstaAutenticado = () => {
 
 var ponIntervaloRequest = () => {
 	lee_llaves().then(x => {
-
               if ('validada' in x.value) {
-			console.log("[sw sI] va a pone intervalo de sincronizacion diferentes estados");
-			setInterval( () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
+		        console.log("[sw] Iniciando intervalos de primer plano");
+			setInterval( async () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
 				var obj = { fechatiempo: Date.now() };
 				insertaOActualizaInterval(obj,'Inter1');
-				try {
-				       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
-				       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
-				       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
-				       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
-				       syncRequest(ESTADOREQ.SOLICITUDACEPTADA);
-				       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
-				       bajaVerificaciones();
-				       bajaTokenCaducado();
-				       bajaTokenInvalido();
-				       bajaRequiriendo();
-				} catch (err) {
-				console.log("Error in interval:", err);
-			    }
+                                await procesarTareasPendientes();
 			}, REVISA.ESTADOREQ * 1000);
 	      }
 
@@ -508,7 +504,6 @@ var ponIntervaloAutenticacion = () => {
 				};
 			}, REVISA.VIGENCIATOKEN_SW * 1000);
 	      }
-
          }).catch ( err => { console.log(err);});
 }
 

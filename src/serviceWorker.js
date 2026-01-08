@@ -57,7 +57,26 @@ function registerValidSW(swUrl, config) {
     .register(swUrl)
     .then(registration => {
       console.log('[rVSW] paso registration');
-      //registration.active.postMessage({ action: 'START_INTERVALO' });
+	    
+      if ('periodicSync' in registration) {
+        // Solicitamos el permiso al navegador
+        navigator.permissions.query({
+          name: 'periodic-background-sync',
+        }).then((status) => {
+          if (status.state === 'granted') {
+            registration.periodicSync.register('check-sat-status', {
+              // Intento de ejecución cada 15 minutos (mínimo permitido por Chrome)
+              minInterval: 15 * 60 * 1000, 
+            }).then(() => {
+              console.log('[PeriodicSync] Registrado con éxito');
+            }).catch((e) => {
+              console.error('[PeriodicSync] Error al registrar:', e);
+            });
+          } else {
+            console.log('[PeriodicSync] Permiso denegado por el navegador o PWA no instalada');
+          }
+        });
+      }
       window.dameMuestraLog().then( x => {
         if (x===true) { document.querySelector('#logContainer').classList.remove("d-none") } else { document.querySelector('#logContainer').classList.add("d-none") };
       }).catch(x=> { console.log('[rVSW] no encontro registro para mostrarlog') });

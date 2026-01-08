@@ -6,6 +6,7 @@ importScripts('dbFiel.js');
 importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
+importScripts('tareasPendientes.js');
 console.log('[sw] entro');
 var DMS = null;
 var intervalSync = null;
@@ -46,10 +47,19 @@ if ("function" === typeof importScripts) {
     });
 
 
-	self.addEventListener('activate', event => {
+    self.addEventListener('activate', event => {
 		console.log('[activate] '+event.target.state);
 		event.waitUntil(self.clients.claim());
-	});
+    });
+
+    // Dentro de sw-custom.js
+    self.addEventListener('periodicsync', (event) => {
+	    if (event.tag === 'check-sat-status') {
+		// waitUntil es vital para que el navegador no mate al SW 
+		// antes de que terminen las peticiones al SAT
+		event.waitUntil(procesarTareasPendientes());
+	    }
+    });
 
 
     // Manual injection point for manifest files.
@@ -469,26 +479,12 @@ var revisaSiEstaAutenticado = () => {
 
 var ponIntervaloRequest = () => {
 	lee_llaves().then(x => {
-
               if ('validada' in x.value) {
-			console.log("[sw sI] va a pone intervalo de sincronizacion diferentes estados");
-			setInterval( () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
+		        console.log("[sw] Iniciando intervalos de primer plano");
+			setInterval( async () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
 				var obj = { fechatiempo: Date.now() };
 				insertaOActualizaInterval(obj,'Inter1');
-				try {
-				       syncRequest(ESTADOREQ.INICIAL.AUTENTICA) ;
-				       syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
-				       syncRequest(ESTADOREQ.INICIAL.VERIFICA);
-				       syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
-				       syncRequest(ESTADOREQ.SOLICITUDACEPTADA);
-				       syncRequest(ESTADOREQ.INICIAL.DESCARGA);
-				       bajaVerificaciones();
-				       bajaTokenCaducado();
-				       bajaTokenInvalido();
-				       bajaRequiriendo();
-				} catch (err) {
-				console.log("Error in interval:", err);
-			    }
+                                await procesarTareasPendientes();
 			}, REVISA.ESTADOREQ * 1000);
 	      }
 
@@ -508,7 +504,6 @@ var ponIntervaloAutenticacion = () => {
 				};
 			}, REVISA.VIGENCIATOKEN_SW * 1000);
 	      }
-
          }).catch ( err => { console.log(err);});
 }
 
