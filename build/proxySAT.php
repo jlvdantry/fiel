@@ -39,7 +39,7 @@ $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_POST, true); // It's always a POST request for SOAP
 curl_setopt($ch, CURLOPT_POSTFIELDS, $soapRequestXml); // The XML goes here
-error_log(logData().' payload='.print_r($soapRequestXml,true).PHP_EOL.' json_decode pl->headers='.print_r($pl->headers,true).PHP_EOL.PHP_EOL,3,$path);
+//error_log(logData().' payload='.print_r($soapRequestXml,true).PHP_EOL.' json_decode pl->headers='.print_r($pl->headers,true).PHP_EOL.PHP_EOL,3,$path);
 
 //$headers['Content-Length']=strlen($soapRequestXml);
 //
@@ -48,7 +48,7 @@ $headersArray=json_decode($pl->headers);
 foreach ($headersArray as $key => $value) {
     $curlHeaders[] = $key . ": " . $value;
 }
-error_log(logData().' curlHeades='.print_r($curlHeaders,true).PHP_EOL,3,$path);
+//error_log(logData().' curlHeades='.print_r($curlHeaders,true).PHP_EOL,3,$path);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $curlHeaders);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
@@ -86,9 +86,8 @@ if (curl_errno($ch)) {
         $xml = simplexml_load_string($stringO);
         $res=json_decode(json_encode($xml));
         error_log(logData().' response='.print_r($response,true).' '.PHP_EOL,3,$path);
-        error_log(logData().PHP_EOL,3,$path);
-        error_log(logData().PHP_EOL.' verbose='.$verboseOutput.' '.PHP_EOL,3,$path);
-        error_log(logData().PHP_EOL,3,$path);
+        //error_log(logData().PHP_EOL.' verbose='.$verboseOutput.' '.PHP_EOL,3,$path);
+        //error_log(logData().PHP_EOL,3,$path);
 	$regresa=[ "status"=>$httpCode, "xml"=>json_encode($xml) ];
 	if (isset($res->{'s:Body'})) {
 		if (isset($res->{'s:Body'}->{'AutenticaResponse'})) {
@@ -104,36 +103,36 @@ if (curl_errno($ch)) {
 		}
 		if (isset($res->{'s:Body'}->{'SolicitaDescargaRecibidosResponse'})) {
 			$SDRR=$res->{'s:Body'}->{'SolicitaDescargaRecibidosResponse'}->{'SolicitaDescargaRecibidosResult'}->{'@attributes'};
-                        error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        //error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
 			$regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"IdSolicitud"=>$SDRR->IdSolicitud ];
 			 echo json_encode($regresa);
 		}
                 if (isset($res->{'s:Body'}->{'SolicitaDescargaEmitidosResponse'})) {
                         $SDRR=$res->{'s:Body'}->{'SolicitaDescargaEmitidosResponse'}->{'SolicitaDescargaEmitidosResult'}->{'@attributes'};
-                        error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        //error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
                         $regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"IdSolicitud"=>$SDRR->IdSolicitud ];
                          echo json_encode($regresa);
                 }
                 if (isset($res->{'s:Body'}->{'SolicitaDescargaFolioResponse'})) {
                         $SDRR=$res->{'s:Body'}->{'SolicitaDescargaFolioResponse'}->{'SolicitaDescargaFolioResult'}->{'@attributes'};
-                        error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        //error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
                         $regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"IdSolicitud"=>$SDRR->IdSolicitud ];
                          echo json_encode($regresa);
                 }
 		if (isset($res->{'s:Body'}->{'VerificaSolicitudDescargaResponse'})) {
 			$SDRR=$res->{'s:Body'}->{'VerificaSolicitudDescargaResponse'}->{'VerificaSolicitudDescargaResult'}->{'@attributes'};
 			$IdsPaquetes=$res->{'s:Body'}->{'VerificaSolicitudDescargaResponse'}->{'VerificaSolicitudDescargaResult'}->{'IdsPaquetes'};
-                        error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        //error_log(logData().' SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
 			$regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"EstadoSolicitud"=>$SDRR->EstadoSolicitud, "CodigoEstadoSolicitud"=>$SDRR->CodigoEstadoSolicitud,"NumeroCFDIs"=>$SDRR->NumeroCFDIs,"IdsPaquetes"=>$IdsPaquetes];
-                        error_log(logData().' regresa='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        //error_log(logData().' regresa='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
 			 echo json_encode($regresa);
 		}
                 if (isset($res->{'s:Body'}->{'RespuestaDescargaMasivaTercerosSalida'})) {
                         $SDRR=$res->{'s:Header'}->{'h:respuesta'}->{'@attributes'};
                         $respuesta=$res->{'s:Header'};
                         $Paquete=$res->{'s:Body'}->{'RespuestaDescargaMasivaTercerosSalida'}->{'Paquete'};
-                        error_log(logData().' download SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
-                        error_log(logData().' download s:header='.print_r($respuesta,true).' '.PHP_EOL,3,$path);
+                        //error_log(logData().' download SDRR='.print_r($SDRR,true).' '.PHP_EOL,3,$path);
+                        //error_log(logData().' download s:header='.print_r($respuesta,true).' '.PHP_EOL,3,$path);
                         $regresa=[ "status"=>$httpCode,"CodEstatus"=>$SDRR->CodEstatus,"Mensaje"=>$SDRR->Mensaje,"Paquete"=>$Paquete];
                         echo json_encode($regresa);
                 }

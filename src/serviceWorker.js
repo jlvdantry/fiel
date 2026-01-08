@@ -57,8 +57,13 @@ function registerValidSW(swUrl, config) {
     .register(swUrl)
     .then(registration => {
       console.log('[rVSW] paso registration');
+
+    // Solicitar permiso de notificaciones si no se tiene
+    if (window.Notification && Notification.permission !== 'granted') {
+        Notification.requestPermission();
+    }
 	    
-      if ('periodicSync' in registration) {
+    if ('periodicSync' in registration) {
         // Solicitamos el permiso al navegador
         navigator.permissions.query({
           name: 'periodic-background-sync',
@@ -76,7 +81,7 @@ function registerValidSW(swUrl, config) {
             console.log('[PeriodicSync] Permiso denegado por el navegador o PWA no instalada');
           }
         });
-      }
+    }
       window.dameMuestraLog().then( x => {
         if (x===true) { document.querySelector('#logContainer').classList.remove("d-none") } else { document.querySelector('#logContainer').classList.add("d-none") };
       }).catch(x=> { console.log('[rVSW] no encontro registro para mostrarlog') });
