@@ -57,7 +57,7 @@ if ("function" === typeof importScripts) {
 	    if (event.tag === 'check-sat-status') {
 		// waitUntil es vital para que el navegador no mate al SW 
 		// antes de que terminen las peticiones al SAT
-		event.waitUntil(procesarTareasPendientes());
+		event.waitUntil(procesarTareasPendientes('Segundo'));
 	    }
     });
 
@@ -343,15 +343,7 @@ var querespuesta = (request,respuesta) => {
 					       .then( () => {
 						    postRequestUpd(request,"se descargo",respuesta);
 					       });
-						// Lógica de Notificación:
-						// Solo mostramos notificación si NO hay pestañas abiertas de la PWA
-						const clientes = await self.clients.matchAll({ type: 'window' });
-						const appAbierta = clientes.length > 0;
-
-						if (!appAbierta) {
-						    // Aquí puedes personalizar el mensaje
-						    enviarNotificacionSat("Descarga Finalizada", "Se han procesado tus solicitudes del SAT en segundo plano.");
-						}
+					       notifica();
 				       });
 				 
 
@@ -495,7 +487,7 @@ var ponIntervaloRequest = () => {
 			setInterval( async () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
 				var obj = { fechatiempo: Date.now() };
 				insertaOActualizaInterval(obj,'Inter1');
-                                await procesarTareasPendientes();
+                                await procesarTareasPendientes('Primer');
 			}, REVISA.ESTADOREQ * 1000);
 	      }
 
@@ -581,3 +573,14 @@ function enviarNotificacionSat(titulo, cuerpo) {
 
     self.registration.showNotification(titulo, opciones);
 }
+
+async function notifica() {
+	const clientes = await self.clients.matchAll({ type: 'window' });
+	const appAbierta = clientes.length > 0;
+
+	if (!appAbierta) {
+	    // Aquí puedes personalizar el mensaje
+	    enviarNotificacionSat("Descarga Finalizada", "Se han procesado tus solicitudes del SAT en segundo plano.");
+	}
+}
+

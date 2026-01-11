@@ -13,6 +13,7 @@ import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
 import About from './componente/About';
 import Config from './componente/Config';
+import PanelControlSync from './componente/HistorialSync';
 import './fontawesome';
 
 /*
@@ -85,6 +86,7 @@ class App extends Component {
 	  <Route path="/misfirmas" component={MisFirmas}/>
 	  <Route path="/config" component={Config}/>
 	  <Route path="/about" component={About}/>
+	  <Route path="/historialSync" component={PanelControlSync}/>
           <Redirect to="/"/>
         </Route>
       </Router>

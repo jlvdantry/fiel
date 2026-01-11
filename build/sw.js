@@ -57,14 +57,14 @@ if ("function" === typeof importScripts) {
 	    if (event.tag === 'check-sat-status') {
 		// waitUntil es vital para que el navegador no mate al SW 
 		// antes de que terminen las peticiones al SAT
-		event.waitUntil(procesarTareasPendientes());
+		event.waitUntil(procesarTareasPendientes('Segundo'));
 	    }
     });
 
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"3abfd1abf28920e85f9e426535367e90","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"4ae7700dd591bd625aacb309b5e57380","url":"static/v4/Constantes.js"},{"revision":"d30e883f893f2710834f85ba2ca57f8f","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"b80b386f9ba7785f40ef962d88535a17","url":"static/v4/dbFiel.js"},{"revision":"973515fb20a2b55033ad0beec08e3366","url":"static/v4/dbInterval.js"},{"revision":"ccea16d7063285e31f1c787e483e3d9c","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"075ed0cee5f4d1dab1458337ddf696e9","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"ee0c5b9e836e8df047c4266ada1f5a89","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"96828f2cdca09dcc44fc23d236e1fe85","url":"static/v4/static/js/main.4c76ac99.js"},{"revision":"9690adbd7f5b417fae4604a9e2febbef","url":"static/v4/tareasPendientes.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"ce0087b58aa280d39e4dba8864eea343","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"8dca81cd22721bcab369838dd77929b8","url":"static/v4/Constantes.js"},{"revision":"d30e883f893f2710834f85ba2ca57f8f","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"b80b386f9ba7785f40ef962d88535a17","url":"static/v4/dbFiel.js"},{"revision":"cfed443a24868b74d3316518531ecd26","url":"static/v4/dbInterval.js"},{"revision":"ccea16d7063285e31f1c787e483e3d9c","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"075ed0cee5f4d1dab1458337ddf696e9","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"6f3161cec2ee6a8258c87b1f4d24f477","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"c94df88cd8bc647aca2ea9979b2ad317","url":"static/v4/static/js/main.b3c204ac.js"},{"revision":"302bc3e75e7239d91f29038106264390","url":"static/v4/tareasPendientes.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -343,7 +343,10 @@ var querespuesta = (request,respuesta) => {
 					       .then( () => {
 						    postRequestUpd(request,"se descargo",respuesta);
 					       });
+					       notifica();
 				       });
+				 
+
 				       return;
 			 }
 				       request.value.passdata.msg_d=respuesta.Mensaje;
@@ -484,7 +487,7 @@ var ponIntervaloRequest = () => {
 			setInterval( async () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
 				var obj = { fechatiempo: Date.now() };
 				insertaOActualizaInterval(obj,'Inter1');
-                                await procesarTareasPendientes();
+                                await procesarTareasPendientes('Primer');
 			}, REVISA.ESTADOREQ * 1000);
 	      }
 
@@ -531,5 +534,53 @@ var  estacorriendoIntevalo = () => {    // TODO  esto debe ser hasta que este ca
 		else { console.log('error al poner intervalo de autenticacion msg='+msg); }
 	});
 
+}
+
+
+// En sw-custom.js
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close(); // Cerrar el globo de texto
+
+    if (event.action !== 'cerrar') {
+        // Enfocar la app si ya está abierta o abrir una nueva pestaña
+        event.waitUntil(
+            self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+                for (const client of clientList) {
+                    if (client.url === '/' && 'focus' in client) return client.focus();
+                }
+                if (self.clients.openWindow) return self.clients.openWindow('/');
+            })
+        );
+    }
+});
+
+// Función para lanzar la notificación visual
+function enviarNotificacionSat(titulo, cuerpo) {
+    const opciones = {
+        body: cuerpo,
+        icon: '/icon-192x192.png', // Ruta a tu icono de PWA
+        badge: '/badge-icon.png',  // Icono pequeño para la barra de Android
+        vibrate: [100, 50, 100],
+        data: {
+            url: '/' // URL a abrir al dar clic
+        },
+        actions: [
+            { action: 'abrir', title: 'Ver Facturas' },
+            { action: 'cerrar', title: 'Cerrar' }
+        ]
+    };
+
+    self.registration.showNotification(titulo, opciones);
+}
+
+async function notifica() {
+	const clientes = await self.clients.matchAll({ type: 'window' });
+	const appAbierta = clientes.length > 0;
+
+	if (!appAbierta) {
+	    // Aquí puedes personalizar el mensaje
+	    enviarNotificacionSat("Descarga Finalizada", "Se han procesado tus solicitudes del SAT en segundo plano.");
+	}
 }
 

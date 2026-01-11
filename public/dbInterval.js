@@ -33,3 +33,13 @@ function dameInterval(file) {
         })
 }
 
+function dameIntervalHis(file) {
+        return new Promise( (resolve, reject) => {
+                selObjectUlt('request','url',file).then( x => {
+                        resolve (x.value[file])
+                }).then( pub => { resolve(pub); })
+                .catch( err => { reject (err) })
+        })
+}
+
+

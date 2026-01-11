@@ -42,7 +42,16 @@ async function procesarTareasPendientes() {
         bajaTokenCaducado();
         bajaRequiriendo();
 
+        // --- NUEVO: Guardar registro de éxito ---
+        const registroExito = { 
+            fechatiempo: Date.now(),
+            metodo: self.registration.periodicSync ? 'Segundo Plano' : 'Primer Plano'
+        };
+        // Usamos tu función existente para guardar el rastro
+        await insertaOActualizaInterval(registroExito, 'UltimaRevisionExito');
+
         console.log('[sw] Barrido completado con éxito.');
+
     } catch (err) {
         console.error('[sw] Error en procesarTareasPendientes:', err);
     } finally {
