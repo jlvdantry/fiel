@@ -357,6 +357,7 @@ var querespuesta = (request,respuesta) => {
 						    postRequestUpd(request,respuesta.Mensaje,respuesta);
 					       });
 				       });
+				       notifica();
 
 	       }
          }
