@@ -1,7 +1,15 @@
 // Variable para evitar ejecuciones duplicadas
 let isProcessing = false;
 
-async function procesarTareasPendientes() {
+async function procesarTareasPendientes(quemetodo) {
+        // --- NUEVO: Guardar registro de éxito ---
+        const registroExito = {
+            fechatiempo: Date.now(),
+            metodo: quemetodo+' Plano isProcessing='+isProcessing
+        };
+        // Usamos tu función existente para guardar el rastro
+        await insertaOActualizaInterval(registroExito, 'UltimaRevisionExito');
+
     if (isProcessing) {
         console.log('[sw] Ya hay un proceso en curso, omitiendo...');
         return;
@@ -41,14 +49,6 @@ async function procesarTareasPendientes() {
         bajaVerificaciones();
         bajaTokenCaducado();
         bajaRequiriendo();
-
-        // --- NUEVO: Guardar registro de éxito ---
-        const registroExito = { 
-            fechatiempo: Date.now(),
-            metodo: self.registration.periodicSync ? 'Segundo Plano' : 'Primer Plano'
-        };
-        // Usamos tu función existente para guardar el rastro
-        await insertaOActualizaInterval(registroExito, 'UltimaRevisionExito');
 
         console.log('[sw] Barrido completado con éxito.');
 

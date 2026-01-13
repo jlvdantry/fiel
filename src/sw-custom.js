@@ -11,17 +11,12 @@ console.log('[sw] entro');
 var DMS = null;
 var intervalSync = null;
 
-/*
         const originalConsoleLog = console.log;
         console.log = function (...args) {
             const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
-            clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(clientList => {
-                clientList.forEach(client => {
-                    client.postMessage({ action: 'log', message }); // Send a structured message
-                });
-            });
+            var objlog={ url:'log',msg:message,'tipo':'sw' }
+            inserta_log(objlog);
        };
-       */
 
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');

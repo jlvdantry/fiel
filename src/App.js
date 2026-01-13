@@ -15,25 +15,31 @@ import About from './componente/About';
 import Config from './componente/Config';
 import PanelControlSync from './componente/HistorialSync';
 import './fontawesome';
+import MisLogWrapper from './componente/MiLog';
 
-/*
-const logContainer = document.getElementById('logContainer');
+//const logContainer = document.getElementById('logContainer');
 function logToDocument(message) {
+	/*
     const logMessage = document.createElement('div');
     logMessage.textContent = message;
     logContainer.appendChild(logMessage);
     logContainer.scrollTop = logContainer.scrollHeight;
+    */
+	var objlog={ url:'log',msg:message,'tipo':'' }
+	window.inserta_log(objlog);
 }
 function logToDocumentE(message) {
+	/*
     const logMessageE = document.createElement('div');
     logMessageE.classList.add('text-danger');
     logMessageE.textContent = message;
     logContainer.appendChild(logMessageE);
     logContainer.scrollTop = logContainer.scrollHeight;
+    */
+	var objlog={ url:'log',msg:message,'tipo':'e' }
+	window.inserta_log(objlog);
 }
-*/
 
-/*
 (function() {
     const originalLog = console.log;
     const originalLogE = console.error;
@@ -47,7 +53,6 @@ function logToDocumentE(message) {
     };
 
 })();
-*/
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', event => {
@@ -87,6 +92,7 @@ class App extends Component {
 	  <Route path="/config" component={Config}/>
 	  <Route path="/about" component={About}/>
 	  <Route path="/historialSync" component={PanelControlSync}/>
+	  <Route path="/miLog" component={MisLogWrapper}/>
           <Redirect to="/"/>
         </Route>
       </Router>

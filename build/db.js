@@ -406,10 +406,31 @@ function inserta_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,urlSAT)
                                     json.key=key;
                                     resolve(json) ; } );
                         }).catch(function(err) {
-                                console.log("[inserta_request] Database error: "+err.message);
+                                console.log("[db.js inserta_request] error: "+err.message);
                 });
         })
 }
+
+/* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
+   cuando se hacer un requermiento */
+function inserta_log(obj)
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then((objectStore) => {
+                                const ahora = new Date();
+                                const soloHora = ahora.toLocaleTimeString();
+                                obj.hora=soloHora;
+                                addObject(objectStore, obj).then( (key) => {
+                                    obj.key=key;
+                                    resolve(obj) ; } );
+                        }).catch(function(err) {
+                                console.log("[db.js inserta_log] error: "+err.message);
+                });
+        })
+}
+
 
 
 /* funcion que actualiza los datos en la tabla de request 
@@ -430,7 +451,7 @@ function update_request(wlurl,passdata,idmenu,forma,wlmovto,header,body,idkey,ur
                 updObjectByKey('request', json, idkey).then( () => {
                                     resolve(idkey) ; })
                         .catch(function(err) {
-                                console.log("[update_request] Database error: "+err.message);
+                                console.log("[db.js update_request] Database error: "+err.message);
                 });
         });
 }
@@ -518,6 +539,26 @@ function leefacturas(filtro={dato:'url',valor:'factura'})
                 });
         })
 }
+
+function leelog(filtro={dato:'url',valor:'log'})
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                selObjects(objectStore,filtro.dato,filtro.valor).then(requests => {
+                                                               var reorden=requests.map((row)=>{
+					                               return { hora:row['value'].hora,key:row['key'],msg:row['value'].msg,tipo:row['value'].tipo}
+							       })
+					                       .sort((a, b) => b.key - a.key);
+                                                               resolve(reorden) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("[db.js leelog] Database error: "+err.message);
+                });
+        })
+}
+
 
 function leeRFCS()
 {
@@ -679,6 +720,22 @@ function cuantasfacturas()
                 });
         })
 }
+
+function cuantaslog()
+{
+        return new Promise(function (resolve, reject) {
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                selObjects(objectStore,'url','log').then(function(requests) {
+                                                               resolve(requests.length) ;
+                                                            }).catch(function(err) {  reject(err) });
+                        }).catch(function(err) {
+                                console.log("error en cuantas log: "+err.message);
+                });
+        })
+}
+
 
 function cuantasfirmas()
 {

@@ -113,6 +113,8 @@ class Menumi extends Component {
                            <FontAwesomeIcon icon={['fas' , 'cog']} /> CONFIGURACIÓN</Link>
               <Link to='/historialSync' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
                            <FontAwesomeIcon icon={['fas' , 'cog']} /> HISTORIAL SINCRONIZACION</Link>
+              <Link to='/miLog' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+                           <FontAwesomeIcon icon={['fas' , 'cog']} /> Ver log</Link>
               <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
                            <FontAwesomeIcon icon={['fas' , 'info-circle']} /> ACERCA DE</Link>
             </Nav>
