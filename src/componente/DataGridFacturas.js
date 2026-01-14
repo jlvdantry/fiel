@@ -29,7 +29,6 @@ export default function DataGridFacturas(props) {
   // Las filas solo se recalculan si cambia 'facturasRaw' o 'rfc'
   const filasAMostrar = useMemo(() => {
     if (rfc && facturasRaw && facturasRaw.length > 0) {
-      console.log("Optimizando: Procesando facturas con EC...");
       return EC(facturasRaw, rfc);
     }
     return [];

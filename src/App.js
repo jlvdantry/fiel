@@ -17,43 +17,6 @@ import PanelControlSync from './componente/HistorialSync';
 import './fontawesome';
 import MisLogWrapper from './componente/MiLog';
 
-//const logContainer = document.getElementById('logContainer');
-function logToDocument(message) {
-	/*
-    const logMessage = document.createElement('div');
-    logMessage.textContent = message;
-    logContainer.appendChild(logMessage);
-    logContainer.scrollTop = logContainer.scrollHeight;
-    */
-	var objlog={ url:'log',msg:message,'tipo':'' }
-	window.inserta_log(objlog);
-}
-function logToDocumentE(message) {
-	/*
-    const logMessageE = document.createElement('div');
-    logMessageE.classList.add('text-danger');
-    logMessageE.textContent = message;
-    logContainer.appendChild(logMessageE);
-    logContainer.scrollTop = logContainer.scrollHeight;
-    */
-	var objlog={ url:'log',msg:message,'tipo':'e' }
-	window.inserta_log(objlog);
-}
-
-(function() {
-    const originalLog = console.log;
-    const originalLogE = console.error;
-    console.log = function(...args) {
-        logToDocument(args.join(' '));
-        originalLog.apply(console, args);
-    };
-    console.error = function(...args) {
-        logToDocumentE(args.join(' '));
-        originalLogE.apply(console, args);
-    };
-
-})();
-
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', event => {
         if (event.data && event.data.action === 'log') {

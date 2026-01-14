@@ -3,7 +3,6 @@ import 'react-data-grid/lib/styles.css';
 import DG from 'react-data-grid';
 
 const columns = [
-  { key: 'key', name: 'Id', Width: 5, flex: 3 },
   { key: 'hora', name: 'Hora', Width: 5, flex: 3 },
   { key: 'msg', name: 'Mensaje', minWidth: 30, flex: 3 },
   { key: 'tipo', name: 'Tipo', Width: 5, flex: 3 },

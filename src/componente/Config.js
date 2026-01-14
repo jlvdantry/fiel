@@ -4,9 +4,7 @@ function Config() {
   const [isChecked, setIsChecked] = useState(false);
 
 	useEffect(() => {
-		    console.log('useEffect');
 		    window.dameMuestraLog().then( x => {
-		        console.log('useEffect dameMuestraLog');
 		if (x===true) { document.querySelector('#myCheck').checked=true; } else { document.querySelector('#myCheck').checked=false; };
 		    });
 	}, []);

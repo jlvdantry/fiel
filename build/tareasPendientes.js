@@ -16,7 +16,7 @@ async function procesarTareasPendientes(quemetodo) {
     }
 
     isProcessing = true;
-    console.log('[sw] Iniciando barrido de tareas (Periodic/Interval)...');
+    console.log('Iniciando barrido de tareas metodo='+quemetodo);
 
     try {
         // 1. Recuperamos la contraseña de la DB (dbFiel.js)
@@ -34,23 +34,33 @@ async function procesarTareasPendientes(quemetodo) {
             DMS = new DescargaMasivaSat(); 
         }
 
-        // 3. Ejecutamos el barrido de todos los estados pendientes
-        // Esto reemplaza las llamadas individuales que tenías en los intervalos
-        await Promise.allSettled([
-            syncRequest(ESTADOREQ.INICIAL.AUTENTICA),
-            syncRequest(ESTADOREQ.INICIAL.SOLICITUD),
-            syncRequest(ESTADOREQ.INICIAL.VERIFICA),
-            syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD),
-            syncRequest(ESTADOREQ.SOLICITUDACEPTADA),
-            syncRequest(ESTADOREQ.INICIAL.DESCARGA)
-        ]);
+        console.log('Revisa si esta autenticado si no crea request de autenciacion');
+        revisaSiEstaAutenticado();
 
-        // 4. Limpieza de registros antiguos
-        bajaVerificaciones();
-        bajaTokenCaducado();
-        bajaRequiriendo();
+        console.log('Iniciando secuencia: Autenticación');
+        await syncRequest(ESTADOREQ.INICIAL.AUTENTICA);
 
-        console.log('[sw] Barrido completado con éxito.');
+        console.log('Iniciando secuencia: Solicitud');
+        await syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
+
+        console.log('Iniciando secuencia: Verificación');
+        await syncRequest(ESTADOREQ.INICIAL.VERIFICA);
+
+        console.log('niciando secuencia: Pendientes de descarga');
+        await syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
+
+        console.log('Iniciando secuencia: Solicitudes aceptadas');
+        await syncRequest(ESTADOREQ.SOLICITUDACEPTADA);
+
+        console.log('Iniciando secuencia: Descarga final');
+        await syncRequest(ESTADOREQ.INICIAL.DESCARGA);
+
+        // 4. Limpieza (estas funciones también deberían ser llamadas secuencialmente)
+        await bajaVerificaciones();
+        await bajaTokenCaducado();
+        await bajaRequiriendo();
+
+        console.log('Ciclo de tareas completado ordenadamente.');
 
     } catch (err) {
         console.error('[sw] Error en procesarTareasPendientes:', err);

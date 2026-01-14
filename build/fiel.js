@@ -8,7 +8,6 @@ var _fiel = function()
   this.cer1 = "";
   this.privada = {};
   this.publica = {};
-  console.log('[_fiel] instancio');
 
   damePrivada().then(privada => { 
 	  this.privada = privada; 

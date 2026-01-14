@@ -92,6 +92,13 @@ var creadb = function(db) {
                         objectStore.createIndex('ID', 'ID', { unique: false });
                         objectStore.createIndex('catalogo_label', ['catalogo','label'], { unique: true });
                     };
+                   if(!db.objectStoreNames.contains('log')) { /* tabla donde se registra los mensajes del log */
+                        objectStore = db.createObjectStore('log', { autoIncrement : true });
+                        objectStore.createIndex('hora', 'hora', { unique: false });
+                        objectStore.createIndex('mensaje', 'mensaje', { unique: false });
+                        objectStore.createIndex('tipo', 'tipo', { unique: false });
+                        objectStore.createIndex('p', 'p', { unique: false });
+                    };
 
 
 }
@@ -163,7 +170,7 @@ var selObjectByKey = function(objectStore,key) {
    objectStores object a buscar registros
    indexname    nombre del indice a buscar
    indexvalue   valor del indice a buscar
-   si llegan valida indexname e indexvalue se regresan todos los valores del objeto
+   si llegan indexname e indexvalue undefined se regresan todos los valores del objeto
    */ 
 var selObjects = function(objectStore, indexname, indexvalue, direccion='next') {
         var regs  = [];
@@ -376,7 +383,7 @@ function inserta_catalogo(catalogo,label)
 					addObject(objectStore, json).then( (key) => {
 					    json.key=key;
 					    resolve(json) ; }).
-                                        catch( (err) => { console.log('registro duplicado'); resolve(); })
+                                        catch( (err) => { resolve(); })
                         }).catch(function(err) {
                                 console.log("[inserta_catalogos] Database error: "+err.message);
                 });
@@ -417,7 +424,7 @@ function inserta_log(obj)
 {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
-                        return openObjectStore(db, 'request', "readwrite");
+                        return openObjectStore(db, 'log', "readwrite");
                         }).then((objectStore) => {
                                 const ahora = new Date();
                                 const soloHora = ahora.toLocaleTimeString();
@@ -540,11 +547,11 @@ function leefacturas(filtro={dato:'url',valor:'factura'})
         })
 }
 
-function leelog(filtro={dato:'url',valor:'log'})
+function lee_log(filtro={dato:undefined,valor:undefined})
 {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
-                        return openObjectStore(db, 'request', "readwrite");
+                        return openObjectStore(db, 'log', "readwrite");
                         }).then(function(objectStore) {
                                 selObjects(objectStore,filtro.dato,filtro.valor).then(requests => {
                                                                var reorden=requests.map((row)=>{
@@ -725,9 +732,9 @@ function cuantaslog()
 {
         return new Promise(function (resolve, reject) {
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
-                        return openObjectStore(db, 'request', "readwrite");
+                        return openObjectStore(db, 'log', "readwrite");
                         }).then(function(objectStore) {
-                                selObjects(objectStore,'url','log').then(function(requests) {
+                                selObjects(objectStore).then(function(requests) {
                                                                resolve(requests.length) ;
                                                             }).catch(function(err) {  reject(err) });
                         }).catch(function(err) {

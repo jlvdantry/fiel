@@ -7,16 +7,11 @@ importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
 importScripts('tareasPendientes.js');
-console.log('[sw] entro');
+importScripts('log.js');
 var DMS = null;
 var intervalSync = null;
 
-        const originalConsoleLog = console.log;
-        console.log = function (...args) {
-            const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
-            var objlog={ url:'log',msg:message,'tipo':'sw' }
-            inserta_log(objlog);
-       };
+log_en_bd('sw','1');
 
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
@@ -24,8 +19,7 @@ if ("function" === typeof importScripts) {
    importScripts('insertaDatos.js');
   // Global workbox
   if (workbox) {
-    console.log("Workbox is loaded");
-    workbox.setConfig({ debug: true });
+    //workbox.setConfig({ debug: true });
     workbox.loadModule('workbox-strategies');
 
 
@@ -35,7 +29,6 @@ if ("function" === typeof importScripts) {
     // Since we're using `injectManifest` to build SW,
     // manually overriding the skipWaiting();
     self.addEventListener("install", (event) => {
-      console.log('[install] entro');
       //self.skipWaiting();
       generallaves();
       insertaRFCS();
@@ -43,7 +36,6 @@ if ("function" === typeof importScripts) {
 
 
     self.addEventListener('activate', event => {
-		console.log('[activate] '+event.target.state);
 		event.waitUntil(self.clients.claim());
     });
 
@@ -127,7 +119,6 @@ if ("function" === typeof importScripts) {
 }
 
 self.addEventListener("sync", event => {
-    console.log('recibio sync el sw event='+JSON.stringify(event,true));
     if (event.tag.substring(0,9)=== "autentica") {
        if (event.tag.substring(10)!=='') {
                      PWDFIEL=event.tag.substring(10);
@@ -420,7 +411,7 @@ var borraverificaciones = () => {
 
 
 self.addEventListener('message', (event) => {
-  console.log('recibio message el sw event='+JSON.stringify(event.data.action,true)+' clientID='+event.source.id);
+  console.log('[sw] recibio message el sw event='+JSON.stringify(event.data.action,true));
   if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
       action: 'VERSION',
@@ -434,7 +425,6 @@ self.addEventListener('message', (event) => {
 	  encripta_pw(event.data.PWDFIEL);
   }
   if (event.data && event.data.action === 'TAB_VISIBLE') {
-	  console.log('intervalSync='+intervalSync);
 	  estacorriendoIntevalo();
   }
   if (event.data && event.data.action === 'START_INTERVALO') {
@@ -443,7 +433,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-/* checa si ya se tecleo el pwd de la privada */
+/* Revisa si esta autenticado */
 var revisaSiEstaAutenticado = () => {
 	dame_pwd().then(pwd => {
 	    if (pwd!==null)  { /* ya se tecleo la pwd */
@@ -466,7 +456,7 @@ var revisaSiEstaAutenticado = () => {
 	});
 }
 
-        dame_pwd().then(pwd => {
+dame_pwd().then(pwd => {
             if (pwd!==null)  { /* ya se tecleo la pwd */
                if (DMS===null) {
                    PWDFIEL= pwd;
@@ -477,23 +467,33 @@ var revisaSiEstaAutenticado = () => {
 
 
 var ponIntervaloRequest = () => {
-	lee_llaves().then(x => {
-              if ('validada' in x.value) {
-		        console.log("[sw] Iniciando intervalos de primer plano");
-			setInterval( async () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
-				var obj = { fechatiempo: Date.now() };
-				insertaOActualizaInterval(obj,'Inter1');
-                                await procesarTareasPendientes('Primer');
-			}, REVISA.ESTADOREQ * 1000);
-	      }
+    lee_llaves().then(x => {
+        if (x && x.value && 'validada' in x.value) {
+            console.log("Inicia ciclo para revisar estatus de requerimientos");
 
-         }).catch ( err => { console.log(err);});
+            const ejecutarCiclo = async () => {
+                var obj = { fechatiempo: Date.now() };
+                
+                // Registro del latido del intervalo en la DB
+                await insertaOActualizaInterval(obj, 'Inter1');
+                
+                // Ejecución secuencial de tareas
+                await procesarTareasPendientes('Primer');
+
+                // Programamos la siguiente ejecución SOLO cuando esta termine
+                setTimeout(ejecutarCiclo, REVISA.ESTADOREQ * 1000);
+            };
+
+            ejecutarCiclo();
+        }
+    }).catch(err => { 
+        console.log("Error al iniciar intervalo:", err); 
+    });
 }
-
 var ponIntervaloAutenticacion = () => {
         lee_llaves().then(x => {
               if ('validada' in x.value) {
-			console.log("[sw sI] pone intervalo para revisar si esta autenticado");
+			console.log("Pone intervalo para revisar si esta autenticado");
 			setInterval( () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
 				var obj = { fechatiempo: Date.now() };
 				insertaOActualizaInterval(obj,'Inter2');
@@ -508,28 +508,26 @@ var ponIntervaloAutenticacion = () => {
 
 
 var  estacorriendoIntevalo = () => {    // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
-	console.log('[eCI Estan corriendo los intervalos de tiempo]');
+	console.log('Revisa si estan corriendo los intervalos de tiempo para revisar los estatus del request');
 	dameInterval('Inter1').then( x => {
 		var tiempo = Date.now() - x;
 		if (tiempo > REVISA.ESTADOREQ * 1000) { // no esta corriendo el intervalo
-	                console.log('[eCI] va a poner intervalor Inter1 tiempo='+tiempo+' DN='+(REVISA.ESTADOREQ * 1000));
 			ponIntervaloRequest();
-		}
+		} else { console.log('Si esta el intervalo de tiempo para revisar los estatus del request'); }
 	}).catch(msg=> { 
 		if (msg.substring(0,20)=='No encontro registro') { ponIntervaloRequest(); } 
 		else { console.log('error al poner intervalo de sincronizacion msg='+msg); }
 	});
-
+/**
         dameInterval('Inter2').then( x => {
                 var tiempo = Date.now() - x;
-                if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo
-	                console.log('[eCI] va a poner intervalor Inter2 tiempo='+tiempo+' DN='+(REVISA.VIGENCIATOKEN_SW * 1000));
+                if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { 
                         ponIntervaloAutenticacion();
                 }
         }).catch(msg=> { if (msg.substring(0,20)=='No encontro registro') { ponIntervaloAutenticacion(); } 
 		else { console.log('error al poner intervalo de autenticacion msg='+msg); }
 	});
-
+**/
 }
 
 

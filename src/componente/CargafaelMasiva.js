@@ -160,7 +160,6 @@ class CargafaelMasiva extends Component {
  
   /* obtiene el pwd del sw */
   dame_pwdSW() {
-	        console.log('[dame_pwdSW]');
                 if ('serviceWorker' in navigator) {
                   navigator.serviceWorker.ready.then((registration) => {
                     if (registration.active) {

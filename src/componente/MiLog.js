@@ -35,7 +35,7 @@ class MiLog extends Component {
 
   consultaLog(){
         var that = this;
-        window.leelog().then(log => {
+        window.lee_log().then(log => {
             // Usamos el RFC que guardamos en el state
             that.setState({ logs: log });
         }).catch(function(err) {

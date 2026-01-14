@@ -7,16 +7,11 @@ importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
 importScripts('tareasPendientes.js');
-console.log('[sw] entro');
+importScripts('log.js');
 var DMS = null;
 var intervalSync = null;
 
-        const originalConsoleLog = console.log;
-        console.log = function (...args) {
-            const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : arg)).join(' ');
-            var objlog={ url:'log',msg:message,'tipo':'sw' }
-            inserta_log(objlog);
-       };
+log_en_bd('sw','1');
 
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
@@ -24,8 +19,7 @@ if ("function" === typeof importScripts) {
    importScripts('insertaDatos.js');
   // Global workbox
   if (workbox) {
-    console.log("Workbox is loaded");
-    workbox.setConfig({ debug: true });
+    //workbox.setConfig({ debug: true });
     workbox.loadModule('workbox-strategies');
 
 
@@ -35,7 +29,6 @@ if ("function" === typeof importScripts) {
     // Since we're using `injectManifest` to build SW,
     // manually overriding the skipWaiting();
     self.addEventListener("install", (event) => {
-      console.log('[install] entro');
       //self.skipWaiting();
       generallaves();
       insertaRFCS();
@@ -43,7 +36,6 @@ if ("function" === typeof importScripts) {
 
 
     self.addEventListener('activate', event => {
-		console.log('[activate] '+event.target.state);
 		event.waitUntil(self.clients.claim());
     });
 
@@ -59,7 +51,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"f3c571d077e532e7af6a9ef249d58b8e","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"3a50b80d73a5fa58369bac6c6e941dc0","url":"static/v4/Constantes.js"},{"revision":"2591bcbeb732f05a78a6a86ab2d79715","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"b80b386f9ba7785f40ef962d88535a17","url":"static/v4/dbFiel.js"},{"revision":"cfed443a24868b74d3316518531ecd26","url":"static/v4/dbInterval.js"},{"revision":"ccea16d7063285e31f1c787e483e3d9c","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"075ed0cee5f4d1dab1458337ddf696e9","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"a4e400aede4363b6abb577d9a1eadde3","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"13235baebe2a9f592f04e32b582631d9","url":"static/v4/static/js/main.75d5b29a.js"},{"revision":"9b26eb125f5e20afa790d101683e8f57","url":"static/v4/tareasPendientes.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"d7f5e6fa7d61ed863872f2a1c4ac382f","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"34596e6f613f34adf18e059e463bc01c","url":"static/v4/Constantes.js"},{"revision":"7db6507f4d0a5a62a85dfa0811b8a16c","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"b80b386f9ba7785f40ef962d88535a17","url":"static/v4/dbFiel.js"},{"revision":"cfed443a24868b74d3316518531ecd26","url":"static/v4/dbInterval.js"},{"revision":"ccea16d7063285e31f1c787e483e3d9c","url":"static/v4/descargaMasivaSat.js"},{"revision":"4e6b166e0dabdfe4fe3c0756f6d620c1","url":"static/v4/encripta.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"a03fb407fa7f5a95b4bdf1f4c4321079","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"e3ce2bca178fd9831d95aee58c49f3f5","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"0f7de8f6fb9f35efe86edb8edd67c4c6","url":"static/v4/log.js"},{"revision":"7d5b147fcab946c531d11ea18e390783","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"139a6c58f613426e63c9cae96b69b747","url":"static/v4/static/js/main.7e944d41.js"},{"revision":"65cd0b07c07347cee827503f8a79c6ec","url":"static/v4/tareasPendientes.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -127,7 +119,6 @@ if ("function" === typeof importScripts) {
 }
 
 self.addEventListener("sync", event => {
-    console.log('recibio sync el sw event='+JSON.stringify(event,true));
     if (event.tag.substring(0,9)=== "autentica") {
        if (event.tag.substring(10)!=='') {
                      PWDFIEL=event.tag.substring(10);
@@ -420,7 +411,7 @@ var borraverificaciones = () => {
 
 
 self.addEventListener('message', (event) => {
-  console.log('recibio message el sw event='+JSON.stringify(event.data.action,true)+' clientID='+event.source.id);
+  console.log('[sw] recibio message el sw event='+JSON.stringify(event.data.action,true));
   if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
       action: 'VERSION',
@@ -434,7 +425,6 @@ self.addEventListener('message', (event) => {
 	  encripta_pw(event.data.PWDFIEL);
   }
   if (event.data && event.data.action === 'TAB_VISIBLE') {
-	  console.log('intervalSync='+intervalSync);
 	  estacorriendoIntevalo();
   }
   if (event.data && event.data.action === 'START_INTERVALO') {
@@ -443,7 +433,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-/* checa si ya se tecleo el pwd de la privada */
+/* Revisa si esta autenticado */
 var revisaSiEstaAutenticado = () => {
 	dame_pwd().then(pwd => {
 	    if (pwd!==null)  { /* ya se tecleo la pwd */
@@ -466,7 +456,7 @@ var revisaSiEstaAutenticado = () => {
 	});
 }
 
-        dame_pwd().then(pwd => {
+dame_pwd().then(pwd => {
             if (pwd!==null)  { /* ya se tecleo la pwd */
                if (DMS===null) {
                    PWDFIEL= pwd;
@@ -477,23 +467,33 @@ var revisaSiEstaAutenticado = () => {
 
 
 var ponIntervaloRequest = () => {
-	lee_llaves().then(x => {
-              if ('validada' in x.value) {
-		        console.log("[sw] Iniciando intervalos de primer plano");
-			setInterval( async () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
-				var obj = { fechatiempo: Date.now() };
-				insertaOActualizaInterval(obj,'Inter1');
-                                await procesarTareasPendientes('Primer');
-			}, REVISA.ESTADOREQ * 1000);
-	      }
+    lee_llaves().then(x => {
+        if (x && x.value && 'validada' in x.value) {
+            console.log("Inicia ciclo para revisar estatus de requerimientos");
 
-         }).catch ( err => { console.log(err);});
+            const ejecutarCiclo = async () => {
+                var obj = { fechatiempo: Date.now() };
+                
+                // Registro del latido del intervalo en la DB
+                await insertaOActualizaInterval(obj, 'Inter1');
+                
+                // Ejecución secuencial de tareas
+                await procesarTareasPendientes('Primer');
+
+                // Programamos la siguiente ejecución SOLO cuando esta termine
+                setTimeout(ejecutarCiclo, REVISA.ESTADOREQ * 1000);
+            };
+
+            ejecutarCiclo();
+        }
+    }).catch(err => { 
+        console.log("Error al iniciar intervalo:", err); 
+    });
 }
-
 var ponIntervaloAutenticacion = () => {
         lee_llaves().then(x => {
               if ('validada' in x.value) {
-			console.log("[sw sI] pone intervalo para revisar si esta autenticado");
+			console.log("Pone intervalo para revisar si esta autenticado");
 			setInterval( () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
 				var obj = { fechatiempo: Date.now() };
 				insertaOActualizaInterval(obj,'Inter2');
@@ -508,28 +508,26 @@ var ponIntervaloAutenticacion = () => {
 
 
 var  estacorriendoIntevalo = () => {    // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
-	console.log('[eCI Estan corriendo los intervalos de tiempo]');
+	console.log('Revisa si estan corriendo los intervalos de tiempo para revisar los estatus del request');
 	dameInterval('Inter1').then( x => {
 		var tiempo = Date.now() - x;
 		if (tiempo > REVISA.ESTADOREQ * 1000) { // no esta corriendo el intervalo
-	                console.log('[eCI] va a poner intervalor Inter1 tiempo='+tiempo+' DN='+(REVISA.ESTADOREQ * 1000));
 			ponIntervaloRequest();
-		}
+		} else { console.log('Si esta el intervalo de tiempo para revisar los estatus del request'); }
 	}).catch(msg=> { 
 		if (msg.substring(0,20)=='No encontro registro') { ponIntervaloRequest(); } 
 		else { console.log('error al poner intervalo de sincronizacion msg='+msg); }
 	});
-
+/**
         dameInterval('Inter2').then( x => {
                 var tiempo = Date.now() - x;
-                if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { // no esta corriendo el intervalo
-	                console.log('[eCI] va a poner intervalor Inter2 tiempo='+tiempo+' DN='+(REVISA.VIGENCIATOKEN_SW * 1000));
+                if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { 
                         ponIntervaloAutenticacion();
                 }
         }).catch(msg=> { if (msg.substring(0,20)=='No encontro registro') { ponIntervaloAutenticacion(); } 
 		else { console.log('error al poner intervalo de autenticacion msg='+msg); }
 	});
-
+**/
 }
 
 
