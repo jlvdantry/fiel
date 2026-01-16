@@ -485,35 +485,48 @@ var DescargaMasivaSat = function()
 
    /* revisa si el token este caducado */
    this.getTokenEstatusSAT = () => {
-                return new Promise( (resolve, reject) => {
-                     selObjectUlt('request','url','/autentica.php','prev').then( obj => {  /*lee la ultima autenticacion */
-			     var actual=Math.floor(Date.now() / 1000);
-			     if ('respuesta' in obj.value && obj.value.respuesta!==null && obj.value.respuesta!==undefined) {
-				     if (actual<=obj.value.respuesta.Expires) {
-					 var cuantoQueda=this.queda(actual,obj.value.respuesta.Expires); 
-					 return { tokenEstatusSAT:TOKEN.ACTIVO, certificado:obj.value.passdata, token:obj.value.respuesta, queda:cuantoQueda }
-				     }
-				     if (actual>=obj.value.respuesta.Expires ) {
-					 console.log('[DMS gTESAT] token caducado id='+obj.key);
-                                         obj.value.respuesta.token='caducado'
-					 obj.value.respuesta.actual=actual;
-					 updestado(obj,TOKEN.CADUCADO,obj.value.respuesta).then( x =>  {
-						return { tokenEstatusSAT:TOKEN.CADUCADO } 
-					 });
-				     }
-			     } else { 
-					 return { tokenEstatusSAT:obj.value.estado }; 
-			     } 
-		})
-                .then( x => {
-                             resolve(x);
-		})
-		.catch( err => {
-			                 console.log('[DMS gTESAT] err='+err);
-				         resolve({ tokenEstatusSAT:TOKEN.NOSOLICITADO }); 
-		     });
-                });
+       return new Promise((resolve, reject) => {
+           selObjectUlt('request', 'url', '/autentica.php', 'prev')
+               .then(obj => {
+                   var actual = Math.floor(Date.now() / 1000);
+
+                   // Case 1: No object found
+                   if (!obj) {
+                       resolve({ tokenEstatusSAT: TOKEN.NOSOLICITADO });
+                       return;
+                   }
+
+                   // Case 2: Response exists and is valid
+                   if ('respuesta' in obj.value && obj.value.respuesta !== null && obj.value.respuesta !== undefined) {
+                       // Token is still active
+                       if (actual <= obj.value.respuesta.Expires) {
+                           var cuantoQueda = this.queda(actual, obj.value.respuesta.Expires);
+                           resolve({ 
+                               tokenEstatusSAT: TOKEN.ACTIVO, 
+                               certificado: obj.value.passdata, 
+                               token: obj.value.respuesta, 
+                               queda: cuantoQueda 
+                           });
+                       } 
+                       // Token has expired
+                       else {
+                           console.log('[DMS gTESAT] token caducado id=' + obj.key);
+                           obj.value.respuesta.token = 'caducado';
+                           obj.value.respuesta.actual = actual;
+                           updestado(obj, TOKEN.CADUCADO, obj.value.respuesta).then(x => {
+                               resolve({ tokenEstatusSAT: TOKEN.CADUCADO });
+                           });
+                       }
+                   } 
+                   // Case 3: Object exists but has no valid response yet (e.g., error or pending)
+                   else {
+                       resolve({ tokenEstatusSAT: obj.value.estado });
+                   }
+               })
+               .catch(err => {
+                   console.log('[DMS gTESAT] err=' + err);
+                   // Always resolve with a default state so .then() in sw-custom.js doesn't fail
+                   resolve({ tokenEstatusSAT: TOKEN.NOSOLICITADO });
+               });
+       });
    }
-
-}
-
