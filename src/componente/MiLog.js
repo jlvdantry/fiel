@@ -28,7 +28,7 @@ class MiLog extends Component {
 		try {
 		    window.borrarTodoDeTabla('log').then( x => {
 			    this.totalLog();
-			    this.consulta();
+			    this.consultaLog();
 		    });
 		} catch (error) {
 		    console.error("No se pudieron borrar los registros", error);
