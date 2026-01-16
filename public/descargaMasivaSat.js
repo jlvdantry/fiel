@@ -497,7 +497,7 @@ var DescargaMasivaSat = function()
 					 console.log('[DMS gTESAT] token caducado id='+obj.key);
                                          obj.value.respuesta.token='caducado'
 					 obj.value.respuesta.actual=actual;
-					 updestado(obj,TOKEN.CADUCADO,obj.value.reepuesta).then( x =>  {
+					 updestado(obj,TOKEN.CADUCADO,obj.value.respuesta).then( x =>  {
 						return { tokenEstatusSAT:TOKEN.CADUCADO } 
 					 });
 				     }
