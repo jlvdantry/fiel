@@ -256,7 +256,7 @@ var DescargaMasivaSat = function()
 	   this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
    }
 
-   this.autenticate_armasoa = async (pwd) => {
+   this.autenticate_armasoa = (pwd) => {
                 this.mifiel.validaprivada(pwd).then( res => {
 			if (res.ok) {
 			   var cer=this.mifiel.damecertificadofiel();
@@ -279,6 +279,8 @@ var DescargaMasivaSat = function()
                 var hs1={ 'Content-Type': 'text/xml;charset=UTF-8','SOAPAction':SOAPACTION.AUTENTICA,'Cache-Control':'no-cache'};
                 inserta_request(url ,res.cer ,MENUS.DESCARGAMASIVA ,FORMA.DESCARGAMASIVA ,MOVIMIENTO.AUTENTICA ,hs1, res.soap ,res.urlSAT).then( key => {
                                 console.log("[autenticate_enviasoa] request de autenticacion");
+                                try { syncRequest(ESTADOREQ.INICIAL.AUTENTICA); }  // sincroniza la autenticacion
+			               catch (err) { console.error('erron en el sycRequest'); } // sin manda error es que esta corriendo en primer plano
                 });
    }
 

@@ -442,12 +442,12 @@ var revisaSiEstaAutenticado = () => {
 		   DMS= new DescargaMasivaSat();
                }
 	       DMS.getTokenEstatusSAT().then( res => {
-	           console.log('[sw rSEA] estatus token='+(res!==undefined ? res.tokenEstatusSAT : 'indefinido'));
+	           console.log('[se encontro token su estatus='+(res!==undefined ? res.tokenEstatusSAT : 'indefinido'));
                    if (res===undefined || res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO 
 			               || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO 
 			               || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
 		      ) {
-			       console.log('[sw rSEA] va a generar el request de autenticacion');
+			       console.log('Va a generar el request de autenticacion');
 			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });
                    }
 	       }).catch(er => { console.log('[sw rSEA] error en getTokenEstatusSAT '+er);}) 

@@ -37,29 +37,29 @@ async function procesarTareasPendientes(quemetodo) {
         console.log('Revisa si esta autenticado si no crea request de autenciacion');
         revisaSiEstaAutenticado();
 
-        console.log('Iniciando secuencia: Autenticación '+quemetodo);
+        //console.log('Iniciando secuencia: Autenticación '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.AUTENTICA);
 
-        console.log('Iniciando secuencia: Solicitud '+quemetodo);
+        //console.log('Iniciando secuencia: Solicitud '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
 
-        console.log('Iniciando secuencia: Verificación '+quemetodo);
+        //console.log('Iniciando secuencia: Verificación '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.VERIFICA);
 
-        console.log('Iniciando secuencia: Pendientes de descarga '+quemetodo);
+        //console.log('Iniciando secuencia: Pendientes de descarga '+quemetodo);
         await syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
 
-        console.log('Iniciando secuencia: Solicitudes aceptadas '+quemetodo);
+        //console.log('Iniciando secuencia: Solicitudes aceptadas '+quemetodo);
         await syncRequest(ESTADOREQ.SOLICITUDACEPTADA);
 
-        console.log('Iniciando secuencia: Descarga final '+quemetodo);
+        //console.log('Iniciando secuencia: Descarga final '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.DESCARGA);
 
         await bajaVerificaciones();
         await bajaTokenCaducado();
         await bajaRequiriendo();
 
-        console.log('Ciclo de tareas completado ordenadamente.');
+        console.log('Termino barrido de tareas ');
 
     } catch (err) {
         console.error('[sw] Error en procesarTareasPendientes:', err);
