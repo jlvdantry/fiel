@@ -5,7 +5,7 @@ async function procesarTareasPendientes(quemetodo) {
         // --- NUEVO: Guardar registro de éxito ---
         const registroExito = {
             fechatiempo: Date.now(),
-            metodo: quemetodo+' Plano isProcessing='+isProcessing
+            metodo: quemetodo+' Plano '
         };
         // Usamos tu función existente para guardar el rastro
         await insertaOActualizaInterval(registroExito, 'UltimaRevisionExito');
@@ -37,25 +37,24 @@ async function procesarTareasPendientes(quemetodo) {
         console.log('Revisa si esta autenticado si no crea request de autenciacion');
         revisaSiEstaAutenticado();
 
-        console.log('Iniciando secuencia: Autenticación');
+        console.log('Iniciando secuencia: Autenticación '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.AUTENTICA);
 
-        console.log('Iniciando secuencia: Solicitud');
+        console.log('Iniciando secuencia: Solicitud '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.SOLICITUD);
 
-        console.log('Iniciando secuencia: Verificación');
+        console.log('Iniciando secuencia: Verificación '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.VERIFICA);
 
-        console.log('niciando secuencia: Pendientes de descarga');
+        console.log('Iniciando secuencia: Pendientes de descarga '+quemetodo);
         await syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
 
-        console.log('Iniciando secuencia: Solicitudes aceptadas');
+        console.log('Iniciando secuencia: Solicitudes aceptadas '+quemetodo);
         await syncRequest(ESTADOREQ.SOLICITUDACEPTADA);
 
-        console.log('Iniciando secuencia: Descarga final');
+        console.log('Iniciando secuencia: Descarga final '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.DESCARGA);
 
-        // 4. Limpieza (estas funciones también deberían ser llamadas secuencialmente)
         await bajaVerificaciones();
         await bajaTokenCaducado();
         await bajaRequiriendo();

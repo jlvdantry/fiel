@@ -125,7 +125,7 @@ var addObject = function(objectStore, object) {
                 resolve(event.target.result,object);
              }
         request.onerror = (event) => {
-                console.log('[addObject] error al agregar el objeto='+event.target.error);
+                //console.log('[addObject] error al agregar el objeto='+event.target.error);
                 reject(event);
              }
 
@@ -823,7 +823,28 @@ var updestado = (request,esta,respuesta) => {
 };
 
 
+/**
+ * Borra todos los registros de una tabla específica
+ * @param {string} storeName - Nombre de la tabla a limpiar (ej. 'request')
+ */
+var borrarTodoDeTabla = (storeName) => {
+    return new Promise((resolve, reject) => {
+        // Usamos tu función existente para abrir la DB
+        openDatabasex(DBNAME, DBVERSION).then(db => {
+            const transaction = db.transaction([storeName], "readwrite");
+            const objectStore = transaction.objectStore(storeName);
+            
+            const request = objectStore.clear();
 
+            request.onsuccess = () => {
+                console.log(`[db] Tabla ${storeName} vaciada con éxito.`);
+                resolve(true);
+            };
 
-
-
+            request.onerror = (event) => {
+                console.error(`[db] Error al vaciar ${storeName}:`, event.target.error);
+		    reject(event.target.error);
+            };
+        }).catch(err => reject(err));
+    });
+};

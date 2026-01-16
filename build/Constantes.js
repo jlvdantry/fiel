@@ -37,12 +37,12 @@ var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:
      // NOSOLICITADO no se ha solicitado
 var  REVISA = { 
 	  VIGENCIATOKEN   : 1 /* cada cuando se revisa si el token esta vigente en el cargafaelMasiva browser en segundos */
-	, ESTADOREQ       :20   /* cada cuando se revisa el estado del requerimiento en segundos */
+	, ESTADOREQ       :60   /* cada cuando se revisa el estado del requerimiento en segundos */
 	, VIGENCIATOKEN_SW:10   /* revisa si el token esta activo caso contrario intenta conectarse en el sw en segundos */
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.556.94';
+var VERSION='1.0.557.03';
 var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
 	            ,SOLICITUD:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc'
 	            ,VERIFICA: 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc'
