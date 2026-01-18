@@ -8,6 +8,7 @@ importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
 importScripts('tareasPendientes.js');
 importScripts('log.js');
+importScripts('estaAutenticado.js');
 var DMS = null;
 var intervalSync = null;
 
@@ -433,28 +434,6 @@ self.addEventListener('message', (event) => {
   }
 });
 
-/* Revisa si esta autenticado */
-var revisaSiEstaAutenticado = () => {
-	dame_pwd().then(pwd => {
-	    if (pwd!==null)  { /* ya se tecleo la pwd */
-	       if (DMS===null) {
-		   PWDFIEL= pwd;
-		   DMS= new DescargaMasivaSat();
-               }
-	       DMS.getTokenEstatusSAT().then( res => {
-	           console.log('[se encontro token su estatus='+(res!==undefined ? res.tokenEstatusSAT : 'indefinido'));
-                   if (res===undefined || res.tokenEstatusSAT===TOKEN.NOSOLICITADO || res.tokenEstatusSAT===TOKEN.CADUCADO 
-			               || res.tokenEstatusSAT===ESTADOREQ.ERROR || res.tokenEstatusSAT===TOKEN.NOGENERADO 
-			               || res.tokenEstatusSAT===ESTADOREQ.ERRORFETCH
-		      ) {
-			       console.log('Va a generar el request de autenticacion');
-			       DMS.autenticate_armasoa(pwd).then( x => { console.log('[rSEA] genero el request de autentificacion') });
-                   }
-	       }).catch(er => { console.log('[sw rSEA] error en getTokenEstatusSAT '+er);}) 
-	    }
-	}).catch(er => { console.log('[sw rSEA] error en dame_pwd '+er)
-	});
-}
 
 dame_pwd().then(pwd => {
             if (pwd!==null)  { /* ya se tecleo la pwd */
@@ -518,16 +497,6 @@ var  estacorriendoIntevalo = () => {    // TODO  esto debe ser hasta que este ca
 		if (msg.substring(0,20)=='No encontro registro') { ponIntervaloRequest(); } 
 		else { console.log('error al poner intervalo de sincronizacion msg='+msg); }
 	});
-/**
-        dameInterval('Inter2').then( x => {
-                var tiempo = Date.now() - x;
-                if (tiempo > REVISA.VIGENCIATOKEN_SW * 1000) { 
-                        ponIntervaloAutenticacion();
-                }
-        }).catch(msg=> { if (msg.substring(0,20)=='No encontro registro') { ponIntervaloAutenticacion(); } 
-		else { console.log('error al poner intervalo de autenticacion msg='+msg); }
-	});
-**/
 }
 
 

@@ -117,7 +117,6 @@ class CargafaelMasiva extends Component {
   /* revisa si esta autenticado recibe el objeto del aplicativo */
   revisaSiEstaAutenticado = () => {
 	      DMS.getTokenEstatusSAT().then( res => {
-		      //console.log('[rSEA] res='+JSON.stringify(res));
 		      if (res!==undefined) {
 			       if (res.tokenEstatusSAT!== this.state.tokenEstatusSAT || res.queda!==this.state.queda) {
 				   this.setState({ tokenEstatusSAT : res.tokenEstatusSAT , queda:res.queda});

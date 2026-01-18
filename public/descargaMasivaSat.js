@@ -530,3 +530,4 @@ var DescargaMasivaSat = function()
                });
        });
    }
+}
