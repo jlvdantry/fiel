@@ -58,15 +58,15 @@ class Misfacturas extends Component {
 	     <div className="row text-center mt-3 mx-2">
 		 <div className="col-md-4">
 		     <h6 className="text-muted">Total Ingresos</h6>
-		     <h4 className="text-success">${totalIngreso.toLocaleString()}</h4>
+		     <h4 className="text-success">${totalIngreso.toLocaleString('en-MX')}</h4>
 		 </div>
 		 <div className="col-md-4">
 		     <h6 className="text-muted">Total Egresos</h6>
-		     <h4 className="text-danger">${totalEgreso.toLocaleString()}</h4>
+		     <h4 className="text-danger">${totalEgreso.toLocaleString('en-MX')}</h4>
 		 </div>
 		 <div className="col-md-4">
 		     <h6 className="text-muted">Neto</h6>
-		     <h4 className="text-primary">${(totalIngreso - totalEgreso).toLocaleString()}</h4>
+		     <h4 className="text-primary">${(totalIngreso - totalEgreso).toLocaleString('en-MX')}</h4>
 		 </div>
 	     </div>
              <Graficafael />
