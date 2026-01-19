@@ -193,6 +193,11 @@ class CargafaelMasiva extends Component {
 			      return;
 		      }
 
+		      // ADD THIS CHECK HERE: Ensure event.data.request exists
+		      if (!event.data.request || !event.data.request.value) {
+			    return; 
+		      }
+
 		      if (event.data.request.value.estado===window.ESTADOREQ.AUTENTICADO & event.data.request.value.url==="/autentica.php") {
 			 this.setState({ token: event.data.respuesta,pwdfiel:  window.PWDFIEL });
 		      }

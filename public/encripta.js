@@ -1,4 +1,3 @@
-   importScripts('forge.min.js');
    /* genera las llaves RSA del aplicativo */
    generallaves = () => {
         lee_llaves().then( x => {

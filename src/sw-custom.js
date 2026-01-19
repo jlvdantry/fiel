@@ -1,5 +1,6 @@
 SW_VERSION = '1.0.290';
 importScripts('utils.js');
+importScripts('forge.min.js');
 importScripts('encripta.js');
 importScripts('db.js');
 importScripts('dbFiel.js');
@@ -433,16 +434,6 @@ self.addEventListener('message', (event) => {
 	  estacorriendoIntevalo();
   }
 });
-
-
-dame_pwd().then(pwd => {
-            if (pwd!==null)  { /* ya se tecleo la pwd */
-               if (DMS===null) {
-                   PWDFIEL= pwd;
-                   DMS= new DescargaMasivaSat();
-               }
-            }
-        });
 
 
 var ponIntervaloRequest = () => {

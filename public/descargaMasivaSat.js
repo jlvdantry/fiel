@@ -280,7 +280,7 @@ var DescargaMasivaSat = function()
                 inserta_request(url ,res.cer ,MENUS.DESCARGAMASIVA ,FORMA.DESCARGAMASIVA ,MOVIMIENTO.AUTENTICA ,hs1, res.soap ,res.urlSAT).then( key => {
                                 console.log("[autenticate_enviasoa] request de autenticacion");
                                 try { syncRequest(ESTADOREQ.INICIAL.AUTENTICA); }  // sincroniza la autenticacion
-			               catch (err) { console.error('erron en el sycRequest'); } // sin manda error es que esta corriendo en primer plano
+			               catch (err) { console.error('erron en el sycRequest '+err); } // sin manda error es que esta corriendo en primer plano
                 });
    }
 

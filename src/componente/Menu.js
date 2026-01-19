@@ -5,11 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { browserHistory  } from 'react-router';
 
 let timer = null;
+let timerc = null;
 class Menumi extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { isOpen: false, online: true , showInstallMessage:false, windowWidth: window.innerWidth, windowHeigth : window.innerHeight, nombre:null };
+    this.state = { isOpen: false, online: true , showInstallMessage:false, windowWidth: window.innerWidth, windowHeigth : window.innerHeight, nombre:null,isConected:false };
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
     this.quitainstala = this.quitainstala.bind(this);
@@ -17,6 +18,7 @@ class Menumi extends Component {
     this.defaultlink = React.createRef();
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     this.cambio = this.cambio.bind(this);
+    this.estaAutenticado =this.estaAutenticado.bind(this);
   }
 
  
@@ -60,10 +62,35 @@ class Menumi extends Component {
 	  this.setState({ showInstallMessage: true });
           timer=setInterval(() => this.quitainstala(), 5000)
 	}
-	  //this.setState({ showInstallMessage: true });
     document.querySelector('#ayuda').click();
-      timer = setInterval(() => this.cambio(), 2000)
+    timer = setInterval(() => this.cambio(), 2000)
     window.log_en_bd(undefined,'1');
+
+    // 1. Listen for the event dispatched by the shared code
+    window.addEventListener('authStatusChanged', (e) => {
+        this.setState({ isConected: e.detail });
+    });
+
+    // 2. Also listen for Service Worker messages (if SW runs it in background)
+    if (navigator.serviceWorker) {
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data.type === 'AUTH_STATUS') {
+                this.setState({ isConected: event.data.value });
+            }
+        });
+    }
+    this.timec=setInterval(this.estaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerc); // Tells the browser: "Stop running ID '1'"
+  }
+
+
+  estaAutenticado() {
+	    if (typeof window.revisaSiEstaAutenticado === 'function') {
+		window.revisaSiEstaAutenticado();
+	    }
   }
 
   cambio() {
@@ -82,9 +109,9 @@ class Menumi extends Component {
     clearTimeout(timer);
   }
 
-	updateWindowDimensions() {
+  updateWindowDimensions() {
 	  this.setState({ windowWidth: window.innerWidth, windowHeight: window.innerHeight });
-	}
+  }
 
   componentWillUnmount() {
     window.removeEventListener('online');
@@ -98,7 +125,13 @@ class Menumi extends Component {
     return (
       <div id='menu'>
         <Navbar color="blue" light expand="md">
-          <h5>FIEL-{this.state.nombre!==null ? this.state.nombre.split(' ')[0]+' '+this.state.nombre.split(' ')[1] : null}</h5>
+          <h5>FIEL-{this.state.nombre!==null ? this.state.nombre.split(' ')[0]+' '+this.state.nombre.split(' ')[1] : null}
+		    <div className="ml-auto d-flex align-items-center">
+			<span style={{ color: this.state.isConected ? 'green' : 'red' }}>
+			    <FontAwesomeIcon icon={['fas', 'circle']} className="mr-1" />
+			</span>
+            </div>
+	  </h5>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto " navbar>
