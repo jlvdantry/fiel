@@ -16,7 +16,7 @@ var log_en_bd = function (type,plano) {
         originalLog.apply(console, args);
     };
     console.error = function(...args) {
-        logToDocumentE(args.join(' '),type,type,plano);
+        logToDocumentE(args.join(' '),type+'e',type,plano);
         originalLogE.apply(console, args);
     };
 

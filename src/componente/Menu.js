@@ -79,13 +79,8 @@ class Menumi extends Component {
             }
         });
     }
-    this.timec=setInterval(this.estaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+    timerc=setInterval(this.estaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
   }
-
-  componentWillUnmount() {
-    clearInterval(this.timerc); // Tells the browser: "Stop running ID '1'"
-  }
-
 
   estaAutenticado() {
 	    if (typeof window.revisaSiEstaAutenticado === 'function') {
@@ -117,6 +112,7 @@ class Menumi extends Component {
     window.removeEventListener('online');
     window.removeEventListener('offline');
     window.removeEventListener('resize', this.updateWindowDimensions);
+    clearInterval(timerc); // Tells the browser: "Stop running ID '1'"
   }
 
   setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; }

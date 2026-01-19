@@ -1,4 +1,5 @@
 SW_VERSION = '1.0.290';
+importScripts('Constantes.js');
 importScripts('utils.js');
 importScripts('forge.min.js');
 importScripts('encripta.js');
@@ -17,7 +18,6 @@ log_en_bd('sw','1');
 
 if ("function" === typeof importScripts) {
    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
-   importScripts('Constantes.js');
    importScripts('insertaDatos.js');
   // Global workbox
   if (workbox) {
@@ -156,13 +156,10 @@ var syncRequest = estado => {
 				}
 
                                 if (request.value.estado==ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD) { // genera registro para que se  descargue las facturas
-                                         console.log('[sR] va a obtener el ultimo token activo');
+                                         console.log('obtuvo un request pendiente de download y va a obtener el ultimo token activo');
 					 obtieneelUltimoTokenActivo().then( aut => {
-                                                         console.log('[sR] download');
 							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires ,token:aut.value.respuesta.token };
-                                                         console.log('[sR] download token');
 							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq };
-                                                         console.log('[sR] download datos');
                                                          DMS.descargando(datos,request).then( x=> { 
                                                                 console.log('[sR] download DMS.descargando');
 								updestado(request,ESTADOREQ.SOLICITUDDESCARGANDO); 
