@@ -209,7 +209,6 @@ function bajaRequiriendo()
                                        var fr=cursor1.value.fecha+' '+hora+':'+minuto;
                                        var dif = differenceInMinutes(fh,fr);
                                        if  (dif > REQUIRIENDOMINUTOS) {
-					    console.log('[bR] fecha hora='+fh);
                                             objectStore.delete(cursor1.primaryKey);
 				       }
                                        cursor1.continue();

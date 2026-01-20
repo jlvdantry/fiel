@@ -424,7 +424,7 @@ self.addEventListener('message', (event) => {
 	  encripta_pw(event.data.PWDFIEL);
   }
   if (event.data && event.data.action === 'TAB_VISIBLE') {
-	  estacorriendoIntevalo();
+          await procesarTareasPendientes('Primer');
   }
   if (event.data && event.data.action === 'START_INTERVALO') {
 	  console.log('START_INTERVALO');
