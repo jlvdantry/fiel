@@ -86,6 +86,9 @@ class Menumi extends Component {
 	    if (typeof window.revisaSiEstaAutenticado === 'function') {
 		window.revisaSiEstaAutenticado();
 	    }
+	    if (navigator.serviceWorker.controller) {
+	      navigator.serviceWorker.controller.postMessage({ action: "TAB_VISIBLE" });
+	    }
   }
 
   cambio() {
