@@ -6,6 +6,7 @@ import { browserHistory  } from 'react-router';
 
 let timer = null;
 let timerc = null;
+let timerR = null;
 class Menumi extends Component {
 
   constructor(props) {
@@ -19,6 +20,7 @@ class Menumi extends Component {
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     this.cambio = this.cambio.bind(this);
     this.estaAutenticado =this.estaAutenticado.bind(this);
+    this.revisaRequest = this.revisaRequest.bind(this);
   }
 
  
@@ -80,14 +82,17 @@ class Menumi extends Component {
         });
     }
     timerc=setInterval(this.estaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+    timerR=setInterval(this.revisaRequest, (window.REVISA.ESTADOREQ * 1000));
   }
 
   estaAutenticado() {
 	    if (typeof window.revisaSiEstaAutenticado === 'function') {
 		window.revisaSiEstaAutenticado();
 	    }
+  }
+  revisaRequest() {
 	    if (navigator.serviceWorker.controller) {
-	      navigator.serviceWorker.controller.postMessage({ action: "TAB_VISIBLE" });
+	      navigator.serviceWorker.controller.postMessage({ action: "REVISA_REQUERIMIENTOS" });
 	    }
   }
 
