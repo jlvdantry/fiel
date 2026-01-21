@@ -43,10 +43,21 @@ if ("function" === typeof importScripts) {
 
     // Dentro de sw-custom.js
     self.addEventListener('periodicsync', (event) => {
+            const timestamp = new Date().toLocaleString();
 	    if (event.tag === 'check-sat-status') {
-		// waitUntil es vital para que el navegador no mate al SW 
-		// antes de que terminen las peticiones al SAT
-		event.waitUntil(procesarTareasPendientes('Segundo'));
+                const timestamp = new Date().toLocaleString();
+		event.waitUntil(
+		    // Use your existing log_en_bd or a custom sync log
+		    log_en_bd('PeriodicSync', `Ejecutado a las: ${timestamp}`)
+		    .then(() => {
+			console.log(`[SW] Sincronización iniciada: ${timestamp}`);
+			return revisaSiEstaAutenticado();
+		    })
+		    .catch(err => {
+			log_en_bd('SyncError', err.message);
+		    })
+		);
+
 	    }
     });
 
@@ -200,11 +211,13 @@ var syncRequest = estado => {
 					headerf={'content-type':'application/json'};
 					fetch('proxySAT.php',{method : 'post', headers: headerf, body   : JSON.stringify(body) })
 					.then( async response => {
-						  if (response.status===500) { 
-							  console.log('[sr] error 500');
-							  await updestado(request,ESTADOREQ.ERROR);
-							  Promise.reject({'error' : response.status });
-						  } else { return response.json(); }
+					if (!response.ok) {
+							// If status is 500 or other errors, we update and THROW
+							return updestado(request, ESTADOREQ.ERROR).then(() => {
+							    throw new Error("HTTP " + response.status);
+							});
+						    }
+						  return response.json(); }
 					})
 					.then( async response => {
 						  await updestado(request,ESTADOREQ.RECIBIDO, response); 
@@ -213,8 +226,7 @@ var syncRequest = estado => {
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch( async err => { 
 						console.log('[fetch] error='+err);
-						await updestado(request,ESTADOREQ.ERRORFETCH, err); 
-						return Promise.reject(err); 
+						await updestado(request,ESTADOREQ.ERRORFETCH, err.message || err); 
 					})
                                 });  // fin updestado
                          });  // fin del map
@@ -424,11 +436,7 @@ self.addEventListener('message', (event) => {
 	  encripta_pw(event.data.PWDFIEL);
   }
   if (event.data && event.data.action === 'TAB_VISIBLE') {
-          await procesarTareasPendientes('Primer');
-  }
-  if (event.data && event.data.action === 'START_INTERVALO') {
-	  console.log('START_INTERVALO');
-	  estacorriendoIntevalo();
+          procesarTareasPendientes('Primer');
   }
 });
 
