@@ -25,13 +25,12 @@ if ("function" === typeof importScripts) {
     workbox.loadModule('workbox-strategies');
 
 
-      self.skipWaiting();
     //`generateSW` and `generateSWString` provide the option
     // to force update an exiting service worker.
     // Since we're using `injectManifest` to build SW,
     // manually overriding the skipWaiting();
     self.addEventListener("install", (event) => {
-      //self.skipWaiting();
+      self.skipWaiting();
       generallaves();
       insertaRFCS();
     });
@@ -211,13 +210,13 @@ var syncRequest = estado => {
 					headerf={'content-type':'application/json'};
 					fetch('proxySAT.php',{method : 'post', headers: headerf, body   : JSON.stringify(body) })
 					.then( async response => {
-					if (!response.ok) {
-							// If status is 500 or other errors, we update and THROW
-							return updestado(request, ESTADOREQ.ERROR).then(() => {
-							    throw new Error("HTTP " + response.status);
-							});
-						    }
-						  return response.json(); }
+						if (!response.ok) {
+								// If status is 500 or other errors, we update and THROW
+								return updestado(request, ESTADOREQ.ERROR).then(() => {
+								    throw new Error("HTTP " + response.status);
+								});
+						}
+						return response.json(); 
 					})
 					.then( async response => {
 						  await updestado(request,ESTADOREQ.RECIBIDO, response); 
@@ -226,6 +225,11 @@ var syncRequest = estado => {
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch( async err => { 
 						console.log('[fetch] error='+err);
+					// Trigger a visual notification on the Android status bar
+						enviarNotificacionSat(
+							'Error de Conexión SAT', 
+							'No se pudo contactar al servidor. Reintentando en el próximo ciclo.'
+						);
 						await updestado(request,ESTADOREQ.ERRORFETCH, err.message || err); 
 					})
                                 });  // fin updestado
@@ -435,7 +439,7 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.action === 'setContra') {
 	  encripta_pw(event.data.PWDFIEL);
   }
-  if (event.data && event.data.action === 'TAB_VISIBLE') {
+  if (event.data && event.data.action === 'REVISA_REQUERIMIENTOS') {
           procesarTareasPendientes('Primer');
   }
 });
