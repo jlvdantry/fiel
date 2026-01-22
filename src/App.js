@@ -30,9 +30,8 @@ document.addEventListener("visibilitychange", () => {
     console.log("[App.js] Tab is now hidden.");
   } else {
     console.log("[App.js] Tab is now visible.");
-    // Optionally send a message to the Service Worker
     if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({ action: "TAB_VISIBLE" });
+      navigator.serviceWorker.controller.postMessage({ action: "REVISA_REQUERIMIENTOS" });
     }
   }
 });
