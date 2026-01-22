@@ -19,6 +19,8 @@ const isLocalhost = Boolean(
     )
 );
 
+window.log_en_bd('serviceWorker','iniciando');
+
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
@@ -60,26 +62,29 @@ function registerValidSW(swUrl, config) {
     if (window.Notification && Notification.permission !== 'granted') {
         Notification.requestPermission();
     }
-	    
-    if ('periodicSync' in registration) {
-        // Solicitamos el permiso al navegador
-        navigator.permissions.query({
-          name: 'periodic-background-sync',
-        }).then((status) => {
-          if (status.state === 'granted') {
-            registration.periodicSync.register('check-sat-status', {
-              // Intento de ejecución cada 15 minutos (mínimo permitido por Chrome)
-              minInterval: 15 * 60 * 1000, 
-            }).then(() => {
-              console.log('[PeriodicSync] Registrado con éxito');
-            }).catch((e) => {
-              console.error('[PeriodicSync] Error al registrar:', e);
-            });
-          } else {
-            console.log('[PeriodicSync] Permiso denegado por el navegador o PWA no instalada');
-          }
-        });
-    }
+    navigator.serviceWorker.ready.then((registration) => {	    
+	    if ('periodicSync' in registration) {
+		// Solicitamos el permiso al navegador
+		navigator.permissions.query({
+		  name: 'periodic-background-sync',
+		}).then((status) => {
+		  if (status.state === 'granted') {
+		    registration.periodicSync.register('check-sat-status', {
+		      // Intento de ejecución cada 15 minutos (mínimo permitido por Chrome)
+		      minInterval: 15 * 60 * 1000, 
+		    }).then(() => {
+		      console.log('[PeriodicSync] Registrado con éxito');
+		    }).catch((e) => {
+		      console.error('[PeriodicSync] Error al registrar:', e);
+		    });
+		  } else {
+		    console.log('[PeriodicSync] Permiso denegado por el navegador o PWA no instalada');
+		  }
+		});
+	    }
+    });
+
+
       window.dameMuestraLog().then( x => {
         if (x===true) { document.querySelector('#logContainer').classList.remove("d-none") } else { document.querySelector('#logContainer').classList.add("d-none") };
       }).catch(x=> { console.log('[rVSW] no encontro registro para mostrarlog') });
