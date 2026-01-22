@@ -170,7 +170,6 @@ function bajaTokenCaducado()
                                        counter++;
                                        if (counter>3)  {
                                           objectStore.delete(cursor1.primaryKey);
-                                          console.log('[bTC] registro borrado='+cursor1.primaryKey);
                                        }
                                        cursor1.continue();
                                     } else {
