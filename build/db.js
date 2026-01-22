@@ -125,7 +125,6 @@ var addObject = function(objectStore, object) {
                 resolve(event.target.result,object);
              }
         request.onerror = (event) => {
-                //console.log('[addObject] error al agregar el objeto='+event.target.error);
                 reject(event);
              }
 
