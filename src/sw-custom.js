@@ -51,8 +51,7 @@ if ("function" === typeof importScripts) {
 			    console.log(`[SW] Sincronización iniciada: ${timestamp}`);
 			    
 			    // 2. Perform your logic
-			    await revisaSiEstaAutenticado();
-	                    await procesarTareasPendientes('Primer');
+	                    await procesarTareasPendientes('Segundo');
 			} catch (err) {
 			    // Use console.error which is wrapped to log to DB
 			    console.error('SyncError: ' + err.message);
