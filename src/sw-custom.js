@@ -40,26 +40,27 @@ if ("function" === typeof importScripts) {
 		event.waitUntil(self.clients.claim());
     });
 
-    // Dentro de sw-custom.js
-    self.addEventListener('periodicsync', (event) => {
-            const timestamp = new Date().toLocaleString();
+
+	self.addEventListener('periodicsync', (event) => {
+	    const timestamp = new Date().toLocaleString();
 	    if (event.tag === 'check-sat-status') {
-                const timestamp = new Date().toLocaleString();
 		event.waitUntil(
-		    // Use your existing log_en_bd or a custom sync log
-		    log_en_bd('PeriodicSync', `Ejecutado a las: ${timestamp}`)
-		    .then(() => {
-			console.log(`[SW] Sincronización iniciada: ${timestamp}`);
-			return revisaSiEstaAutenticado();
-		    })
-		    .catch(err => {
-			log_en_bd('SyncError', err.message);
-		    })
+		    (async () => {
+			try {
+			    // 1. Just call the log function (it doesn't return a promise)
+			    console.log(`[SW] Sincronización iniciada: ${timestamp}`);
+			    
+			    // 2. Perform your logic
+			    await revisaSiEstaAutenticado();
+	                    await procesarTareasPendientes('Primer');
+			} catch (err) {
+			    // Use console.error which is wrapped to log to DB
+			    console.error('SyncError: ' + err.message);
+			}
+		    })()
 		);
-
 	    }
-    });
-
+	});
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
@@ -444,60 +445,6 @@ self.addEventListener('message', (event) => {
   }
 });
 
-
-var ponIntervaloRequest = () => {
-    lee_llaves().then(x => {
-        if (x && x.value && 'validada' in x.value) {
-            console.log("Inicia ciclo para revisar estatus de requerimientos");
-
-            const ejecutarCiclo = async () => {
-                var obj = { fechatiempo: Date.now() };
-                
-                // Registro del latido del intervalo en la DB
-                await insertaOActualizaInterval(obj, 'Inter1');
-                
-                // Ejecución secuencial de tareas
-                await procesarTareasPendientes('Primer');
-
-                // Programamos la siguiente ejecución SOLO cuando esta termine
-                setTimeout(ejecutarCiclo, REVISA.ESTADOREQ * 1000);
-            };
-
-            ejecutarCiclo();
-        }
-    }).catch(err => { 
-        console.log("Error al iniciar intervalo:", err); 
-    });
-}
-var ponIntervaloAutenticacion = () => {
-        lee_llaves().then(x => {
-              if ('validada' in x.value) {
-			console.log("Pone intervalo para revisar si esta autenticado");
-			setInterval( () => { // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
-				var obj = { fechatiempo: Date.now() };
-				insertaOActualizaInterval(obj,'Inter2');
-				try { revisaSiEstaAutenticado() } 
-				catch (err) {
-				   console.log("Error in interval EstaAutenticado:", err);
-				};
-			}, REVISA.VIGENCIATOKEN_SW * 1000);
-	      }
-         }).catch ( err => { console.log(err);});
-}
-
-
-var  estacorriendoIntevalo = () => {    // TODO  esto debe ser hasta que este cargada la fiel y esta este correcta.
-	console.log('Revisa si estan corriendo los intervalos de tiempo para revisar los estatus del request');
-	dameInterval('Inter1').then( x => {
-		var tiempo = Date.now() - x;
-		if (tiempo > REVISA.ESTADOREQ * 1000) { // no esta corriendo el intervalo
-			ponIntervaloRequest();
-		} else { console.log('Si esta el intervalo de tiempo para revisar los estatus del request'); }
-	}).catch(msg=> { 
-		if (msg.substring(0,20)=='No encontro registro') { ponIntervaloRequest(); } 
-		else { console.log('error al poner intervalo de sincronizacion msg='+msg); }
-	});
-}
 
 
 // En sw-custom.js
