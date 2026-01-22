@@ -35,7 +35,7 @@ async function procesarTareasPendientes(quemetodo) {
         }
 
         console.log('Revisa si esta autenticado si no crea request de autenciacion');
-        revisaSiEstaAutenticado();
+        await revisaSiEstaAutenticado();
 
         //console.log('Iniciando secuencia: Autenticación '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.AUTENTICA);
@@ -59,7 +59,7 @@ async function procesarTareasPendientes(quemetodo) {
         await bajaTokenCaducado();
         await bajaRequiriendo();
 
-        console.log('Termino barrido de tareas ');
+        console.log('Termino barrido de tareas plano='+quemetodo);
 
     } catch (err) {
         console.error('[sw] Error en procesarTareasPendientes:', err);
