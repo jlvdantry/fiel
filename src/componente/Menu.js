@@ -66,7 +66,7 @@ class Menumi extends Component {
 	}
     document.querySelector('#ayuda').click();
     timer = setInterval(() => this.cambio(), 2000)
-    window.log_en_bd(undefined,'1');
+    //window.log_en_bd(undefined,'1');
 
     // 1. Listen for the event dispatched by the shared code
     window.addEventListener('authStatusChanged', (e) => {
@@ -93,6 +93,8 @@ class Menumi extends Component {
   revisaRequest() {
 	    if (navigator.serviceWorker.controller) {
 	      navigator.serviceWorker.controller.postMessage({ action: "REVISA_REQUERIMIENTOS" });
+	    } else {
+		    console.log('No esta funcionando el controller');
 	    }
   }
 
@@ -120,7 +122,8 @@ class Menumi extends Component {
     window.removeEventListener('online');
     window.removeEventListener('offline');
     window.removeEventListener('resize', this.updateWindowDimensions);
-    clearInterval(timerc); // Tells the browser: "Stop running ID '1'"
+    clearInterval(timerc); // Tells the browser: "Stop running "
+    clearInterval(timerR); // Tells the browser: "Stop running '"
   }
 
   setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; }
