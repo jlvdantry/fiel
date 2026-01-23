@@ -224,8 +224,7 @@ var syncRequest = estado => {
 					 })
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch( async err => { 
-						console.log('[fetch] error='+err);
-					// Trigger a visual notification on the Android status bar
+						console.log('[fetch] error='+err+'url='+request.value.url+' response='+response);
 						enviarNotificacionSat(
 							'Error de Conexión SAT', 
 							'No se pudo contactar al servidor. Reintentando en el próximo ciclo.'
