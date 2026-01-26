@@ -414,10 +414,11 @@ var DescargaMasivaSat = function()
 					      }
 					  }
 				      }
-				      console.log('[DMS SA] armo el body key='+idkey);	
+				      console.log('[DMS SA] armo body de solicita key='+idkey);	
 				      this.solicita_enviasoa(this.xmltoken,request.value.token,request.value.passdata,idkey)
 				   }
 				   if (res.tokenEstatusSAT===TOKEN.CADUCADO) { 
+				      console.log('[DMS SA] no genero el body de solicita porque el token esta caducado de id='+idkey);	
 				   }
 				})
 			}
