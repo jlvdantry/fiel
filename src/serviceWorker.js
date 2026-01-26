@@ -87,7 +87,7 @@ function registerValidSW(swUrl, config) {
 
       window.dameMuestraLog().then( x => {
         if (x===true) { document.querySelector('#logContainer').classList.remove("d-none") } else { document.querySelector('#logContainer').classList.add("d-none") };
-      }).catch(x=> { console.log('[rVSW] no encontro registro para mostrarlog') });
+      }).catch(x=> { });
 
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
