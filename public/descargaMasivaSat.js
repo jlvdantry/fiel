@@ -522,7 +522,7 @@ var DescargaMasivaSat = function()
                    } 
                    // Case 3: Object exists but has no valid response yet (e.g., error or pending)
                    else {
-                       resolve({ tokenEstatusSAT: obj.value.estado });
+                       resolve({ tokenEstatusSAT: TOKEN.NOGENERADO });
                    }
                })
                .catch(err => {
