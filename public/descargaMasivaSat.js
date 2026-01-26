@@ -309,7 +309,7 @@ var DescargaMasivaSat = function()
 		,'Cache-Control': 'no-cache','Connection':'keep-alive'
 	};
                 update_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITUD,hs1,soa,idkey,urlSAT).then( key => {
-                                console.log("[DMS SE]  actualizo key="+key);
+                                console.log("[DMS SE]  actualizo key="+key+' a que el requerimiento es una solicitud');
                 });
    }
 
