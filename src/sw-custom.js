@@ -155,7 +155,7 @@ var syncRequest = estado => {
 	  return req;
     }).then( requests => {
                          requests.map( request => {
-                                console.log('[sR] url='+request.value.url+' key='+request.key+' es r='+estado+' estado reg='+request.value.estado);
+                                console.log('url='+request.value.url+' key='+request.key+' es r='+estado+' estado reg='+request.value.estado);
                                 if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
                                         if (DMS===null) { DMS= new DescargaMasivaSat(); }
 					/* si se cumple solo va armar el soa para la peticion */
@@ -208,10 +208,11 @@ var syncRequest = estado => {
                                 updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
 					body={envelope:request.value.body,urlSAT:request.value.urlSAT,headers:JSON.stringify(jsonHeaders)};
 					headerf={'content-type':'application/json'};
+					console.log('va hacer fetch de='+request.value.url);
 					fetch('proxySAT.php',{method : 'post', headers: headerf, body   : JSON.stringify(body) })
 					.then( async response => {
+						console.log('respondio el fecth'+request.value.url);
 						if (!response.ok) {
-								// If status is 500 or other errors, we update and THROW
 								return updestado(request, ESTADOREQ.ERROR).then(() => {
 								    throw new Error("HTTP " + response.status);
 								});
@@ -219,12 +220,13 @@ var syncRequest = estado => {
 						return response.json(); 
 					})
 					.then( async response => {
+						  console.log('response='+JSON.stringify(response,true)+' url='+request.value.url);
 						  await updestado(request,ESTADOREQ.RECIBIDO, response); 
 						  return response;
 					 })
 					.then(response => { querespuesta(request,response); return Promise.resolve(); })
 					.catch( async err => { 
-						console.log('[fetch] error='+err+'url='+request.value.url+' response='+response);
+						console.log('[fetch] error='+err+'url='+request.value.url);
 						enviarNotificacionSat(
 							'Error de Conexión SAT', 
 							'No se pudo contactar al servidor. Reintentando en el próximo ciclo.'
@@ -265,7 +267,6 @@ var querespuesta = (request,respuesta) => {
          if(respuesta===undefined) {
 		 console.log('[qr] respuesta indefinida'+JSON.stringify(request,true));
 	 }
-         console.log('[qr] id='+request.key+' url='+request.value.url);
          if("error" in respuesta) {
             updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
             return;
