@@ -8,6 +8,7 @@ importScripts('dbFiel.js');
 importScripts('dbInterval.js');
 importScripts('fiel.js');
 importScripts('descargaMasivaSat.js');
+importScripts('sycRequest.js');
 importScripts('tareasPendientes.js');
 importScripts('log.js');
 importScripts('estaAutenticado.js');
@@ -145,99 +146,6 @@ self.addEventListener("sync", event => {
        event.waitUntil(syncRequest(ESTADOREQ.INICIAL.DESCARGA));
     } ;
 });
-
-var syncRequest = estado => { 
-    openDatabasex(DBNAME, DBVERSION).then( db => {
-          var oS=openObjectStore(db, 'request', "readonly"); 
-	  return oS;
-    }).then( async objectStore => {
-          var req= await selObjects(objectStore, "estadoIndex", estado); 
-	  return req;
-    }).then( requests => {
-                         requests.map( request => {
-                                console.log('url='+request.value.url+' key='+request.key+' es r='+estado+' estado reg='+request.value.estado);
-                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.INICIAL.SOLICITUD & !('header' in request.value)) {    
-                                        if (DMS===null) { DMS= new DescargaMasivaSat(); }
-					/* si se cumple solo va armar el soa para la peticion */
-					dame_pwd().then( pwd => { 
-						 DMS.solicita_armasoa(request,request.key,pwd) 
-					});
-					return;
-				}
-
-                                if (request.value.estado==ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD) { // genera registro para que se  descargue las facturas
-                                         console.log('obtuvo un request pendiente de download y va a obtener el ultimo token activo');
-					 obtieneelUltimoTokenActivo().then( aut => {
-							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires ,token:aut.value.respuesta.token };
-							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq };
-                                                         DMS.descargando(datos,request).then( x=> { 
-                                                                console.log('[sR] download DMS.descargando');
-								updestado(request,ESTADOREQ.SOLICITUDDESCARGANDO); 
-					                 });
-					 }).catch( e=> { console.error('[sR] error='+JSON.stringify(e,true));
-					 });
-					 return;
-                                }
-
-                                if (request.value.url=='/verifica.php' & 'respuesta' in request.value) { // no procesa las verificaciones ya terminadas
-                                     if  (request.value.respuesta.substring(0,9)=="Rechazada") {  return; }
-                                }
-
-                                if (request.value.url=='/solicita.php' & estado==ESTADOREQ.SOLICITUDACEPTADA) {  // genera el registro de verificacion
-					 obtieneelUltimoTokenActivo().then( aut => {
-						 if ('respuesta' in aut.value) {
-						    if (aut.value.respuesta!==null) {
-							 var token = { Created: aut.value.respuesta.Created, Expires:aut.value.respuesta.Expires
-									       ,token:aut.value.respuesta.token }
-							 var datos = { pwdfiel:PWDFIEL, token:token,folioReq:request.value.folioReq }
-							 DMS.verificando( datos,request.key);
-						    }
-						 }
-					 }).catch( e=> { console.log('[sR] no token para verificar e='+JSON.stringify(e,true));
-					 });
-				         postRequestUpd(request,"update-request","");   /* mensajea al cliente y aqui se genera el registro de verificacion */
-                                         return; //si fue aceptada la solicitud deberia de mandar la verificacion
-                                }
-
-                                if (request.value.url=='factura') {
-                                     return;
-                                }
-
-				const jsonHeaders = request.value.header;
-				const HEADERS = new Headers(jsonHeaders);
-                                updestado(request,ESTADOREQ.REQUIRIENDO, null).then( x=> {
-					body={envelope:request.value.body,urlSAT:request.value.urlSAT,headers:JSON.stringify(jsonHeaders)};
-					headerf={'content-type':'application/json'};
-					console.log('va hacer fetch de='+request.value.url);
-					fetch('proxySAT.php',{method : 'post', headers: headerf, body   : JSON.stringify(body) })
-					.then( async response => {
-						console.log('respondio el fecth'+request.value.url);
-						if (!response.ok) {
-								return updestado(request, ESTADOREQ.ERROR).then(() => {
-								    throw new Error("HTTP " + response.status);
-								});
-						}
-						return response.json(); 
-					})
-					.then( async response => {
-						  console.log('response='+JSON.stringify(response,true)+' url='+request.value.url);
-						  await updestado(request,ESTADOREQ.RECIBIDO, response); 
-						  return response;
-					 })
-					.then(response => { querespuesta(request,response); return Promise.resolve(); })
-					.catch( async err => { 
-						console.log('[fetch] error='+err+'url='+request.value.url);
-						enviarNotificacionSat(
-							'Error de Conexión SAT', 
-							'No se pudo contactar al servidor. Reintentando en el próximo ciclo.'
-						);
-						await updestado(request,ESTADOREQ.ERRORFETCH, err.message || err); 
-					})
-                                });  // fin updestado
-                         });  // fin del map
-                    //); // promise all
-    }); // fin requests
-};
 
 
 /* envia mensaje a los clientes despues de que se actualizo el request */
