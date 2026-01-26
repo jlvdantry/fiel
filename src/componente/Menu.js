@@ -133,33 +133,27 @@ class Menumi extends Component {
       <div id='menu'>
         <Navbar color="blue" light expand="md">
           <h5>FIEL-{this.state.nombre!==null ? this.state.nombre.split(' ')[0]+' '+this.state.nombre.split(' ')[1] : null}
-		    <div className="ml-auto d-flex align-items-center">
 			<span style={{ color: this.state.isConected ? 'green' : 'red' }}>
-			    <FontAwesomeIcon icon={['fas', 'circle']} className="mr-1" />
+			    <FontAwesomeIcon icon={['fas', 'circle']} className="ml-1" />
 			</span>
-            </div>
 	  </h5>
           <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto " navbar>
-              <Link to='/ayuda' id='ayuda' className='rounded mr-1' onClick={this.closeNavbar} activeClassName="active" onlyActiveOnIndex>
-	                   <FontAwesomeIcon icon={['fas', 'question']} /> AYUDA</Link>
-              <Link to='/mifiel' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-	                   <FontAwesomeIcon icon={['fas' , 'pen-fancy']} /> MI FIEL</Link>
-              <Link to='/cargafaelMasiva' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA</Link>
-              <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
-              <Link to='/config' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'cog']} /> CONFIGURACIÓN</Link>
-              <Link to='/historialSync' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'cog']} /> HISTORIAL SINCRONIZACION</Link>
-              <Link to='/miLog' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'cog']} /> Ver log</Link>
-              <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-                           <FontAwesomeIcon icon={['fas' , 'info-circle']} /> ACERCA DE</Link>
-            </Nav>
-          </Collapse>
+		  <Collapse isOpen={this.state.isOpen} navbar>
+		    <Nav className="ml-auto " navbar>
+		      <Link to='/ayuda' id='ayuda' className='rounded mr-1' onClick={this.closeNavbar} activeClassName="active" onlyActiveOnIndex>
+				   <FontAwesomeIcon icon={['fas', 'question']} /> AYUDA</Link>
+		      <Link to='/mifiel' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+				   <FontAwesomeIcon icon={['fas' , 'pen-fancy']} /> MI FIEL</Link>
+		      <Link to='/cargafaelMasiva' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+				   <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA</Link>
+		      <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+				   <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
+		      <Link to='/config' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+				   <FontAwesomeIcon icon={['fas' , 'cog']} /> CONFIGURACIÓN</Link>
+		      <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+				   <FontAwesomeIcon icon={['fas' , 'info-circle']} /> ACERCA DE</Link>
+		    </Nav>
+		  </Collapse>
         </Navbar>
         { !this.state.online && <Alert color="danger">Aplicativo sin internet</Alert> }
         { this.state.showInstallMessage && <div  className='fixed-bottom d-flex text-justify justify-content-center' id="instalar">
