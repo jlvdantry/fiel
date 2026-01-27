@@ -309,7 +309,7 @@ var DescargaMasivaSat = function()
 		,'Cache-Control': 'no-cache','Connection':'keep-alive'
 	};
                 update_request(url,passdata,MENUS.DESCARGAMASIVA,FORMA.DESCARGAMASIVA,MOVIMIENTO.SOLICITUD,hs1,soa,idkey,urlSAT).then( key => {
-                                console.log("[DMS SE]  actualizo key="+key);
+                                console.log("[DMS SE]  actualizo key="+key+' a que el requerimiento es una solicitud');
                 });
    }
 
@@ -414,10 +414,11 @@ var DescargaMasivaSat = function()
 					      }
 					  }
 				      }
-				      console.log('[DMS SA] armo el body key='+idkey);	
+				      console.log('[DMS SA] armo body de solicita key='+idkey);	
 				      this.solicita_enviasoa(this.xmltoken,request.value.token,request.value.passdata,idkey)
 				   }
 				   if (res.tokenEstatusSAT===TOKEN.CADUCADO) { 
+				      console.log('[DMS SA] no genero el body de solicita porque el token esta caducado de id='+idkey);	
 				   }
 				})
 			}
@@ -521,7 +522,7 @@ var DescargaMasivaSat = function()
                    } 
                    // Case 3: Object exists but has no valid response yet (e.g., error or pending)
                    else {
-                       resolve({ tokenEstatusSAT: obj.value.estado });
+                       resolve({ tokenEstatusSAT: TOKEN.NOGENERADO });
                    }
                })
                .catch(err => {

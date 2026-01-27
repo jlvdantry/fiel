@@ -151,7 +151,7 @@ class Menumi extends Component {
 		      <Link to='/config' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'cog']} /> CONFIGURACIÓN</Link>
 		      <Link to='/miLog' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-				   <FontAwesomeIcon icon={['fas' , 'cog']} /> Ver log</Link>
+				   <FontAwesomeIcon icon={['fas' , 'history']} /> Ver log</Link>
 		      <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'info-circle']} /> ACERCA DE</Link>
 		    </Nav>

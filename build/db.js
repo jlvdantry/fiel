@@ -836,7 +836,6 @@ var borrarTodoDeTabla = (storeName) => {
             const request = objectStore.clear();
 
             request.onsuccess = () => {
-                console.log(`[db] Tabla ${storeName} vaciada con éxito.`);
                 resolve(true);
             };
 
