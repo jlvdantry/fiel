@@ -1,6 +1,6 @@
 
 // Cambiamos a una función async para poder usar await
-var syncRequest = async (estado) => { 
+var syncRequest = async (estado,endpoint=ENDPOINTFIEL.PROXYSAT) => { 
     try {
         const db = await openDatabasex(DBNAME, DBVERSION);
         const objectStore = await openObjectStore(db, 'request', "readonly"); 
@@ -59,7 +59,7 @@ var syncRequest = async (estado) => {
 
             try {
                 // AQUÍ ESTÁ LA CLAVE: esperar al fetch antes de seguir
-                const response = await fetch('proxySAT.php', { method: 'post', headers: headerf, body: JSON.stringify(body) });
+                const response = await fetch(endpoint, { method: 'post', headers: headerf, body: JSON.stringify(body) });
                 
                 if (!response.ok) {
                     await updestado(request, ESTADOREQ.ERROR);
