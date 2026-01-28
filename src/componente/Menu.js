@@ -148,8 +148,8 @@ class Menumi extends Component {
 				   <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA</Link>
 		      <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
-		      <Link to='/config' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-				   <FontAwesomeIcon icon={['fas' , 'cog']} /> CONFIGURACIÓN</Link>
+		      //<Link to='/config' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+		//		   <FontAwesomeIcon icon={['fas' , 'cog']} /> CONFIGURACIÓN</Link>
 		      <Link to='/miLog' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'history']} /> Ver log</Link>
 		      <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
