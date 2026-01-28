@@ -4,10 +4,10 @@ import { Router, browserHistory, Route, Redirect } from 'react-router';
 import './App.css';
 import Ayuda from './componente/Ayuda';
 import Master from './componente/Master';
-import Carga from './componente/Carga';
+import CargaFiel from './componente/CargaFiel';
 import Mifiel from './componente/Mifiel';
 import MisfacturasWrapper from './componente/Misfacturas';
-import Valida from './componente/Valida';
+import ValidaFiel from './componente/ValidaFiel';
 import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
 import CargafaelMasiva from './componente/CargafaelMasiva';
@@ -43,8 +43,8 @@ class App extends Component {
       <Router history={browserHistory}>
         <Route path="/" component={Master}>
 	  <Route path="/ayuda" component={Ayuda}/>
-	  <Route path="/carga" component={Carga}/>
-	  <Route path="/validar" component={Valida}/>
+	  <Route path="/carga" component={CargaFiel}/>
+	  <Route path="/validaFiel" component={ValidaFiel}/>
 	  <Route path="/mifiel" component={Mifiel}/>
 	  <Route path="/misfacturas" component={MisfacturasWrapper}/>
 	  <Route path="/cargafaelMasiva" component={CargafaelMasiva}/>

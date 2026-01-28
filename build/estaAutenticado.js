@@ -18,7 +18,7 @@ var revisaSiEstaAutenticado = () => {
 			           res.tokenEstatusSAT === TOKEN.NOGENERADO
 		                   );
 
-                if (!isAuthed && (res.tokenEstatusSAT !== TOKEN.NOGENERADO && res.tokenEstatusSAT !== TOKEN.NOGENERADO)) {
+                if (!isAuthed && (res.tokenEstatusSAT !== ESTADOREQ.REQUIRIENDO && res.tokenEstatusSAT !== TOKEN.NOGENERADO)) {
                     DMS.autenticate_armasoa(pwd);
                 }
 

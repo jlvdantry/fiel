@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import Carga from './Carga';
-import Valida from './Valida';
+import CargaFiel from './CargaFiel';
+import ValidaFiel from './ValidaFiel';
 class Mifiel extends Component {
   render() {
     return (
       <div>
-	      <Carga />
-	      <Valida />
+	      <CargaFiel />
+	      <ValidaFiel />
       </div> 
     );
   }
