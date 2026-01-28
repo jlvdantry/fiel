@@ -56,7 +56,7 @@ var DescargaMasivaSat = function()
     * arma el body para solicita facturas recibidos
     */
    this.armaBodySolRec = function (estado) {
-          var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin, 
+          var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin+'T23:59:59', 
                'RfcReceptor': estado.passdata.RFCReceptor, 'TipoSolicitud' : estado.passdata.TipoSolicitud
               };
           var solicitudAttributesAsText='EstadoComprobante="Vigente"'+' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'"'+' RfcReceptor="'+solicitud.RfcReceptor+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"';
@@ -94,7 +94,7 @@ var DescargaMasivaSat = function()
     * arma el body para solicita facturas emitidos 
     */
    this.armaBodySolEmi = function (estado) {
-          var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin,
+          var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin+'T23:59:59',
                'RfcEmisor': estado.passdata.RFCEmisor, 'TipoSolicitud' : estado.passdata.TipoSolicitud,'RfcSolicitante':estado.passdata.RFCEmisor
               };
           var solicitudAttributesAsText='EstadoComprobante="Vigente"'+' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'"'+' RfcEmisor="'+solicitud.RfcEmisor+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"'+' RfcSolicitante="'+estado.passdata.RFCEmisor+'"';
@@ -522,7 +522,7 @@ var DescargaMasivaSat = function()
                    } 
                    // Case 3: Object exists but has no valid response yet (e.g., error or pending)
                    else {
-                       resolve({ tokenEstatusSAT: TOKEN.NOGENERADO });
+                       resolve({ tokenEstatusSAT: obj.value.estado });
                    }
                })
                .catch(err => {
