@@ -82,6 +82,53 @@ function inserta_solicitud(passdata)
         })
 }
 
+/* inserta el request para solicitar el nonce, 
+   para autenticarse contra el servidor utilizando la fiel y que va hacer el web push */
+function inserta_nonce(passdata)
+{
+        return new Promise(function (resolve, reject) {
+                var json= { };
+                json.estado=window.ESTADOREQ.LOGINFIEL.NONCEINICIAL;
+                json.url='nonce';
+                json.urlSAT=ENDPOINTFIEL.NONCE;
+                json.passdata=passdata;
+                json=datos_comunes(json);
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                addObject(objectStore, json).then( (key) => {
+                                    resolve(key) ; } );
+                        }).catch(function(err) {
+                                console.log("[inserta_nonce] Database error: "+err.message);
+                });
+        })
+}
+
+/* inserta el request para solicitar el nonce,
+   para autenticarse contra el servidor utilizando la fiel y que va hacer el web push */
+function inserta_loginfiel(passdata)
+{
+        return new Promise(function (resolve, reject) {
+                var json= { };
+                json.estado=window.ESTADOREQ.LOGINFIEL.INICIAL;
+                json.url='loginfiel';
+                json.urlSAT=ENDPOINTFIEL.LOGIN;
+                json.passdata=passdata;
+                json=datos_comunes(json);
+                openDatabasex(DBNAME, DBVERSION).then(function(db) {
+                        return openObjectStore(db, 'request', "readwrite");
+                        }).then(function(objectStore) {
+                                addObject(objectStore, json).then( (key) => {
+                                    resolve(key) ; } );
+                        }).catch(function(err) {
+                                console.log("[inserta_loginfiel] Database error: "+err.message);
+                });
+        })
+}
+
+
+
+
 
 
 function bajaVerificaciones()
