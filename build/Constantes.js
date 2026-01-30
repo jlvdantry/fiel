@@ -10,10 +10,12 @@ var  ESTADOSOLICITUD = {
 	,RECHAZADA:5
 	,VENCIDA:6
 }
-var  ESTADOLOGIN = { 
-	INICIAL:99
+var  ESTADOLOGINFIEL = { 
+	 INICIAL:99
 	,LOGUEADO:100
 	,ERROR:101
+        ,NONCEINICIAL:102
+	,NONCEOBTENIDO:103
 }
 
 var  ESTADOREQ = { 
@@ -35,7 +37,7 @@ var  ESTADOREQ = {
 	, DESCARGADO:'5002'
 	, INSERTADO:'0'  /* Insertardo el requerimiento localmente */
 	, ERRORFETCH:'5003'
-	, LOGIN:ESTADOLOGIN
+	, LOGINFIEL:ESTADOLOGINFIEL
 	}; /* Estado del requerimiento */
 
 var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:3 }   // tiempo en que vigente el token proporcionado por el SAT, para controlar si esta aun viente el token
@@ -57,6 +59,7 @@ var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.g
 var ENDPOINTFIEL = { LOGIN:'api/login'
 	             ,PROXYSAT:'proxySAT.php'
 	             ,SUBSCRIPCION:'suscribe'
+	             ,NONCE:'api/nonce'
 	           };
 
 var SOAPACTION = {   AUTENTICA:'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica'
