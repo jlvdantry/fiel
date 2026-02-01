@@ -334,7 +334,6 @@ var borraverificaciones = () => {
 
 
 self.addEventListener('message', (event) => {
-  console.log('[sw] recibio message el sw event='+JSON.stringify(event.data.action,true));
   if (event.data && event.data.action === 'GET_VERSION') {
     event.source.postMessage({
       action: 'VERSION',

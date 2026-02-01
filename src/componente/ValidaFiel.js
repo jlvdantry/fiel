@@ -3,7 +3,7 @@ import { Button, FormGroup, Label, Input, Container, Alert,Card,CardBody,CardSub
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 let mifiel=null;
-let timer=null;
+let timeryaCargo=null;
 let DMS=null;
 class CargaFiel extends Component {
   constructor(props){
@@ -11,32 +11,32 @@ class CargaFiel extends Component {
     this.state = { ok : false , nook:false , msg:'', nombre:'',rfc:'',curp:'',email:'',emisor:'',desde:null,hasta:null,type:'password',ojos:'eye'}
     this.validafirma = this.validafirma.bind(this)
     this.showHide = this.showHide.bind(this)
-    this.autenticaContraSAT = this.autenticaContraSAT.bind(this);
     this.revisaFirma = this.revisaFirma.bind(this);
     this.yaCargoFirma = this.yaCargoFirma.bind(this);
   }
 
   revisaFirma(){
        mifiel = new window._fiel();
-       timer = setInterval(() => this.yaCargoFirma(), 300)
+       timeryaCargo = setInterval(() => this.yaCargoFirma(), 1000)
   };
 
   yaCargoFirma() {
-
           if (mifiel.privada!==null & mifiel.publica!==null) {
-		 clearInterval(timer); 
+		 clearInterval(timeryaCargo); 
                  this.validafirma();
 	  }
   }
 
-  yaCargoFirmaDMS() {
-	  if (DMS.mifiel.privada!==null & DMS.mifiel.publica!==null) {
-                 clearInterval(timer);
-                 DMS.autenticate_armasoa(window.PWDFIEL).then( x => { console.log('paso la validacin de la firma lccalmente'); });
-          }
+
+
+
+  componentDidMount() {
+          DMS = new window.DescargaMasivaSat();
   }
 
-
+  componentWillUnmount() {
+          clearInterval(timeryaCargo); // Tells the browser: "Stop running "
+  }
 
   validafirma() {
 	    mifiel.validafiellocal(document.querySelector('#pwdfiel').value).then( res => {
@@ -52,12 +52,11 @@ class CargaFiel extends Component {
 			    }
 			  });
 		       } 
-
-		       this.autenticaContraSAT();	
+                       DMS.autenticate_armasoa(window.PWDFIEL);  // generar el request para autenticarse contra el set
+                       window.inserta_nonce({});                 // genera el request del nonce para autenticarse con la fiel parra hacer syc-request contra el sata cada 15 minutos
 		    }
 		    if (res.ok===false) {
 		       this.setState({ ok: false, nook:true,msg:res.msg  });
-                       window.inserta_nonce({});
 		    }
 	    });
   }
@@ -69,10 +68,6 @@ class CargaFiel extends Component {
     })  
   }
 
-  autenticaContraSAT () {
-            DMS = new window.DescargaMasivaSat();
-            timer = setInterval(() => this.yaCargoFirmaDMS(), 300)
-  }
 
 
   render() {

@@ -50,7 +50,7 @@ var  REVISA = {
               }; // segundos
 var  PWDFIEL = null;   /* password de la llave privada */
 var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.557.71';
+var VERSION='1.0.557.84';
 var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
 	            ,SOLICITUD:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc'
 	            ,VERIFICA: 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc'
@@ -59,7 +59,7 @@ var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.g
 var ENDPOINTFIEL = { LOGIN:'api/login'
 	             ,PROXYSAT:'proxySAT.php'
 	             ,SUBSCRIPCION:'suscribe'
-	             ,NONCE:'api/auth/nonce'
+	             ,NONCE:'https://fiel-sat.so-lu-int.com/api/auth/nonce'
 	           };
 
 var SOAPACTION = {   AUTENTICA:'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica'

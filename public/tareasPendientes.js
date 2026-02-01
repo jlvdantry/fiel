@@ -34,9 +34,8 @@ async function procesarTareasPendientes(quemetodo) {
             DMS = new DescargaMasivaSat(); 
         }
 
-        await syncRequest(ESTADOREQ.LOGIN.INICIAL,ENDPOINTFIEL.LOGIN);
+        await syncRequest(ESTADOREQ.LOGINFIEL.NONCEINICIAL,ENDPOINTFIEL.NONCE);
 
-        console.log('Revisa si esta autenticado si no crea request de autenciacion');
         await revisaSiEstaAutenticado();
 
         //console.log('Iniciando secuencia: Autenticación '+quemetodo);
