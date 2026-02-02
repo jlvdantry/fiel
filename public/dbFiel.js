@@ -110,7 +110,7 @@ function inserta_loginFiel(passdata)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
-                json.estado=ESTADOREQ.LOGINFIEL.INICIAL;
+                json.estado=ESTADOREQ.LOGINFIEL.LOGININICIAL;
                 json.url='loginfiel';
                 json.urlSAT=ENDPOINTFIEL.LOGIN;
                 json.passdata=passdata;
