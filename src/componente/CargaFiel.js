@@ -4,7 +4,6 @@ import { browserHistory  } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
-let timer = null;
 class CargaFiel extends Component {
 
   constructor(props){
@@ -14,16 +13,21 @@ class CargaFiel extends Component {
     this.cargarpub = this.cargarpub.bind(this);
     this.cargarkey = this.cargarkey.bind(this);
     this.cambio = this.cambio.bind(this);
+    this.timer = null;
   }
 
   nextPath(path) {
       browserHistory.push(path);
   }
   componentDidMount(){
-      timer = setInterval(() => this.cambio(), 2000)
+      this.timer = setInterval(() => this.cambio(), 2000)
   }
+
   componentWillUnmount() {
-    clearTimeout(timer);
+    // Limpiar usando la referencia de la instancia
+    if (this.timer) {
+        clearInterval(this.timer);
+    }
   }
 
   onChangeHandler=event=>{
@@ -31,18 +35,22 @@ class CargaFiel extends Component {
   }
 
   cambio() {
-
        window.damePublica().then( publica => {
-	       if (publica.cer_name!=null) {
-		  this.setState({cer_name : publica.cer_name})
-	       } else {  this.setState({cer_name : null })  }
-       }).catch(er => { this.setState({cer_name : null }) });
+          if (this.timer && publica.cer_name != null) {
+              this.setState({cer_name : publica.cer_name});
+          }
+       }).catch(er => { 
+          if (this.timer) this.setState({cer_name : null });
+       });
 
        window.damePrivada().then( privada => {
-	       if (privada.key_name!=null) {
-		  this.setState({key_name : privada.key_name})
-	       } else { this.setState({key_name : null }) }
-       }).catch(er => { this.setState({key_name : null }) });
+          if (this.timer && privada.key_name != null) {
+              this.setState({key_name : privada.key_name});
+          }
+       }).catch(er => { 
+          if (this.timer) this.setState({key_name : null });
+       });
+
   }
 
   cargarpub() {

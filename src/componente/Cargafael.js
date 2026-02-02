@@ -4,7 +4,6 @@ import { browserHistory  } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
-let timer = null;
 class Cargafael extends Component {
 
   constructor(props){
@@ -13,16 +12,22 @@ class Cargafael extends Component {
     this.state = { xml_name : [] };
     this.cargar = this.cargar.bind(this);
     this.cambio = this.cambio.bind(this);
+    this.time   = null;
   }
 
   nextPath(path) {
       browserHistory.push(path);
   }
   componentDidMount(){
-      timer = setInterval(() => this.cambio(), 2000)
+      this.timer = setInterval(() => this.cambio(), 2000)
   }
+
+
   componentWillUnmount() {
-    clearTimeout(timer);
+    // Limpiar usando la referencia de la instancia
+    if (this.timer) {
+        clearInterval(this.timer);
+    }
   }
 
   onChangeHandler=event=>{
