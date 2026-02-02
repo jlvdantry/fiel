@@ -55,7 +55,7 @@ var syncRequest = async (estado,endpoint=ENDPOINTFIEL.PROXYSAT) => {
             await updestado(request, ESTADOREQ.REQUIRIENDO, null);
             
             const body = { envelope: request.value.body, urlSAT: request.value.urlSAT, headers: JSON.stringify(jsonHeaders) };
-            const headerf = { 'content-type': 'application/json' };
+            const headerf = { 'content-type': 'application/json','X-Requested-With': 'XMLHttpRequest' };
 
             try {
                 // AQUÍ ESTÁ LA CLAVE: esperar al fetch antes de seguir

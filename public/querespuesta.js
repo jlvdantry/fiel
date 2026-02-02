@@ -97,4 +97,16 @@ var querespuesta = (request,respuesta) => {
 		 inserta_loginFiel(respuesta);
 	 }
 
+         if("errors" in respuesta ) { //errores que vienen de laravel para el login fiel
+		    const mensajes = Object.values(respuesta.errors);
+		    const errorTexto = mensajes.length > 0 ? mensajes[0][0] : respuesta.message;
+
+		    request.value.passdata.msg = errorTexto; // Guardamos el texto en español
+		    
+		    updestado(request, ESTADOLOGINFIEL.ERROR, respuesta).then((r) => {
+			postRequestUpd(r, "error-validacion", { msg: errorTexto });
+		    });
+		    return;
+	 }
+
 };
