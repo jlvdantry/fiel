@@ -64,7 +64,7 @@ if ("function" === typeof importScripts) {
 
     // Manual injection point for manifest files.
     // All assets under build/ and 5MB sizes are precached.
-    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"21a92d18af63a9dff38300d4adf783d6","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"9f2119a6d1c54f0d7c192cac11da8fc3","url":"static/v4/Constantes.js"},{"revision":"94b7193c133d6407f17dce331f59fde2","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"e74ec530186ac8134a63c7bfb7f463ef","url":"static/v4/dbFiel.js"},{"revision":"cfed443a24868b74d3316518531ecd26","url":"static/v4/dbInterval.js"},{"revision":"e9cc27be98aaca3508353a7d99a0985b","url":"static/v4/descargaMasivaSat.js"},{"revision":"36214d6dcb300c761e9892ebfb92d66e","url":"static/v4/encripta.js"},{"revision":"3b133215ebc3edb0e6aa56dcf94fe405","url":"static/v4/estaAutenticado.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"a03fb407fa7f5a95b4bdf1f4c4321079","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"a60e856b5ef8c4f90e4a4d6e8746d89c","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"504d5e3e48d5bec948f863523803c7b8","url":"static/v4/log.js"},{"revision":"51786482ed1a6534a106ed0a48d76a27","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"dd2ad631701fd771649d71f5ce38f021","url":"static/v4/static/js/main.58f7fcf5.js"},{"revision":"c4954d16e2f57acb3c50d342ca727f52","url":"static/v4/suscribe.js"},{"revision":"93b27560ba4e1b29403f175fddcaa3ca","url":"static/v4/sycRequest.js"},{"revision":"8349c8bd13dd0baa81b066fd4da47ba3","url":"static/v4/tareasPendientes.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
+    workbox.precaching.precacheAndRoute([{"revision":"a51306634718899c7223da3c64bd7258","url":"static/v4/apple-icon-180x180.png"},{"revision":"d60d8979a018c6c9f325a9923edbc901","url":"static/v4/apple-launch-1125x2436.png"},{"revision":"8deb514dd319e162034bc89a22a4b55d","url":"static/v4/apple-launch-1170x2532.png"},{"revision":"39e2197139f1aa1d74404e32097bf5db","url":"static/v4/apple-launch-1242x2688.png"},{"revision":"b33172204b0695d988bd6b1cb1ec8b83","url":"static/v4/apple-launch-1284x2778.png"},{"revision":"3274e95d3e2ba5b891dd6ec1c76d69c1","url":"static/v4/apple-launch-1536x2048.png"},{"revision":"456c1377fdf47262f056770ab7e75383","url":"static/v4/apple-launch-1668x2224.png"},{"revision":"88167a6568345c1f184f2b2b00b8b974","url":"static/v4/apple-launch-1668x2388.png"},{"revision":"aa2e9dcb9423e2cc3351efee275e93a2","url":"static/v4/apple-launch-2048x2732.png"},{"revision":"e907773cb684f6a5c52695a69f42e7ed","url":"static/v4/apple-launch-640x1136.png"},{"revision":"52448a1cec8159d7362899fcae0cdf16","url":"static/v4/apple-launch-750x1334.png"},{"revision":"7259618c8e117300e389a06cf8efd952","url":"static/v4/apple-launch-828x1792.png"},{"revision":"81e929914439bd0f9528ee64aa886618","url":"static/v4/asset-manifest.json"},{"revision":"5fcde1585d918711baecc6a33e531160","url":"static/v4/cadenaoriginal_3_3.js"},{"revision":"6d45e980f5b3172686b79f83b7fb2729","url":"static/v4/cargaFael.js"},{"revision":"45a344987ca3ae5e4656e0f644db5ad6","url":"static/v4/cargaFiel.js"},{"revision":"122a76f6037788bd4f6b5c86a2bde520","url":"static/v4/Constantes.js"},{"revision":"94b7193c133d6407f17dce331f59fde2","url":"static/v4/db.js"},{"revision":"bf536ac2b9e956cb73c8b836076e04fe","url":"static/v4/dbConfig.js"},{"revision":"20f95841dc9c00b6fc3ead44ea245853","url":"static/v4/dbFiel.js"},{"revision":"cfed443a24868b74d3316518531ecd26","url":"static/v4/dbInterval.js"},{"revision":"e9cc27be98aaca3508353a7d99a0985b","url":"static/v4/descargaMasivaSat.js"},{"revision":"36214d6dcb300c761e9892ebfb92d66e","url":"static/v4/encripta.js"},{"revision":"3b133215ebc3edb0e6aa56dcf94fe405","url":"static/v4/estaAutenticado.js"},{"revision":"57fa627b552071d907841938379ed8af","url":"static/v4/favicon.ico"},{"revision":"a03fb407fa7f5a95b4bdf1f4c4321079","url":"static/v4/fiel.js"},{"revision":"e90842916e60987c879e3dae084acc47","url":"static/v4/forge.min.js"},{"revision":"4a72428859f83adf27bee4d9a8ef3879","url":"static/v4/index.html"},{"revision":"c7c2fba1ef5fb31aeef361be8a5161dc","url":"static/v4/insertaDatos.js"},{"revision":"504d5e3e48d5bec948f863523803c7b8","url":"static/v4/log.js"},{"revision":"51786482ed1a6534a106ed0a48d76a27","url":"static/v4/manifest.json"},{"revision":"76af09612cae73ea86bdd8d8fcad5598","url":"static/v4/mifiel.png"},{"revision":"3af49b5ff302eeccf17b5258c2411a6c","url":"static/v4/pluma144x144.png"},{"revision":"136f21c487d2cfc622592779e8164a7a","url":"static/v4/pluma512x512m.png"},{"revision":"ef0076009c9d8c4495ab2e8eaa0ed32c","url":"static/v4/querespuesta.js"},{"revision":"e783a65500d79dd8adc8d064e6cf105b","url":"static/v4/static/css/main.3e8e37ab.css"},{"revision":"c3d60a4de9555fa5bbf43dcc83836b61","url":"static/v4/static/js/main.8cf4f42a.js"},{"revision":"c4954d16e2f57acb3c50d342ca727f52","url":"static/v4/suscribe.js"},{"revision":"93b27560ba4e1b29403f175fddcaa3ca","url":"static/v4/sycRequest.js"},{"revision":"c4757e3f32ad6f3d4cfd0713fa3e6aef","url":"static/v4/tareasPendientes.js"},{"revision":"936314bc2d9d2cd574f9ea430d8b612c","url":"static/v4/utils.js"},{"revision":"541ea20988d6452c83c3a169480c8a23","url":"static/v4/zip.min.js"}]);
 
     // Font caching
     workbox.routing.registerRoute(
@@ -170,108 +170,7 @@ var enviaContra = (pwd) => {
 
 }
 
-/* checa cual fue la respuesta del servidor */
-var querespuesta = (request,respuesta) => {
-         if(respuesta===undefined) {
-		 console.log('[qr] respuesta indefinida'+JSON.stringify(request,true));
-	 }
-         if("error" in respuesta) {
-            updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
-            return;
-         }
-
-         if("Created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autenticado y que se cuenta con un token */
-            respuesta.createdLocal=Math.floor(Date.now() / 1000) ;
-            respuesta.expiredLocal=Math.floor((Date.now() + (TOKEN.TIMELIVE*60*1000)) / 1000);
-            updestado(request,ESTADOREQ.AUTENTICADO,respuesta).then( (r) => 
-                          { postRequestUpd(r,"autenticado",respuesta); 
-			    if (DMS===null) { DMS= new DescargaMasivaSat(); }
-			  });
-            return;
-         }
-
-         if("status" in respuesta & "CodEstatus" in respuesta) {
-               if (request.value.url=='/solicita.php') {
-		       updestado(request,respuesta.CodEstatus,respuesta.Mensaje)   // se supone que aqui se acepto la solicitud
-                       .then( (r) => { 
-		                 request.value.passdata.msg=respuesta.Mensaje;
-		                 "IdSolicitud" in respuesta ? request.value.folioReq=respuesta.IdSolicitud : null;
-		                 updObjectByKey("request",request.value,request.key); /* actualiza el folio del requerimiento de la solicitud */
-                              })
-                       .then ( () => {
-                                 postRequestUpd(request,"se genero una solicitud",respuesta);
-                             });
-		       return;
-               }
-               if (request.value.url=='/verifica.php')  {
-
-		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) {
-		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
-		       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
-		       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,respuesta.Mensaje).then( () => {
-				     updSolicitud(respuesta,request.value)
-				       .then( () => {
-					postRequestUpd(request,"se verifico",respuesta);
-				       });
-
-                               });
-		    }
-                    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.RECHAZADA) {
-                       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
-                       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
-                       updestado(request,ESTADOREQ.EstadoSolicitud,respuesta.Mensaje).then( () => {
-                                     updSolicitud(respuesta,request.value)
-                                       .then( () => {
-                                        postRequestUpd(request,"No hay informacion",respuesta);
-                                       });
-
-                               });
-                    }
-		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.TERMINADA) {
-                       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
-                       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
-                       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,respuesta.Mensaje).then( () => {
-                                     updSolicitud(respuesta,request.value)
-                                       .then( () => {
-                                        postRequestUpd(request,"se verifico, NumeroCFDIs?"+respuesta.NumeroCFDIs,respuesta);
-                                       });
-
-                               });
-
-		    }
-		    return;
-               }
-               if (request.value.url=='/download.php')  {
-			 if(respuesta.Mensaje=="Solicitud Aceptada") {
-				       request.value.passdata.msg_d=respuesta.Mensaje;
-				       var respuestax=respuesta;
-				       delete respuesta.paquete;
-				       updestado(request,ESTADOREQ.DESCARGADO,respuestax).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
-					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-					       updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
-					       .then( () => {
-						    postRequestUpd(request,"se descargo",respuesta);
-					       });
-					       notifica();
-				       });
-				 
-
-				       return;
-			 }
-				       request.value.passdata.msg_d=respuesta.Mensaje;
-				       updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
-					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-				               updSolicitudDownload(respuesta.Mensaje,request.value.passdata.keySolicitud)  //actualiza el resulta de la descarga en el request de la solicitud
-					       .then( () => {
-						    postRequestUpd(request,respuesta.Mensaje,respuesta);
-					       });
-				       });
-				       notifica();
-
-	       }
-         }
-
-};
+importScripts('querespuesta.js');
 
 var updSolicitud = (respuesta,verificacionValue) => {
         return new Promise( (resolve, reject) => {

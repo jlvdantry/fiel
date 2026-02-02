@@ -34,7 +34,9 @@ async function procesarTareasPendientes(quemetodo) {
             DMS = new DescargaMasivaSat(); 
         }
 
-        await syncRequest(ESTADOREQ.LOGINFIEL.NONCEINICIAL,ENDPOINTFIEL.NONCE);
+        await syncRequest(ESTADOREQ.LOGINFIEL.NONCEINICIAL,ENDPOINTFIEL.LOGIN);
+
+        await syncRequest(ESTADOREQ.LOGINFIEL.LOGININICIAL,ENDPOINTFIEL.NONCE);
 
         await revisaSiEstaAutenticado();
 

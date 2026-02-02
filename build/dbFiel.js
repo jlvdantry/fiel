@@ -104,13 +104,13 @@ function inserta_nonce(passdata)
         })
 }
 
-/* inserta el request para solicitar el nonce,
-   para autenticarse contra el servidor utilizando la fiel y que va hacer el web push */
-function inserta_loginfiel(passdata)
+/* inserta el request para hacer login con la fiel,
+   y poder hacer el web push */
+function inserta_loginFiel(passdata)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
-                json.estado=window.ESTADOREQ.LOGINFIEL.INICIAL;
+                json.estado=ESTADOREQ.LOGINFIEL.INICIAL;
                 json.url='loginfiel';
                 json.urlSAT=ENDPOINTFIEL.LOGIN;
                 json.passdata=passdata;
