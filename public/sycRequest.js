@@ -53,13 +53,17 @@ var syncRequest = async (estado,endpoint=ENDPOINTFIEL.PROXYSAT) => {
             // Lógica del FETCH (ProxySAT)
             const jsonHeaders = request.value.header;
             await updestado(request, ESTADOREQ.REQUIRIENDO, null);
-            
-            const body = { envelope: request.value.body, urlSAT: request.value.urlSAT, headers: JSON.stringify(jsonHeaders) };
-            const headerf = { 'content-type': 'application/json','X-Requested-With': 'XMLHttpRequest' };
+            let body; 
+            if (request.value.urlSAT===ENDPOINTFIEL.LOGIN || request.value.urlSAT===ENDPOINTFIEL.NONCE) {
+                body =  request.value.body;
+	    } else {
+                body = { envelope: request.value.body, urlSAT: request.value.urlSAT, headers: JSON.stringify(jsonHeaders) };
+	    }
+            const headerf = { 'content-type': 'application/json', 'Accept': 'application/json' };
 
             try {
                 // AQUÍ ESTÁ LA CLAVE: esperar al fetch antes de seguir
-                const response = await fetch(endpoint, { method: 'post', headers: headerf, body: JSON.stringify(body) });
+                const response = await fetch(endpoint, { method: 'post', headers: headerf, body: JSON.stringify(body),mode:'cors' });
                 
                 if (!response.ok) {
                     await updestado(request, ESTADOREQ.ERROR);

@@ -93,11 +93,19 @@ var querespuesta = (request,respuesta) => {
 
 	       }
          }
+
          if("nonce" in respuesta ) {
 		 inserta_loginFiel(respuesta);
 	 }
 
+         if ("token_api" in respuesta) {
+                updestado(request, ESTADOLOGINFIEL.LOGUEADO, respuesta).then( () => {
+                         enviarNotificacionSat("Sesión Iniciada", "Acceso correcto con e.firma");
+		});
+         }
+
          if("errors" in respuesta ) { //errores que vienen de laravel para el login fiel
+
 		    const mensajes = Object.values(respuesta.errors);
 		    const errorTexto = mensajes.length > 0 ? mensajes[0][0] : respuesta.message;
 

@@ -25,23 +25,22 @@ function insertaOActualizaFiel(obj,file)
         })
 }
 
-function damePublica() {
-        return new Promise( (resolve, reject) => {
-		selObjectUlt('request','url','fiel').then( fiel => {
-			resolve (fiel.value.publica)
-		}).then( pub => { resolve(pub); })
-		.catch( err => { reject (null) })
-        })
+async function damePublica() {
+    try {
+        const fiel = await selObjectUlt('request', 'url', 'fiel');
+        return fiel.value.publica;
+    } catch (err) {
+        return null;
+    }
 }
 
-function damePrivada() {
-        return new Promise( (resolve, reject) => {
-                selObjectUlt('request','url','fiel').then( fiel => {
-                        return fiel.value.privada
-                })
-		.then( pri => { resolve(pri); })
-		.catch( err => { reject (null) })
-        })
+async function damePrivada() {
+    try {
+        const fiel = await selObjectUlt('request', 'url', 'fiel');
+        return fiel.value.privada;
+    } catch (err) {
+        return null;
+    }
 }
 
 function dameRfc() {
@@ -104,26 +103,38 @@ function inserta_nonce(passdata)
         })
 }
 
-/* inserta el request para hacer login con la fiel,
-   y poder hacer el web push */
-function inserta_loginFiel(passdata)
-{
-        return new Promise(function (resolve, reject) {
-                var json= { };
-                json.estado=ESTADOREQ.LOGINFIEL.LOGININICIAL;
-                json.url='loginfiel';
-                json.urlSAT=ENDPOINTFIEL.LOGIN;
-                json.passdata=passdata;
-                json=datos_comunes(json);
-                openDatabasex(DBNAME, DBVERSION).then(function(db) {
-                        return openObjectStore(db, 'request', "readwrite");
-                        }).then(function(objectStore) {
-                                addObject(objectStore, json).then( (key) => {
-                                    resolve(key) ; } );
-                        }).catch(function(err) {
-                                console.log("[inserta_loginfiel] Database error: "+err.message);
-                });
-        })
+async function inserta_loginFiel(passdata) {
+    try {
+        const pwd = await dame_pwd();
+        if (DMS === null) DMS = new DescargaMasivaSat();
+
+        const nonceParaFirmar = passdata.nonce;
+        const firma = await DMS.mifiel.validafiellocal(pwd,nonceParaFirmar);
+
+        let json = {
+            body: {
+                nonce: nonceParaFirmar,
+                firma: firma.sellogen,
+                rfc: firma.rfc,
+                certificado: firma.cer
+            },
+            estado: ESTADOREQ.LOGINFIEL.LOGININICIAL,
+            url: 'loginfiel',
+            urlSAT: ENDPOINTFIEL.LOGIN,
+            passdata: null
+        };
+
+        json = datos_comunes(json);
+
+        const db = await openDatabasex(DBNAME, DBVERSION);
+        const objectStore = await openObjectStore(db, 'request', "readwrite");
+        const key = await addObject(objectStore, json);
+
+        return key;
+    } catch (err) {
+        console.error("[inserta_loginfiel] Error:", err.message);
+        throw err;
+    }
 }
 
 
