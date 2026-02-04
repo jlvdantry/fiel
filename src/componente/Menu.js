@@ -4,9 +4,6 @@ import { Collapse, Navbar, NavbarToggler, Nav, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { browserHistory  } from 'react-router';
 
-let timer = null;
-let timerc = null;
-let timerR = null;
 class Menumi extends Component {
 
   constructor(props) {
@@ -21,6 +18,9 @@ class Menumi extends Component {
     this.cambio = this.cambio.bind(this);
     this.estaAutenticado =this.estaAutenticado.bind(this);
     this.revisaRequest = this.revisaRequest.bind(this);
+    this.timer   = null;
+    this.timerc	 = null;
+    this.timerR	 = null;
   }
 
  
@@ -62,10 +62,10 @@ class Menumi extends Component {
 	// Checks if should display install popup notification:
 	if (isIos() && !isInStandaloneMode()) {
 	  this.setState({ showInstallMessage: true });
-          timer=setInterval(() => this.quitainstala(), 5000)
+          this.timer=setInterval(() => this.quitainstala(), 5000)
 	}
     document.querySelector('#ayuda').click();
-    timer = setInterval(() => this.cambio(), 2000)
+    this.timer = setInterval(() => this.cambio(), 2000)
     //window.log_en_bd(undefined,'1');
 
     // 1. Listen for the event dispatched by the shared code
@@ -81,8 +81,8 @@ class Menumi extends Component {
             }
         });
     }
-    timerc=setInterval(this.estaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
-    timerR=setInterval(this.revisaRequest, (window.REVISA.ESTADOREQ * 1000));
+    this.timerc=setInterval(this.estaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
+    this.timerR=setInterval(this.revisaRequest, (window.REVISA.ESTADOREQ * 1000));
   }
 
   estaAutenticado() {
@@ -102,7 +102,7 @@ class Menumi extends Component {
 	  window.dameNombre().then( nombre => {
 	       if (nombre!=null) {
 		  this.setState({nombre : nombre})
-                  clearInterval(timer);
+                  clearInterval(this.timer);
 	       } else {  this.setState({nombre : null })  }
 	   }).catch( err => { this.setState({nombre : null })});
   }
@@ -111,7 +111,7 @@ class Menumi extends Component {
   quitainstala() {
     document.querySelector('#instalar').classList.remove("d-flex");
     document.querySelector('#instalar').classList.add("d-none");
-    clearTimeout(timer);
+    clearTimeout(this.timer);
   }
 
   updateWindowDimensions() {
@@ -122,8 +122,8 @@ class Menumi extends Component {
     window.removeEventListener('online');
     window.removeEventListener('offline');
     window.removeEventListener('resize', this.updateWindowDimensions);
-    clearInterval(timerc); // Tells the browser: "Stop running "
-    clearInterval(timerR); // Tells the browser: "Stop running '"
+    clearInterval(this.timerc); // Tells the browser: "Stop running "
+    clearInterval(this.timerR); // Tells the browser: "Stop running '"
   }
 
   setOnlineStatus = isOnline => { this.setState({ online: isOnline }) ; }
