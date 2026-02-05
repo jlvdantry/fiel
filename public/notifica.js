@@ -43,3 +43,31 @@ async function notifica() {
 	}
 }
 
+self.addEventListener('push', function(event) {
+    console.log('[SW] Push Recibido');
+
+    let data = { title: 'SAT Sync', body: 'Tienes una nueva actualización.' };
+
+    // Si el servidor envió datos en JSON, los usamos
+    if (event.data) {
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data.body = event.data.text();
+        }
+    }
+
+    const options = {
+        body: data.body,
+        icon: '/logo192.png', // Tu logo de PWA
+        badge: '/favicon.ico', // Icono pequeño para la barra de estado
+        vibrate: [100, 50, 100],
+        data: {
+            url: data.url || '/' // URL a donde irá el usuario al dar clic
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
