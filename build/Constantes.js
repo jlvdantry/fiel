@@ -37,6 +37,7 @@ var  ESTADOREQ = {
 	, INSERTADO:'0'  /* Insertardo el requerimiento localmente */
 	, ERRORFETCH:'5003'
 	, LOGINFIEL:ESTADOLOGINFIEL
+	, PUSH_SUSCRIBE: '126'
 	}; /* Estado del requerimiento */
 
 var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:3 }   // tiempo en que vigente el token proporcionado por el SAT, para controlar si esta aun viente el token
@@ -47,9 +48,9 @@ var  REVISA = {
 	, ESTADOREQ       :30   /* cada cuando se revisa el estado del requerimiento en segundos */
 	, VIGENCIATOKEN_SW:10   /* revisa si el token esta activo caso contrario intenta conectarse en el sw en segundos */
               }; // segundos
-var  PWDFIEL = null;   /* password de la llave privada */
-var  REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.558.12';
+var PWDFIEL = null;   /* password de la llave privada */
+var REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
+var VERSION='1.0.558.20';
 var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
 	            ,SOLICITUD:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc'
 	            ,VERIFICA: 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc'
@@ -57,9 +58,11 @@ var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.g
 
 var ENDPOINTFIEL = { LOGIN:'https://fiel-sat.so-lu-int.com/api/loginfiel'
 	             ,PROXYSAT:'proxySAT.php'
-	             ,SUBSCRIPCION:'suscribe'
+	             ,SUBSCRIPCION: 'https://fiel-sat.so-lu-int.com/api/subscribe'
 	             ,NONCE:'https://fiel-sat.so-lu-int.com/api/auth/nonce'
 	           };
+
+var VAPID_PUBLIC_KEY = "BCXdWLV6pJURV_3y1lHxSxyzX0EFpmC5G3ZcNxwzb-Os3Hkc63TN82vLy7brLCa43SXjU0-Z4IiqwfCyKTtagYs";
 
 var SOAPACTION = {   AUTENTICA:'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica'
 	            ,SOLICITUDRECIBIDOS:'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescargaRecibidos'

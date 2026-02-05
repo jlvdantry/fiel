@@ -1,4 +1,5 @@
 import React, { useEffect,useState } from 'react';
+import solicitarYGuardarSuscripcion from './webpush-client';
 
 function Config() {
   const [isChecked, setIsChecked] = useState(false);
@@ -25,6 +26,9 @@ function Config() {
         ¿Muestra log?  
 	<input type="checkbox" className="m-3" checked={isChecked} onChange={handleChange} id="myCheck"/>
       </label>
+      <button onClick={solicitarYGuardarSuscripcion} className="btn-push">
+                🔔 Activar Notificaciones de Descarga
+      </button>
     </div>
   );
 

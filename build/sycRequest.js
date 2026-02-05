@@ -54,12 +54,19 @@ var syncRequest = async (estado,endpoint=ENDPOINTFIEL.PROXYSAT) => {
             const jsonHeaders = request.value.header;
             await updestado(request, ESTADOREQ.REQUIRIENDO, null);
             let body; 
-            if (request.value.urlSAT===ENDPOINTFIEL.LOGIN || request.value.urlSAT===ENDPOINTFIEL.NONCE) {
+            let headerf; 
+            if (request.value.urlSAT===ENDPOINTFIEL.LOGIN || request.value.urlSAT===ENDPOINTFIEL.NONCE || request.value.urlSAT===ENDPOINTFIEL.SUBSCRIPCION) {
                 body =  request.value.body;
 	    } else {
                 body = { envelope: request.value.body, urlSAT: request.value.urlSAT, headers: JSON.stringify(jsonHeaders) };
 	    }
-            const headerf = { 'content-type': 'application/json', 'Accept': 'application/json' };
+
+            if (request.value.urlSAT===ENDPOINTFIEL.SUBSCRIPCION) {
+               const token_de_fiel= await obtieneelUltimoTokenActivoLoginFiel();
+               headerf = { 'content-type': 'application/json', 'Accept': 'application/json','Authorization': `Bearer ${token_de_fiel}` };
+	    } else {
+               headerf = { 'content-type': 'application/json', 'Accept': 'application/json' };
+	    }
 
             try {
                 // AQUÍ ESTÁ LA CLAVE: esperar al fetch antes de seguir
