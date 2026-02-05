@@ -684,6 +684,20 @@ function obtieneelUltimoTokenActivo() {
         })
 }
 
+/* Obtiene el ultimo TOKEN generado */
+function obtieneelUltimoTokenActivoLoginFiel() {
+        return new Promise(function (resolve, reject) {
+               this.selObjectUlt('request','url','loginfiel','prev').then( obj => {
+                    if (obj.value.estado===ESTADOLOGINFIEL.LOGUEADO) {
+                       resolve(obj.value.respuesta.token_api);
+                    } else {
+                       reject({'msg':'el token no esta autenticado',key:obj.key,estado:obj.value.estado });
+                    }
+               });
+        })
+}
+
+
 /*  lee si tecleo el pwd de la llave privada */
 function tecleoPwdPrivada() {
         return new Promise(function (resolve, reject) {
