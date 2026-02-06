@@ -43,31 +43,37 @@ async function notifica() {
 	}
 }
 
+
 self.addEventListener('push', function(event) {
-    console.log('[SW] Push Recibido');
+    console.log('[SW] Mensaje Push recibido');
 
-    let data = { title: 'SAT Sync', body: 'Tienes una nueva actualización.' };
-
-    // Si el servidor envió datos en JSON, los usamos
-    if (event.data) {
-        try {
-            data = event.data.json();
-        } catch (e) {
-            data.body = event.data.text();
-        }
+    let payload;
+    try {
+        // Intentamos obtener el JSON
+        payload = event.data ? event.data.json() : {};
+        console.log('[SW] Payload recibido:', payload);
+    } catch (e) {
+        console.warn('[SW] El push no contiene JSON válido, intentando texto...');
+        payload = { action: event.data ? event.data.text() : 'no_data' };
     }
 
-    const options = {
-        body: data.body,
-        icon: '/logo192.png', // Tu logo de PWA
-        badge: '/favicon.ico', // Icono pequeño para la barra de estado
-        vibrate: [100, 50, 100],
-        data: {
-            url: data.url || '/' // URL a donde irá el usuario al dar clic
-        }
-    };
+    // Laravel WebPush a veces mete la data dentro de un objeto 'data'
+    // o directamente en la raíz. Buscamos en ambos lugares:
+    const action = payload.action || (payload.data ? payload.data.action : null);
 
-    event.waitUntil(
-        self.registration.showNotification(data.title, options)
-    );
+    if (action === 'check-sat-status' || action === 'sync') {
+        console.log('[SW] Acción reconocida: Ejecutando tareas pendientes...');
+
+        event.waitUntil(
+            procesarTareasPendientes('Push_Laravel')
+                .then(() => {
+                    console.log('[SW] Proceso finalizado exitosamente.');
+                })
+                .catch(err => {
+                    console.error('[SW] Error en procesarTareasPendientes:', err);
+                })
+        );
+    } else {
+        console.warn('[SW] No se reconoció la acción o action es undefined. Action detectada:', action);
+    }
 });
