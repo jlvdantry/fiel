@@ -65,4 +65,17 @@
     left: 49%;
 }
 
+/* Hacer que el contenido de la cabecera sea el que reciba el click */
+.header-sort-button {
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  background-color: #f1f1f1;
+  pointer-events: auto !important; /* FORZAR CLIC */
+  z-index: 10;
+}
 

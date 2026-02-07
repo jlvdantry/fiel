@@ -43,3 +43,37 @@ async function notifica() {
 	}
 }
 
+
+self.addEventListener('push', function(event) {
+    console.log('[SW] Mensaje Push recibido');
+
+    let payload;
+    try {
+        // Intentamos obtener el JSON
+        payload = event.data ? event.data.json() : {};
+        console.log('[SW] Payload recibido:', payload);
+    } catch (e) {
+        console.warn('[SW] El push no contiene JSON válido, intentando texto...');
+        payload = { action: event.data ? event.data.text() : 'no_data' };
+    }
+
+    // Laravel WebPush a veces mete la data dentro de un objeto 'data'
+    // o directamente en la raíz. Buscamos en ambos lugares:
+    const action = payload.action || (payload.data ? payload.data.action : null);
+
+    if (action === 'check-sat-status' || action === 'sync') {
+        console.log('[SW] Acción reconocida: Ejecutando tareas pendientes...');
+
+        event.waitUntil(
+            procesarTareasPendientes('Push_Laravel')
+                .then(() => {
+                    console.log('[SW] Proceso finalizado exitosamente.');
+                })
+                .catch(err => {
+                    console.error('[SW] Error en procesarTareasPendientes:', err);
+                })
+        );
+    } else {
+        console.warn('[SW] No se reconoció la acción o action es undefined. Action detectada:', action);
+    }
+});
