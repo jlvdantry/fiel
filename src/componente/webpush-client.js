@@ -31,10 +31,23 @@ export default async function solicitarYGuardarSuscripcion() {
             applicationServerKey: urlBase64ToUint8Array(publicKey)
         });
 
+        let deviceId = localStorage.getItem('pwa_device_id');
+	if (!deviceId) {
+		deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now();
+		localStorage.setItem('pwa_device_id', deviceId);
+	}
+
+	// 2. Identificar el nombre del dispositivo para tu control
+	const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+	const deviceName = isMobile ? 'Mobile (' + navigator.platform + ')' : 'PC (' + navigator.platform + ')';
+
         // 4. Crear el objeto para tu tabla 'request' de db.js
+	var subs  = subscription.toJSON(); 
+        subs.device_name=deviceName;
+        subs.device_id=deviceId;
         const dataPush = {
             url: 'push',
-            body: subscription.toJSON(),
+            body: subs,
             estado: window.ESTADOREQ.PUSH_SUSCRIBE,
             urlSAT: window.ENDPOINTFIEL.SUBSCRIPCION, 
             passdata: { fecha: new Date().toISOString() }
