@@ -233,67 +233,69 @@ class CargafaelMasiva extends Component {
   }
 
   cargar() {
+    // 1. Bloqueo inmediato para evitar doble clic si ya se está procesando
+    if (this.state.isDisabled) return;
+    this.setState({ isDisabled: true }, () => {
+       setTimeout(() => {
+	       if (this.state.TipoDescarga==='por folio') {
+		       this.setState({folio:document.querySelector('#folio').value});
+		       if (this.state.folio==='') {
+			   this.setState({okfolio:false, isDisabled: false});
+			   return;
+		       } else {
+			   this.setState({okfolio:true});
+		       }
+	       }
 
-    if (this.state.TipoDescarga==='por folio') {
-       this.setState({folio:document.querySelector('#folio').value});
-       if (this.state.folio==='') {
-           this.setState({okfolio:false});
-           return;
-       } else {
-           this.setState({okfolio:true});
-       }
-    }
+	       this.setState({start:document.querySelector('#fechainicial').value});
+	       if (this.state.start===null || this.state.start==='') {
+		   this.setState({okfechai:false, isDisabled: false});
+		   return;
+	       } else {
+		   this.setState({okfechai:true});
+	       }
 
+	       this.setState({end:document.querySelector('#fechafinal').value});
+	       if (this.state.end===null || this.state.end==='') {
+		   this.setState({okfechaf:false,msgfecha:'La fecha final es obligatoria', isDisabled: false });
+		   return;
+	       } else {
+		   this.setState({okfechaf:true});
+	       }
 
+	       if (this.state.end<this.state.start) {
+		   this.setState({okfechaf:false,msgfecha:'La fecha final no puede ser menor a la inicial', isDisabled: false});
+		   return;
+	       } else {
+		   this.setState({okfechaf:true});
+	       }
 
+	       this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
+	       if ((this.state.RFCEmisor===null || this.state.RFCEmisor==='') & this.TipoDescarga==='Emitidos') {
+		   this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio', isDisabled: false });
+		   return;
+	       } else {
+		   this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
+	       }
 
-       this.setState({start:document.querySelector('#fechainicial').value});
-       if (this.state.start===null || this.state.start==='') {
-           this.setState({okfechai:false});
-           return;
-       } else {
-           this.setState({okfechai:true});
-       }
-
-       this.setState({end:document.querySelector('#fechafinal').value});
-       if (this.state.end===null || this.state.end==='') {
-           this.setState({okfechaf:false,msgfecha:'La fecha final es obligatoria' });
-           return;
-       } else {
-           this.setState({okfechaf:true});
-       }
-
-       if (this.state.end<this.state.start) {
-           this.setState({okfechaf:false,msgfecha:'La fecha final no puede ser menor a la inicial'});
-           return;
-       } else {
-           this.setState({okfechaf:true});
-       }
-
-       this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
-       if ((this.state.RFCEmisor===null || this.state.RFCEmisor==='') & this.TipoDescarga==='Emitidos') {
-           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio' });
-           return;
-       } else {
-           this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
-       }
-
-       this.setState({RFCReceptor:document.querySelector('#RFCReceptor').value});
-       if (this.state.RFCReceptor===null || this.state.RFCReceptors==='') {
-           this.setState({okRFCReceptor:false,msgRFCReceptor:'El RFC del receptor es obligatoria' });
-           return;
-       } else {
-           this.setState({okRFCReceptor:true,msgRFCReceptor:'' });
-       }
-       if (this.state.RFCReceptor===this.state.RFCEmisor) {
-           this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor y del receptor no pueden ser iguales' });
-           return;
-       }
-       if (this.state.RFCEmisorIsValid===false || this.state.RFCReceptorIsValid===false) {
-           return;
-       }
-    this.setState({isDisabled:true});
-    this.inserta_solicitud();
+	       this.setState({RFCReceptor:document.querySelector('#RFCReceptor').value});
+	       if (this.state.RFCReceptor===null || this.state.RFCReceptors==='') {
+		   this.setState({okRFCReceptor:false,msgRFCReceptor:'El RFC del receptor es obligatoria', isDisabled: false });
+		   return;
+	       } else {
+		   this.setState({okRFCReceptor:true,msgRFCReceptor:'' });
+	       }
+	       if (this.state.RFCReceptor===this.state.RFCEmisor) {
+		   this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor y del receptor no pueden ser iguales', isDisabled: false });
+		   return;
+	       }
+	       if (this.state.RFCEmisorIsValid===false || this.state.RFCReceptorIsValid===false) {
+		   return;
+	       }
+	       this.setState({isDisabled:true});
+	       this.inserta_solicitud();
+          },1000);
+    });
   }
 
   /* inserta una solicitud en request */
@@ -304,7 +306,11 @@ class CargafaelMasiva extends Component {
 		      };
 	              window.inserta_solicitud(passdata).then(idkey => {
                                window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a, isDisabled:false }) });
-		      });
+		      }).catch(err => {
+			  // Siempre liberar en caso de error para no bloquear la UI
+			  this.setState({ isDisabled: false });
+			  console.error(err);
+                      });
   }
 
   showHide(e){
@@ -525,7 +531,9 @@ class CargafaelMasiva extends Component {
 
 
                       <div className="flex-col d-flex justify-content-center mb-2">
-                           <Button color="primary" onClick={this.cargar} disabled={this.state.isDisabled} >{this.state.isDisabled ? 'Solicitando' : 'Solicitar' }</Button>
+                           <Button color="primary" onClick={this.cargar} disabled={this.state.isDisabled} style={{ minWidth: '140px' }}>
+			          {this.state.isDisabled ? ( <> <FontAwesomeIcon icon={['fas', 'spinner']} spin className="mr-2" /> Solicitando...  </>) : "Solicitar"}
+			   </Button>
                       </div>
                       <MiDataGrid className="container" filas={this.state.solicitudes}/>
       <style>
