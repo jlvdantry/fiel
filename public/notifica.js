@@ -15,38 +15,43 @@ self.addEventListener('notificationclick', (event) => {
     }
 });
 
-// Función para lanzar la notificación visual
+
+// notifica.js
+async function notifica() {
+    console.log('Iniciando proceso de notificación...');
+    // Eliminamos la validación de clientes activos para que siempre notifique
+    try {
+        await enviarNotificacionSat(
+            "Descarga Finalizada",
+            "Tus facturas han sido procesadas correctamente."
+        );
+        console.log('Notificación enviada con éxito');
+    } catch (error) {
+        console.error('Error al lanzar notificación:', error);
+    }
+}
+
 function enviarNotificacionSat(titulo, cuerpo) {
     const opciones = {
         body: cuerpo,
-        icon: '/icon-192x192.png', // Ruta a tu icono de PWA
-        badge: '/badge-icon.png',  // Icono pequeño para la barra de Android
+        icon: '/icon-192x192.png',
+        badge: '/badge-icon.png',
         vibrate: [100, 50, 100],
-        data: {
-            url: '/' // URL a abrir al dar clic
-        },
+        data: { url: '/' },
+        tag: 'descarga-sat', // Evita que se amontonen múltiples globos
+        renotify: true,
         actions: [
             { action: 'abrir', title: 'Ver Facturas' },
             { action: 'cerrar', title: 'Cerrar' }
         ]
     };
 
-    self.registration.showNotification(titulo, opciones);
+    // Es fundamental usar self.registration para el Service Worker
+    return self.registration.showNotification(titulo, opciones);
 }
-
-async function notifica() {
-	const clientes = await self.clients.matchAll({ type: 'window' });
-	const appAbierta = clientes.length > 0;
-
-	if (!appAbierta) {
-	    enviarNotificacionSat("Descarga Finalizada", "Se han procesado tus solicitudes del SAT en segundo plano.");
-	}
-}
-
 
 self.addEventListener('push', function(event) {
     console.log('[SW] Mensaje Push recibido');
-
     let payload;
     try {
         // Intentamos obtener el JSON

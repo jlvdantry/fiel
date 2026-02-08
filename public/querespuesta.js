@@ -65,7 +65,6 @@ var querespuesta = (request,respuesta) => {
 		    return;
                }
                if (request.value.url=='/download.php')  {
-			 if(respuesta.Mensaje=="Solicitud Aceptada") {
 				       request.value.passdata.msg_d=respuesta.Mensaje;
 				       var respuestax=respuesta;
 				       delete respuesta.paquete;
@@ -74,22 +73,10 @@ var querespuesta = (request,respuesta) => {
 					       updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
 					       .then( () => {
 						    postRequestUpd(request,"se descargo",respuesta);
+                                                    notifica();
 					       });
-					       notifica();
 				       });
-				 
-
 				       return;
-			 }
-				       request.value.passdata.msg_d=respuesta.Mensaje;
-				       updestado(request,ESTADOREQ.RESPUESTADESCONOCIDA,respuesta).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
-					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-				               updSolicitudDownload(respuesta.Mensaje,request.value.passdata.keySolicitud)  //actualiza el resulta de la descarga en el request de la solicitud
-					       .then( () => {
-						    postRequestUpd(request,respuesta.Mensaje,respuesta);
-					       });
-				       });
-				       notifica();
 
 	       }
          }
