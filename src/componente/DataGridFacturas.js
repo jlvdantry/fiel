@@ -3,6 +3,69 @@ import 'react-data-grid/lib/styles.css';
 import DG from 'react-data-grid';
 import { useFamilyFiltro } from './FamilyFiltros';
 import { ExtraeComprobantes as EC } from './ExtraeComprobantes';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable'; // Importación específica
+
+const generarPdfIndividual = (factura) => {
+  const doc = new jsPDF();
+
+  // Configuración de estilo
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("COMPROBANTE FISCAL DIGITAL (CFDI)", 105, 20, { align: "center" });
+
+  // Cuadro de Emisor y Receptor
+  doc.setFontSize(10);
+  doc.rect(14, 30, 90, 35); // Cuadro Emisor
+  doc.text("EMISOR", 16, 35);
+  doc.setFont("helvetica", "normal");
+  doc.text(`RFC: ${factura.Emisor}`, 16, 45);
+  doc.text(`Nombre: ${factura['Nombre Emisor'] || 'N/A'}`, 16, 50);
+
+  doc.setFont("helvetica", "bold");
+  doc.rect(106, 30, 90, 35); // Cuadro Receptor
+  doc.text("RECEPTOR", 108, 35);
+  doc.setFont("helvetica", "normal");
+  doc.text(`RFC: ${factura.Receptor}`, 108, 45);
+  doc.text(`Nombre: ${factura['Nombre Receptor'] || 'N/A'}`, 108, 50);
+
+  // Información del Folio y Fecha
+  doc.setFont("helvetica", "bold");
+  doc.text("Datos del Comprobante", 14, 75);
+  doc.line(14, 77, 196, 77);
+
+  doc.setFont("helvetica", "normal");
+  doc.text(`Folio Fiscal (UUID): ${factura.UUID}`, 14, 85);
+  doc.text(`Fecha de Emisión: ${factura['Fecha Emision']}`, 14, 92);
+  doc.text(`Tipo de Comprobante: ${factura.TipoComprobante || 'Ingreso'}`, 14, 99);
+
+    // TABLA DE CONCEPTOS
+    autoTable(doc, {
+        startY: 100,
+        head: [['Cant', 'Clave', 'Descripción', 'Unitario', 'Importe']],
+        body: factura.Conceptos.map(c => [
+            c.cantidad, c.clave, c.descripcion, `$ ${c.valorUnitario}`, `$ ${c.importe}`
+        ]),
+        styles: { fontSize: 8 }
+    });
+
+    // RESUMEN DE TOTALES
+    const finalY = doc.lastAutoTable.finalY;
+    doc.text(`Subtotal: $ ${factura.Subtotal}`, 140, finalY + 10);
+    
+    // Mapeo de impuestos en el pie
+    factura.Impuestos.forEach((imp, index) => {
+        doc.text(`${imp.impuesto} (${imp.tasa}): $ ${imp.importe}`, 140, finalY + 15 + (index * 5));
+    });
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text(`TOTAL: $ ${factura.Total}`, 140, finalY + 30);
+
+  doc.save(`Factura_${factura.UUID.substring(0,8)}.pdf`);
+};
 
 export default function DataGridFacturas(props) {
   const [isMobile, setIsMobile] = useState(false);
@@ -30,7 +93,21 @@ export default function DataGridFacturas(props) {
     { key: 'Ingreso', name: 'Ingreso', minWidth: 100 },
     { key: 'Egreso', name: 'Egreso', minWidth: 100 },
     { key: 'Iva Acreditado', name: 'IVA Acreditado', minWidth: 100 },
-    { key: 'Iva Cobrado', name: 'IVA Cobrado', minWidth: 100 }
+    { key: 'Iva Cobrado', name: 'IVA Cobrado', minWidth: 100 },
+    {
+	    key: 'acciones',
+	    name: 'PDF',
+	    width: 80,
+	    renderCell: ({ row }) => (
+	      <button 
+		className="btn btn-link btn-sm p-0" 
+		onClick={() => generarPdfIndividual(row)}
+		title="Descargar PDF"
+	      >
+		<FontAwesomeIcon icon={['fas', 'file-pdf']} className="text-danger" size="lg" />
+	      </button>
+	    )
+    }
   ].map(col => ({
     ...col,
     // Asigna el click de ordenamiento a cada cabecera
@@ -128,6 +205,16 @@ export default function DataGridFacturas(props) {
               </div>
             ))}
           </div>
+	  {/* Dentro de renderMobileView, dentro del mapeo de tarjetas */}
+	  <div className="card-footer bg-transparent border-top-0 d-flex justify-content-end">
+		  <button 
+		    className="btn btn-danger btn-sm" 
+		    onClick={() => generarPdfIndividual(row)}
+		  >
+		    <FontAwesomeIcon icon={['fas', 'file-pdf']} className="mr-2" />
+		    Bajar PDF
+		  </button>
+	  </div>
         </div>
       ))}
     </div>
