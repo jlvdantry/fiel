@@ -425,9 +425,7 @@ function inserta_log(obj)
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'log', "readwrite");
                         }).then((objectStore) => {
-                                const ahora = new Date();
-                                const soloHora = ahora.toLocaleTimeString();
-                                obj.hora=soloHora;
+                                obj.hora=obtenerFechaFormateada();
                                 addObject(objectStore, obj).then( (key) => {
                                     obj.key=key;
                                     resolve(obj) ; } );
