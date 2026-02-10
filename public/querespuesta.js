@@ -4,9 +4,8 @@ var querespuesta = (request,respuesta) => {
 		 console.log('[qr] respuesta indefinida'+JSON.stringify(request,true));
 	 }
          if("error" in respuesta) {
-              await updestado(request, ESTADOREQ.ERROR, respuesta);
-              await postRequestUpd(request, "update-request", respuesta);
-              return;
+            updestado(request,ESTADOREQ.ERROR,respuesta).then( () => { postRequestUpd(request,"update-request",respuesta); });
+            return;
          }
 
          if("Created" in respuesta) { /* si en la respuesta viene el item created quiere decir que esta autenticado y que se cuenta con un token */
@@ -20,20 +19,17 @@ var querespuesta = (request,respuesta) => {
          }
 
          if("status" in respuesta & "CodEstatus" in respuesta) {
-
-	       if (request.value.url == '/solicita.php') {
-			if (respuesta.status === "Aceptada" || respuesta.CodEstatus === "301") {
-			    request.value.passdata.msg = respuesta.Mensaje;
-			    if ("IdSolicitud" in respuesta) {
-				request.value.passdata.idSolicitud = respuesta.IdSolicitud;
-			    }
-			    // Esperamos a que la DB se actualice realmente
-			    await updestado(request, ESTADOREQ.SOLICITUDACEPTADA, respuesta.Mensaje);
-			    await postRequestUpd(request, "solicito-aceptada", respuesta);
-			}
-			return;
-	       }
-         
+               if (request.value.url=='/solicita.php') {
+		       updestado(request,respuesta.CodEstatus,respuesta.Mensaje)   // se supone que aqui se acepto la solicitud
+                       .then( (r) => { 
+		                 request.value.passdata.msg=respuesta.Mensaje;
+		                 "IdSolicitud" in respuesta ? request.value.folioReq=respuesta.IdSolicitud : null;
+		                 updObjectByKey("request",request.value,request.key); /* actualiza el folio del requerimiento de la solicitud */
+                              })
+                       .then ( () => { postRequestUpd(request,"se genero una solicitud",respuesta);
+                             });
+		       return;
+               }
                if (request.value.url=='/verifica.php')  {
 		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) {
 		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
@@ -69,22 +65,18 @@ var querespuesta = (request,respuesta) => {
 		    return;
                }
                if (request.value.url=='/download.php')  {
-				if (respuesta.Mensaje === "Solicitud Aceptada" || "paquete" in respuesta) {
-				    const respuestax = { ...respuesta };
-				    delete respuesta.paquete; // No guardar el binario pesado en el log
-
-				    // 1. Actualizar estado del request de descarga
-				    await updestado(request, ESTADOREQ.DESCARGADO, respuestax);
-				    await updObjectByKey("request", request.value, request.key);
-
-				    // 2. Actualizar el request original de la solicitud
-				    await updSolicitudDownload('Se descargo', request.value.passdata.keySolicitud);
-				    
-				    // 3. Notificar y avisar al servidor
-				    await postRequestUpd(request, "se descargo", respuesta);
-				    await notifica(); // Ahora la notificación es parte del flujo esperado
-				    return;
-				}
+				       request.value.passdata.msg_d=respuesta.Mensaje;
+				       var respuestax=respuesta;
+				       delete respuesta.paquete;
+				       updestado(request,ESTADOREQ.DESCARGADO,respuestax).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
+					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
+					       updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
+					       .then( () => {
+						    postRequestUpd(request,"se descargo",respuesta);
+                                                    notifica();
+					       });
+				       });
+				       return;
 
 	       }
          }
@@ -94,8 +86,9 @@ var querespuesta = (request,respuesta) => {
 	 }
 
          if ("token_api" in respuesta) {
-		await updestado(request, ESTADOLOGINFIEL.LOGUEADO, respuesta);
-		enviarNotificacionSat("Sesión Iniciada", "Acceso correcto con e.firma");
+                updestado(request, ESTADOLOGINFIEL.LOGUEADO, respuesta).then( () => {
+                         enviarNotificacionSat("Sesión Iniciada", "Acceso correcto con e.firma");
+		});
          }
 
          if("errors" in respuesta ) { //errores que vienen de laravel para el login fiel

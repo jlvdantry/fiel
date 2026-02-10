@@ -50,10 +50,6 @@ async function procesarTareasPendientes(quemetodo) {
         //console.log('Iniciando secuencia: Verificación '+quemetodo);
         await syncRequest(ESTADOREQ.INICIAL.VERIFICA);
 
-	// Esperamos medio segundo para que los cambios de estado de "Verificación" 
-	// (que pasan a SOLICITUDACEPTADA) se asienten en la DB.
-	await new Promise(resolve => setTimeout(resolve, 500));
-
         //console.log('Iniciando secuencia: Pendientes de descarga '+quemetodo);
         await syncRequest(ESTADOREQ.SOLICITUDPENDIENTEDOWNLOAD);
 
