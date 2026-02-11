@@ -30,8 +30,8 @@ var querespuesta = (request,respuesta) => {
                              });
 		       return;
                }
+
                if (request.value.url=='/verifica.php')  {
-		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ACEPTADA) {
 		       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
 		       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
 		       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,respuesta.Mensaje).then( () => {
@@ -39,31 +39,9 @@ var querespuesta = (request,respuesta) => {
 				       .then( () => { postRequestUpd(request,"se verifico",respuesta);
 				       });
 
-                               });
-		    }
-                    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.RECHAZADA) {
-                       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
-                       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
-                       updestado(request,ESTADOREQ.EstadoSolicitud,respuesta.Mensaje).then( () => {
-                                     updSolicitud(respuesta,request.value)
-                                       .then( () => { postRequestUpd(request,"No hay informacion",respuesta);
-                                       });
-
-                               });
-                    }
-		    if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.TERMINADA) {
-                       request.value.passdata.intentos=("intentos" in request.value.passdata ?  request.value.passdata.intentos+1 : 1);
-                       request.value.passdata.msg_v=respuesta.Mensaje + ' ' + request.value.passdata.intentos;
-                       updestado(request,ESTADOREQ.VERIFICACIONTERMINADA,respuesta.Mensaje).then( () => {
-                                     updSolicitud(respuesta,request.value)
-                                       .then( () => { postRequestUpd(request,"se verifico, NumeroCFDIs?"+respuesta.NumeroCFDIs,respuesta);
-                                       });
-
-                               });
-
-		    }
-		    return;
+                       });
                }
+
                if (request.value.url=='/download.php')  {
 				       request.value.passdata.msg_d=respuesta.Mensaje;
 				       var respuestax=respuesta;
@@ -85,11 +63,24 @@ var querespuesta = (request,respuesta) => {
 		 inserta_loginFiel(respuesta);
 	 }
 
-         if ("token_api" in respuesta) {
-                updestado(request, ESTADOLOGINFIEL.LOGUEADO, respuesta).then( () => {
-                         enviarNotificacionSat("Sesión Iniciada", "Acceso correcto con e.firma");
+
+	if ("token_api" in respuesta) {
+	    updestado(request, ESTADOLOGINFIEL.LOGUEADO, respuesta).then(() => {
+		enviarNotificacionSat("Sesión Iniciada", "Acceso correcto con e.firma");
+		
+		// --- AQUÍ DEBEMOS DISPARAR LA SUSCRIPCIÓN ---
+		// Enviamos un mensaje de vuelta a la ventana (cliente) 
+		// para que ejecute el código de suscripción (que requiere permiso del navegador)
+		self.clients.matchAll().then(clients => {
+		    clients.forEach(client => {
+			client.postMessage({
+			    action: 'LOGIN_EXITOSO_SUSCRIBIR_PUSH',
+			    rfc: request.value.rfc 
+			});
+		    });
 		});
-         }
+	    });
+	}
 
          if("errors" in respuesta ) { //errores que vienen de laravel para el login fiel
 

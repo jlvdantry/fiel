@@ -858,3 +858,36 @@ var borrarTodoDeTabla = (storeName) => {
         }).catch(err => reject(err));
     });
 };
+
+/**
+ * Obtiene el último ID (key) numérico dado de alta en la tabla request
+ */
+var getNextRequestId = function () {
+    return new Promise((resolve, reject) => {
+        openDatabasex(DBNAME, DBVERSION).then(db => {
+            const transaction = db.transaction(['request'], "readonly");
+            const objectStore = transaction.objectStore('request');
+
+            // Abrimos un cursor que empieza desde el final (prev)
+            // Esto nos da el ID más alto inmediatamente
+            const requestCursor = objectStore.openKeyCursor(null, 'prev');
+
+            requestCursor.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    // cursor.key es el ID más alto actual
+                    const ultimoId = parseInt(cursor.key);
+                    // Si no es un número (ej. es un string antiguo), retornamos el total + 1 como fallback
+                    resolve(isNaN(ultimoId) ? Date.now() : ultimoId + 1);
+                } else {
+                    // Si la tabla está vacía, empezamos en 1
+                    resolve(1);
+                }
+            };
+
+            requestCursor.onerror = () => {
+                reject("Error al obtener el último ID");
+            };
+        }).catch(err => reject(err));
+    });
+};
