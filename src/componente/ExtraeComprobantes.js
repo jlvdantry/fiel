@@ -75,6 +75,7 @@ export function  ExtraeComprobantes(fact,RFC) {
 			       }
 			       datoFactura={         "Emisor" : rfcEmisor
 						    ,"Nombre Emisor" : x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Nombre
+				                    ,"Nombre Receptor" : x.value.passdata["cfdi:Comprobante"]["cfdi:Receptor"]["@attributes"].Nombre || 'Sin Nombre'
 						    ,"Receptor": rfcReceptor
 						    ,"Fecha Emision" : x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
 						    ,"Fecha Pago" : fechaPago
@@ -93,7 +94,8 @@ export function  ExtraeComprobantes(fact,RFC) {
 						    "NoCertificadoSAT": tfd.NoCertificadoSAT,
 						    "UUID": tfd.UUID, // El ID fiscal completo
 						    "Conceptos": conceptos, // <--- LISTA DE PRODUCTOS
-						    "Impuestos": impuestosTrasladados // <--- IVA, IEPS, etc.
+						    "Impuestos": impuestosTrasladados, // <--- IVA, IEPS, etc.
+						    "Total": total 
 
 						  };
 			      return datoFactura;
