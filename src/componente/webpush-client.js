@@ -55,7 +55,17 @@ export default async function solicitarYGuardarSuscripcion() {
 
         // 5. Guardar en IndexedDB (Esto dispara tu ciclo de tareas pendientes)
         // Nota: Asegúrate de que updObjectByKey esté disponible en el alcance
-        await window.updObjectByKey('request', dataPush, 'push_reg_' + Date.now());
+	try {
+	    const nextId = await window.getNextRequestId();
+	    // 5. Guardar en IndexedDB con el ID numérico
+	    await window.updObjectByKey('request', dataPush, nextId);
+	    console.log('[Push] Guardado con ID consecutivo:', nextId);
+	} catch (err) {
+	    console.log('[Push] err:', err);
+	    // Fallback por si falla el contador (mantenemos el timestamp para no perder el dato)
+	    const fallbackId = 'push_err_' + Date.now();
+	    await window.updObjectByKey('request', dataPush, fallbackId);
+	}
         
         console.log("Suscripción encolada en IndexedDB");
     } catch (err) {
