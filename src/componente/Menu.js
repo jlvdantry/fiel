@@ -3,6 +3,7 @@ import {  Link } from 'react-router';
 import { Collapse, Navbar, NavbarToggler, Nav, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { browserHistory  } from 'react-router';
+import solicitarYGuardarSuscripcion from './webpush-client'; // Importar la lógica de push
 
 class Menumi extends Component {
 
@@ -78,7 +79,12 @@ class Menumi extends Component {
         navigator.serviceWorker.addEventListener('message', (event) => {
             if (event.data.type === 'AUTH_STATUS') {
                 this.setState({ isConected: event.data.value });
+                return;
             }
+	    if (event.data && event.data.action === 'LOGIN_EXITOSO_SUSCRIBIR_PUSH') {
+		console.log('[Push] El servidor confirmó el login. Suscribiendo...');
+		solicitarYGuardarSuscripcion(); 
+	    }
         });
     }
     this.timerc=setInterval(this.estaAutenticado, (window.REVISA.VIGENCIATOKEN * 1000));
