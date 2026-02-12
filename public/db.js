@@ -953,3 +953,81 @@ var dameUltimosLogs = function (limit = 50) {
 
 // Exponerla
 self.dameUltimosLogs = dameUltimosLogs;
+
+
+/**
+ * Mantiene la tabla de logs limpia, dejando solo los 100 más recientes.
+ */
+var depuraLogs = function (limite = 100) {
+    return new Promise((resolve, reject) => {
+        openDatabasex(DBNAME, DBVERSION).then(db => {
+            const transaction = db.transaction(['log'], "readwrite");
+            const objectStore = transaction.objectStore('log');
+
+            // Usamos un cursor 'prev' para empezar por los más nuevos
+            const request = objectStore.openCursor(null, 'prev');
+            let contador = 0;
+
+            request.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    contador++;
+                    // Si ya pasamos los 100 más nuevos, borramos el resto
+                    if (contador > limite) {
+                        cursor.delete();
+                    }
+                    cursor.continue();
+                } else {
+                    console.log(`[DB] Depuración terminada. Se conservaron los ${limite} más nuevos.`);
+                    resolve();
+                }
+            };
+
+            request.onerror = (err) => reject("Error depurando logs: " + err);
+        }).catch(err => reject(err));
+    });
+};
+
+// Exponerla globalmente
+self.depuraLogs = depuraLogs;
+
+
+/**
+ * Depura los registros de autenticación caducados en la tabla 'request'
+ */
+var depuraAutenticacionesCaducadas = function () {
+    return new Promise((resolve, reject) => {
+        const ahora = Math.floor(Date.now() / 1000); // Timestamp actual en segundos
+
+        openDatabasex(DBNAME, DBVERSION).then(db => {
+            const transaction = db.transaction(['request'], "readwrite");
+            const objectStore = transaction.objectStore('request');
+            const requestCursor = objectStore.openCursor();
+
+            requestCursor.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const data = cursor.value;
+
+                    // Identificamos si es un registro de autenticación
+                    // Basado en tu querespuesta.js, estos suelen tener 'expiredLocal' o 'token_api'
+                    let expiracion = data.expiredLocal || (data.respuesta && data.respuesta.expiredLocal);
+
+                    if (expiracion && expiracion < ahora) {
+                        console.log(`[DB] Eliminando sesión caducada de: ${data.rfc || 'Sin RFC'}`);
+                        cursor.delete();
+                    }
+
+                    cursor.continue();
+                } else {
+                    resolve("Depuración de autenticaciones completa.");
+                }
+            };
+
+            requestCursor.onerror = (err) => reject("Error al depurar autenticaciones: " + err);
+        }).catch(err => reject(err));
+    });
+};
+
+// Exponer globalmente
+self.depuraAutenticacionesCaducadas = depuraAutenticacionesCaducadas;

@@ -62,6 +62,8 @@ async function procesarTareasPendientes(quemetodo) {
         await bajaVerificaciones();
         await bajaTokenCaducado();
         await bajaRequiriendo();
+        await depuraLogs();
+        await depuraAutenticacionesCaducadas();
 
         console.log('Termino barrido de tareas plano='+quemetodo);
 
