@@ -891,3 +891,65 @@ var getNextRequestId = function () {
         }).catch(err => reject(err));
     });
 };
+
+self.getNextRequestId = getNextRequestId;
+
+// db.js
+
+var dameUltimosLogs = function (limit = 50) {
+    return new Promise((resolve, reject) => {
+        openDatabasex(DBNAME, DBVERSION).then(db => {
+            const transaction = db.transaction(['logs'], "readonly");
+            const objectStore = transaction.objectStore('logs');
+            const logs = [];
+
+            // Usamos un cursor 'prev' para traer los más recientes primero
+            const request = objectStore.openCursor(null, 'prev');
+
+            request.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor && logs.length < limit) {
+                    logs.push(cursor.value);
+                    cursor.continue();
+                } else {
+                    resolve(logs);
+                }
+            };
+
+            request.onerror = () => reject("Error leyendo logs");
+        }).catch(err => reject(err));
+    });
+};
+
+// Exponerla
+self.dameUltimosLogs = dameUltimosLogs;
+
+// db.js
+
+var dameUltimosLogs = function (limit = 50) {
+    return new Promise((resolve, reject) => {
+        openDatabasex(DBNAME, DBVERSION).then(db => {
+            const transaction = db.transaction(['log'], "readonly");
+            const objectStore = transaction.objectStore('log');
+            const logs = [];
+
+            // Usamos un cursor 'prev' para traer los más recientes primero
+            const request = objectStore.openCursor(null, 'prev');
+
+            request.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor && logs.length < limit) {
+                    logs.push(cursor.value);
+                    cursor.continue();
+                } else {
+                    resolve(logs);
+                }
+            };
+
+            request.onerror = () => reject("Error leyendo logs");
+        }).catch(err => reject(err));
+    });
+};
+
+// Exponerla
+self.dameUltimosLogs = dameUltimosLogs;
