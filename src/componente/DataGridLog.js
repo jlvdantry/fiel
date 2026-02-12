@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import 'react-data-grid/lib/styles.css';
 import DG from 'react-data-grid';
 import { Input, Card, CardBody, Badge, Row, Col } from 'reactstrap';
@@ -16,12 +16,14 @@ export default function DataGridLog(props) {
   const [filtroTexto, setFiltroTexto] = useState("");
   const [filas, setFilas] = useState([]);
 
-     // Función única de recarga
- const refrescarTabla = () => {
-                if (window.dameUltimosLogs) {
-                    window.dameUltimosLogs(100).then(data => setFilas(data));
-                }
-          };
+// 2. Envolver la función en useCallback
+  const refrescarTabla = useCallback(() => {
+    if (window.dameUltimosLogs) {
+      window.dameUltimosLogs(100).then(data => {
+        if (data) setFilas(data);
+      });
+    }
+  }, []); // El array vacío [] indica que la función no cambia nunca después de crearse
 
 
   useEffect(() => {
