@@ -151,7 +151,7 @@ class Menumi extends Component {
 		      <Link to='/mifiel' className='rounded mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'pen-fancy']} /> MI FIEL</Link>
 		      <Link to='/cargafaelMasiva' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
-				   <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> DESCARGA MASIVA</Link>
+				   <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> SOLICITAR FACTURAS</Link>
 		      <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
 		      <Link to='/miLog' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>

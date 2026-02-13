@@ -978,7 +978,6 @@ var depuraLogs = function (limite = 100) {
                     }
                     cursor.continue();
                 } else {
-                    console.log(`[DB] Depuración terminada. Se conservaron los ${limite} más nuevos.`);
                     resolve();
                 }
             };
@@ -1014,7 +1013,6 @@ var depuraAutenticacionesCaducadas = function () {
                     let expiracion = data.expiredLocal || (data.respuesta && data.respuesta.expiredLocal);
 
                     if (expiracion && expiracion < ahora) {
-                        console.log(`[DB] Eliminando sesión caducada de: ${data.rfc || 'Sin RFC'}`);
                         cursor.delete();
                     }
 

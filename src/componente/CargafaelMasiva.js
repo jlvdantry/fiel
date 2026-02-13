@@ -382,7 +382,7 @@ class CargafaelMasiva extends Component {
 
     return  (
         <Card id="cargafael" className="p-2 m-2">
-                  <h2 className="text-center">Carga masiva de la factura electrónica</h2>
+                  <h2 className="text-center">Solicitar facturas electrónicas</h2>
                             { this.state.tecleoPWD===false &&
                                 <div  className="mt-1">
                                        <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
