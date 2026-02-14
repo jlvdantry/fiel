@@ -57,8 +57,8 @@ class Ayuda extends Component {
             <UncontrolledCollapse toggler="#toggler1" isOpen={collapseID === 'toggler1'}>
               <Card>
                 <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Este aplicativo le permite validar la llave privada y pública generada por el <b>SAT</b>. Su principal virtud es que la llave privada y pública <b>no</b> viajan por internet. Esto incrementa la seguridad de sus datos confidenciales, previniendo ser víctima de un ciber-crimen al no exponer sus llaves y evitar que su firma electrónica pueda ser <b>hackeada</b>.</p>
-                  <p className="text-justify"><b className="text-info">2.</b> Solicitar las facturas electrónicas emitidas y/o recibidas y poder exportarlas a <b>Excel</b>.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Solicitar al SAT las facturas electrónicas emitidas y/o recibidas y  poder exportarlas a <b>Excel y o PDF</b>.</p>
+                  <p className="text-justify"><b className="text-info">2.</b> Para solicitar facturas se tiene que validar la llave privada y pública generada por el <b>SAT</b>. La ventaja  principal de este aplicativo es que la llave privada y pública <b>no</b> viajan por internet. Esto incrementa la seguridad de sus datos confidenciales, previniendo ser víctima de un ciber-crimen al no exponer sus llaves y evitar que su firma electrónica pueda ser <b>hackeada</b>.</p>
                 </CardBody>
               </Card>
             </UncontrolledCollapse>
@@ -105,14 +105,13 @@ class Ayuda extends Component {
             <UncontrolledCollapse toggler="#toggler4" isOpen={collapseID === 'toggler4'}>
               <Card>
                 <CardBody>
-                  <p className="text-justify"><b className="text-info">1.</b> Dé clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas', 'cloud-download-alt']} /> DESCARGA MASIVA"</b>. Aquí el aplicativo le mostrará y/o solicitará la siguiente información:</p>
-                  <p className="text-justify"><b className="text-info">2.</b> Previamente se debió haber validado la <b className="text-info">"FIEL"</b>.</p>
-                  <p className="text-justify"><b className="text-info">3.</b> El aplicativo le mostrará el RFC que contiene la FIEL.</p>
-                  <p className="text-justify"><b className="text-info">4.</b> El aplicativo le mostrará que está autenticado ante el SAT.</p>
-                  <p className="text-justify"><b className="text-info">5.</b> El aplicativo le solicitará el RFC o los RFCs que le emitieron una factura o que usted emitió.</p>
-                  <p className="text-justify"><b className="text-info">6.</b> El aplicativo le solicitará la fecha inicial y final en que se expidió la factura.</p>
-                  <p className="text-justify"><b className="text-info">7.</b> Una vez ingresados los datos solicitados, deberá dar clic en el botón <b>"Solicitar"</b>.</p>
-                  <p className="text-justify"><b className="text-info">8.</b> Si todo está correcto, le mostrará una tabla con el registro de la solicitud, donde podrá ver el estado desde que fue aceptada hasta que se descargaron las facturas.</p>
+                  <p className="text-justify"><b className="text-info">1.</b> Dé clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas', 'cloud-download-alt']} /> SOLICITAR FACTURAS"</b>. Aquí el aplicativo le mostrará y/o solicitará la siguiente información:</p>
+                  <p className="text-justify"><b className="text-info">2.</b> Selecciona el tipo de factura <b className="text-info">"Emitidas"</b>o <b className="text-info">"Recibidas"</b>.</p>
+                  <p className="text-justify ml-4"><b className="text-info"><FontAwesomeIcon icon={['fas', 'circle']} className="text-info mr-2" style={{ fontSize: '0.5rem', verticalAlign: 'middle' }} /></b> Si selecciona "Emitidas" debera de seleccionar los RFC receptores.</p>
+                  <p className="text-justify ml-4"><b className="text-info"><FontAwesomeIcon icon={['fas', 'circle']} className="text-info mr-2" style={{ fontSize: '0.5rem', verticalAlign: 'middle' }} /></b> Si selecciona "Recibidas" no es necesario seleccionar el RFC receptor.</p>
+                  <p className="text-justify"><b className="text-info">3.</b> El aplicativo le solicitará la fecha inicial y final en que se expidió la factura.</p>
+                  <p className="text-justify"><b className="text-info">4.</b> Una vez ingresados los datos solicitados, deberá dar clic en el botón <b>"Solicitar"</b>.</p>
+                  <p className="text-justify"><b className="text-info">5.</b> Si todo está correcto, le mostrará una tabla con el registro de la solicitud, donde podrá ver el estado desde que fue aceptada hasta que se descargaron las facturas.</p>
                 </CardBody>
               </Card>
             </UncontrolledCollapse>
@@ -121,16 +120,17 @@ class Ayuda extends Component {
           {/* SECCIÓN 6 */}
           <div className="mb-2">
             <button className="link-button text-info text-left" id="toggler5" onTouchEnd={this.toggle('toggler5')} onClick={this.toggle('toggler5')} style={{ marginBottom: '1rem' }}>
-              <h5>¿Cómo consultar o exportar a Excel las facturas electrónicas?</h5>
+              <h5>¿Cómo consultar, exportar a Excel o generar el PDF de las facturas electrónicas?</h5>
             </button>
             <UncontrolledCollapse toggler="#toggler5" isOpen={collapseID === 'toggler5'}>
               <Card>
                 <CardBody>
                   <p className="text-justify"><b className="text-info">1.</b> Dé clic en la opción <b className="text-info">"<FontAwesomeIcon icon={['fas', 'receipt']} /> MIS FACTURAS"</b>.</p>
                   <p className="text-justify"><b className="text-info">2.</b> Si no se han descargado facturas, el aplicativo le enviará un mensaje indicando que aún no hay facturas disponibles.</p>
-                  <p className="text-justify"><b className="text-info">3.</b> Si hay facturas, le mostrará una gráfica de los ingresos y/o egresos del año de emisión actual o anterior.</p>
-                  <p className="text-justify"><b className="text-info">4.</b> Se podrá consultar en forma detallada las facturas dando clic en el botón <b className="text-info"><FontAwesomeIcon icon={['fas', 'search']} className='mr-2' />"Consultar historial"</b>.</p>
-                  <p className="text-justify"><b className="text-info">5.</b> Se podrá exportar a Excel las facturas mediante el icono con el logo de <b className="text-info">"Excel"</b>.</p>
+                  <p className="text-justify"><b className="text-info">3.</b> En el encabezado mostrará el total de ingreso, egresos y el neto de las factras electronicas.</p>
+                  <p className="text-justify"><b className="text-info">4.</b> Muestra una grafica con los ingresos, egresos y el neto donde podra seleccionar el tipo de grafica, el año de emisión de las facturas y un boton <FontAwesomeIcon size="2x" data-tooltip-id="my-tooltip-1" className="text-primary" icon={['fas' , 'file-excel']} /> para poder exportar las facturas a excel.</p>
+                  <p className="text-justify"><b className="text-info">4.</b> Asi mismo muestra un tabla con cada una de las facturas.</p>
+                  <p className="text-justify"><b className="text-info">5.</b> En cada fila existe un icono <FontAwesomeIcon icon={['fas', 'file-pdf']} className="text-danger" size="lg" /> que al darle click genera un PDF de la factura.</p>
                 </CardBody>
               </Card>
             </UncontrolledCollapse>
