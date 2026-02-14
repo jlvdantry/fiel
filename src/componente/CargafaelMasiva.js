@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { FormGroup, Alert, Button, Card,Label,InputGroup,Input,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
+import { FormGroup, Alert, Button, Card,Label,Dropdown,DropdownToggle,DropdownMenu,DropdownItem } from 'reactstrap';
 import { browserHistory  } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  DatePicker } from "reactstrap-date-picker";
@@ -237,15 +237,6 @@ class CargafaelMasiva extends Component {
     if (this.state.isDisabled) return;
     this.setState({ isDisabled: true }, () => {
        setTimeout(() => {
-	       if (this.state.TipoDescarga==='por folio') {
-		       this.setState({folio:document.querySelector('#folio').value});
-		       if (this.state.folio==='') {
-			   this.setState({okfolio:false, isDisabled: false});
-			   return;
-		       } else {
-			   this.setState({okfolio:true});
-		       }
-	       }
 
 	       this.setState({start:document.querySelector('#fechainicial').value});
 	       if (this.state.start===null || this.state.start==='') {
@@ -270,13 +261,15 @@ class CargafaelMasiva extends Component {
 		   this.setState({okfechaf:true});
 	       }
 
-	       this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
-	       if ((this.state.RFCEmisor===null || this.state.RFCEmisor==='') & this.TipoDescarga==='Emitidos') {
-		   this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio', isDisabled: false });
-		   return;
-	       } else {
-		   this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
-	       }
+	       if (this.TipoDescarga==='Emitidos') {
+		       this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
+		       if ((this.state.RFCEmisor===null || this.state.RFCEmisor==='') ) {
+			   this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio', isDisabled: false });
+			   return;
+		       } else {
+			   this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
+		       }
+               }
 
 	       this.setState({RFCReceptor:document.querySelector('#RFCReceptor').value});
 	       if (this.state.RFCReceptor===null || this.state.RFCReceptors==='') {
@@ -383,11 +376,11 @@ class CargafaelMasiva extends Component {
     return  (
         <Card id="cargafael" className="p-2 m-2">
                   <h2 className="text-center">Solicitar facturas electrónicas</h2>
-                            { this.state.tecleoPWD===false &&
-                                <div  className="mt-1">
-                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Primero debe de cargar su fiel para poder solicitar facturas al SAT </Alert>
-                                </div> }
+		  { this.state.tecleoPWD===false &&
+			<div  className="mt-1">
+			       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+				  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> Primero debe de cargar su fiel para poder solicitar facturas al SAT </Alert>
+			</div> }
 
                   { this.state.tecleoPWD===true && <div>
                         <FormGroup className="container col-lg-12 justify-content-around">
@@ -399,7 +392,6 @@ class CargafaelMasiva extends Component {
 				      <DropdownMenu>
 					<DropdownItem onClick={this.changeValue} >Emitidos</DropdownItem>
 					<DropdownItem onClick={this.changeValue} >Recibidos</DropdownItem>
-					<DropdownItem onClick={this.changeValue} >por folio</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
                           </div>
@@ -422,82 +414,85 @@ class CargafaelMasiva extends Component {
 	              { this.state.tokenEstatusSAT!==window.TOKEN.ACTIVO &&  <Label className="text-danger">Esta desconectado con el SAT</Label> }
 		      </FormGroup>
 
-                      { this.state.TipoDescarga!=='por folio' && <FormGroup className="container row col-lg-12">
-                          <div className="col-lg-6 mt-1">
-				<Label>RFC Emisor</Label>
-                                <div className="col-lg-12 px-0">
-					      <Autocomplete 
-						items={this.state.RFCS}
-						getItemValue={item => item.label}
-						renderItem={(item, highlighted) =>
-						  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
-						}
-					        inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCEmisor, maxLength:13 }}
-						value={this.state.RFCEmisor}
-						onChange={this.cambioRFCEmisor}
-						onSelect={ value => this.selectRFCEmisor(value)}
-                                                wrapperStyle={{
-                                                      ...wrapperStyle1,
-                                                      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
-                                                      opacity: this.state.TipoDescarga === "Recibidos" ? 0.6 : 1
-                                                }}
+                      <FormGroup className="container row col-lg-12">
+                          {this.state.TipoDescarga !== 'Recibidos' && (
+				  <div className="col-lg-6 mt-1">
+					<Label>RFC Emisor</Label>
+					<div className="col-lg-12 px-0">
+						      <Autocomplete 
+							items={this.state.RFCS}
+							getItemValue={item => item.label}
+							renderItem={(item, highlighted) =>
+							  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
+							}
+							inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCEmisor, maxLength:13 }}
+							value={this.state.RFCEmisor}
+							onChange={this.cambioRFCEmisor}
+							onSelect={ value => this.selectRFCEmisor(value)}
+							wrapperStyle={{
+							      ...wrapperStyle1,
+							      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
+							      opacity: this.state.TipoDescarga === "Recibidos" ? 0.6 : 1
+							}}
 
-					      />
-                                </div>
-                                { this.state.okRFCEmisor===false &&
-					<div id="nook" className="mt-1">
-					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCEmisor } </Alert>
+						      />
 					</div>
-                                }
-                                { this.state.RFCEmisorIsValid===false &&
-					<div id="nook" className="mt-1">
-					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El RFC Emisor esta mal tecleado </Alert>
+					{ this.state.okRFCEmisor===false &&
+						<div id="nook" className="mt-1">
+						       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+							  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCEmisor } </Alert>
+						</div>
+					}
+					{ this.state.RFCEmisorIsValid===false &&
+						<div id="nook" className="mt-1">
+						       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+							  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El RFC Emisor esta mal tecleado </Alert>
+						</div>
+					}
+				  </div>
+		         )}
+				  <div className={this.state.TipoDescarga === 'Recibidos' ? "col-lg-12 mt-1" : "col-lg-6 mt-1"}>
+					<Label>RFC Receptor</Label>
+					<div className="col-lg-12 px-0">
+						      <Autocomplete
+							items={this.state.RFCS}
+							getItemValue={item => item.label}
+							renderItem={(item, highlighted) =>
+							  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
+							}
+							inputProps={
+								{ id: 'RFCReceptor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCReceptor, maxLength:13 
+                                                                   ,readOnly: this.state.TipoDescarga === "Recibidos" 
+								}}
+							value={this.state.RFCReceptor}
+							onChange={this.cambioRFCReceptor}
+							onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
+							wrapperStyle={{
+							      ...wrapperStyle1,
+							      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
+							      opacity: this.state.TipoDescarga === "Recibidos" ? 0.6 : 1
+							}}
+						      />
 					</div>
-                                }
-                          </div>
-                          <div className="col-lg-6 mt-1">
-                                <Label>RFC Receptor</Label>
-
-                                <div className="col-lg-12 px-0">
-                                              <Autocomplete
-                                                items={this.state.RFCS}
-                                                getItemValue={item => item.label}
-                                                renderItem={(item, highlighted) =>
-                                                  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
-                                                }
-                                                inputProps={{ id: 'RFCReceptor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCReceptor, maxLength:13 }}
-                                                value={this.state.RFCReceptor}
-                                                onChange={this.cambioRFCReceptor}
-                                                onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
-						wrapperStyle={{
-						      ...wrapperStyle1,
-						      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
-						      opacity: this.state.TipoDescarga === "Recibidos" ? 0.6 : 1
-						}}
-                                              />
-                                </div>
 
 
-                                { this.state.okRFCReceptor===false &&
-					<div id="nook" className="mt-1">
-					       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-						  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCReceptor } </Alert>
-					</div>
-                                }
-                                { this.state.RFCReceptorIsValid===false &&
-                                        <div id="nook" className="mt-1">
-                                               <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-                                                  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} />  El RFC Receptor  esta mal tecleado  </Alert>
-                                        </div>
-                                }
-                          </div>
+					{ this.state.okRFCReceptor===false &&
+						<div id="nook" className="mt-1">
+						       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+							  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgRFCReceptor } </Alert>
+						</div>
+					}
+					{ this.state.RFCReceptorIsValid===false &&
+						<div id="nook" className="mt-1">
+						       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
+							  <FontAwesomeIcon icon={['fas' , 'thumbs-down']} />  El RFC Receptor  esta mal tecleado  </Alert>
+						</div>
+					}
+				 </div>
+                      </FormGroup> 
 
-                      </FormGroup> }
 
-
-                      { this.state.TipoDescarga!=='por folio' && <FormGroup className="container row col-lg-12">
+                      <FormGroup className="container row col-lg-12">
                           <div className="col-lg-6 mt-1">
                             <Label>Fecha Inicial</Label>
                             <DatePicker dayLabels={days} monthLabels={months} onFocus={this.handleFocus} onBlur={this.handleBlur} defaultValue={this.state.start} id="fechainicial" maxDate={new Date().toISOString()} onChange={(v,f) => this.handleChangeini(v, f)} />
@@ -516,18 +511,7 @@ class CargafaelMasiva extends Component {
                                           <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> { this.state.msgfecha } </Alert>
                                 </div> }
                           </div>
-                      </FormGroup> }
-
-                      { this.state.TipoDescarga==='por folio' && <FormGroup className="container row col-lg-12">
-				<InputGroup>
-					<Input type="input" name="password" id="folio" placeholder="Folio de la factura" />
-				</InputGroup>
-                                { this.state.okfolio===false && 
-                                <div id="nook" className="mt-1">
-                                       <Alert color="danger" className="text-center  d-flex justify-content-between align-items-center">
-                                          <FontAwesomeIcon icon={['fas' , 'thumbs-down']} /> El folio es obligatorio </Alert>
-                                </div> }
-                      </FormGroup> }
+                      </FormGroup> 
 
 
                       <div className="flex-col d-flex justify-content-center mb-2">
