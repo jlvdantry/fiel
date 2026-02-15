@@ -10,7 +10,7 @@ import MisfacturasWrapper from './componente/Misfacturas';
 import ValidaFiel from './componente/ValidaFiel';
 import Graficafael from './componente/Graficafael';
 import MisFirmas from './componente/Misfirmas';
-import CargafaelMasiva from './componente/CargafaelMasiva';
+import SolicitaFacturas from './componente/SolicitaFacturas';
 import About from './componente/About';
 import Config from './componente/Config';
 import PanelControlSync from './componente/HistorialSync';
@@ -47,7 +47,7 @@ class App extends Component {
 	  <Route path="/validaFiel" component={ValidaFiel}/>
 	  <Route path="/mifiel" component={Mifiel}/>
 	  <Route path="/misfacturas" component={MisfacturasWrapper}/>
-	  <Route path="/cargafaelMasiva" component={CargafaelMasiva}/>
+	  <Route path="/SolicitaFacturas" component={SolicitaFacturas}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>
 	  <Route path="/config" component={Config}/>

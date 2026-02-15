@@ -14,7 +14,7 @@ let estaAutenticadoInter = null;  // funcion de que se se ejecuta en el interval
         const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         var DMS = '';
 
-class CargafaelMasiva extends Component {
+class SolicitaFacturas extends Component {
 
   constructor(props){
     super(props);
@@ -22,7 +22,7 @@ class CargafaelMasiva extends Component {
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()).toISOString(),end:new Date().toISOString(),formattedValueIni:null
                    ,formattedValueFin:null,dropdownOpen:false,TipoDescarga:'Recibidos',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
-                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
+                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:[],RFCSeleccionados:[],RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
                    ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false,queda:'',RFC_FIEL:''
     };
     this.cargar = this.cargar.bind(this);
@@ -395,18 +395,6 @@ class CargafaelMasiva extends Component {
 				      </DropdownMenu>
 				</Dropdown>
                           </div>
-
-                          <div className="col-lg-12 d-flex justify-content-center">
-				<Dropdown isOpen={this.state.dropdownOpenC} toggle={this.toggleC}  className="d-flex justify-content-center mb-2" >
-				      <DropdownToggle caret color="primary" >
-						   Solicitud de {this.state.TipoSolicitud}
-				      </DropdownToggle>
-				      <DropdownMenu>
-					<DropdownItem onClick={this.changeValueC} >CFDI</DropdownItem>
-					<DropdownItem onClick={this.changeValueC} >Metadata</DropdownItem>
-				      </DropdownMenu>
-				</Dropdown>
-                          </div>
                       </FormGroup>
 
 		      <FormGroup className="container">
@@ -539,4 +527,4 @@ class CargafaelMasiva extends Component {
     )
   }
 };
-export default CargafaelMasiva;
+export default SolicitaFacturas;
