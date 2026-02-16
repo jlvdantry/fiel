@@ -89,6 +89,7 @@ var creadb = function(db) {
                         objectStore.createIndex('usename', 'usename', { unique: false });
                         objectStore.createIndex('catalogo', 'catalogo', { unique: false });
                         objectStore.createIndex('label', 'label', { unique: false });
+                        objectStore.createIndex('alias', 'alias', { unique: false });
                         objectStore.createIndex('ID', 'ID', { unique: false });
                         objectStore.createIndex('catalogo_label', ['catalogo','label'], { unique: true });
                     };
@@ -369,12 +370,13 @@ var wl_fecha = function () {
       return fecha;
 }
 
-function inserta_catalogo(catalogo,label)
+function inserta_catalogo(catalogo,label,alias)
 {
         return new Promise(function (resolve, reject) {
                 var json= { };
                 json.catalogo=catalogo;
                 json.label=label;
+                json.label=alias;
                 json=datos_comunesCat(json);
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'catalogos', "readwrite");
@@ -573,7 +575,7 @@ function leeRFCS()
                                 selObjects(objectStore,'catalogo','rfcs').then(function(requests) {
                                     var rfcs=[];
                                     requests.forEach(
-                                          e => { rfcs.push({label : e.value.label})  }
+                                          e => { rfcs.push({label : e.value.label, alias:e.value.alias})  }
                                     );
                                     resolve(rfcs);
                                 }).catch(function(err) {  reject(err) });

@@ -1,10 +1,10 @@
 var insertaRFCS = function insertaRFCS() {
-	inserta_catalogo('rfcs','GDF9712054NA'); // gobierno de la cdmx
-	inserta_catalogo('rfcs','NWM9709244W4'); // aurrera o walmart
-	inserta_catalogo('rfcs','FGU830930PD3'); // farmacias guadalajara
-	inserta_catalogo('rfcs','TTB040915CY9'); // tres B
-	inserta_catalogo('rfcs','SSD050315240'); // Similares
-	inserta_catalogo('rfcs','MCS2007152D3'); // Metropolitan car show   Nissan Iztacalo
-	inserta_catalogo('rfcs','SAT8410245V8'); // Seguros Atlas
-	inserta_catalogo('rfcs','GPA161202UGB'); // Facturas gas
+	inserta_catalogo('rfcs','GDF9712054NA','CDMX Gobierno'); 
+	inserta_catalogo('rfcs','NWM9709244W4','Walmart o Aurrera'); 
+	inserta_catalogo('rfcs','FGU830930PD3','Farmacias Guadalajara'); 
+	inserta_catalogo('rfcs','TTB040915CY9','Tres B'); 
+	inserta_catalogo('rfcs','SSD050315240','Similares'); 
+	inserta_catalogo('rfcs','MCS2007152D3','Metropolita car show'); 
+	inserta_catalogo('rfcs','SAT8410245V8','Seguros atlas'); 
+	inserta_catalogo('rfcs','GPA161202UGB','Factura Gas'); 
 }
