@@ -22,7 +22,8 @@ class SolicitaFacturas extends Component {
     this.state = { xml_name : [],ojos:'eye',type:'password',msg:'',ok:'',nook:'',start:new Date("1/1/"+ new Date().getFullYear()).toISOString(),end:new Date().toISOString(),formattedValueIni:null
                    ,formattedValueFin:null,dropdownOpen:false,TipoDescarga:'Recibidos',token:'',folio:'' ,okfolio:true, okfechai:true, okfechaf:true, msgfecha:''
                    ,dropdownOpenC:false,TipoSolicitud:'CFDI',pwdfiel:'',okfolioReq:true, estatusDownload : null, estatusDownloadMsg : null, solicitudes: []
-                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:[],RFCSeleccionados:[],RFCEmisorIsValid:null,OKRFCEmisor:null,RFCReceptor:''
+                   ,resultadoVerifica:null,resultadoDownload:null,resultadoAutenticate:null,RFCEmisor:'',RFCEmisorIsValid:null,OKRFCEmisor:null
+	           ,RFCReceptor:[],Receptores_Seleccionados: []
                    ,RFCReceptorIsValid:null,OKRFCReceptor:null,folioReq:null,tokenEstatusSAT:false,RFCS:[],tecleoPWD:false,isDisabled:false,queda:'',RFC_FIEL:''
     };
     this.cargar = this.cargar.bind(this);
@@ -94,6 +95,27 @@ class SolicitaFacturas extends Component {
 		    }
 	    });
     }
+
+    selectRFCReceptor(value) {
+	    // Solo permitimos múltiples si es 'Emitidos'
+	    if (this.state.TipoDescarga === 'Emitidos') {
+		const itemCompleto = this.state.RFCS.find(item => item.label === value);
+		
+		if (this.state.RFCReceptor.length < 5) {
+		    if (!this.state.RFCReceptor.includes(value)) {
+			this.setState({
+			    RFCReceptor: [...this.state.RFCReceptor, value],
+			    Receptores_Seleccionados: [...this.state.Receptores_Seleccionados, itemCompleto]
+			});
+		    }
+		} else {
+		    alert("Máximo 5 receptores permitidos para descargas emitidas.");
+		}
+	    } else {
+		// Comportamiento normal para otros tipos
+		this.setState({ RFCReceptor: value, RFCReceptorIsValid: true });
+	    }
+     }
 
 
     cambioRFCReceptor(event) {
@@ -440,27 +462,47 @@ class SolicitaFacturas extends Component {
 				  </div>
 		         )}
 				  <div className={this.state.TipoDescarga === 'Recibidos' ? "col-lg-12 mt-1" : "col-lg-6 mt-1"}>
-					<Label>RFC Receptor</Label>
+					<Label>RFC Receptor {this.state.TipoDescarga === 'Emitidos' && "(Hasta 5)"}</Label>
 					<div className="col-lg-12 px-0">
 						      <Autocomplete
 							items={this.state.RFCS}
 							getItemValue={item => item.label}
-							renderItem={(item, highlighted) =>
-							  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
+			                                renderItem={(item, highlighted) =>
+									    <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent', padding: '5px' }}>
+										<strong>{item.alias || 'Sin Alias'}</strong> - <small>{item.label}</small>
+									    </div>
 							}
-							inputProps={
-								{ id: 'RFCReceptor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCReceptor, maxLength:13 
-                                                                   ,readOnly: this.state.TipoDescarga === "Recibidos" 
-								}}
-							value={this.state.RFCReceptor}
+                                                        inputProps={{ id: 'RFCReceptor', placeholder: 'Seleccione receptores...', className:'form-control', onBlur:onBlurRFCReceptor }}
+							value={this.state.TipoDescarga === 'Emitidos' ? '' : this.state.RFCReceptor} 
+							onSelect={value => this.selectRFCReceptor(value)}
 							onChange={this.cambioRFCReceptor}
-							onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
+							//onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
 							wrapperStyle={{
 							      ...wrapperStyle1,
 							      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
 							      opacity: this.state.TipoDescarga === "Recibidos" ? 0.6 : 1
 							}}
 						      />
+						    {/* Etiquetas de los seleccionados */}
+			                            {this.state.TipoDescarga !== 'Recibidos' &&
+							    <div className="d-flex flex-wrap mt-2" >
+								{this.state.Receptores_Seleccionados.map((rfc, index) => (
+								    <span key={index} className="badge badge-info m-1 p-2">
+									{rfc.alias ? `${rfc.alias} (${rfc.label})` : rfc.label}
+									<FontAwesomeIcon 
+									    icon={['fas', 'times']} 
+									    className="ml-2" 
+									    style={{ cursor: 'pointer' }}
+									    onClick={() => {
+										const r = this.state.RFCReceptor.filter(val => val !== rfc.label);
+										const s = this.state.Receptores_Seleccionados.filter(obj => obj.label !== rfc.label);
+										this.setState({ RFCReceptor: r, Receptores_Seleccionados: s });
+									    }}
+									/>
+								    </span>
+								))}
+							    </div>
+						    }
 					</div>
 
 

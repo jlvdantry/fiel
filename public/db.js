@@ -376,7 +376,7 @@ function inserta_catalogo(catalogo,label,alias)
                 var json= { };
                 json.catalogo=catalogo;
                 json.label=label;
-                json.label=alias;
+                json.alias=alias;
                 json=datos_comunesCat(json);
                 openDatabasex(DBNAME, DBVERSION).then(function(db) {
                         return openObjectStore(db, 'catalogos', "readwrite");
