@@ -90,43 +90,75 @@ var DescargaMasivaSat = function()
 
    }
 
-   /*
-    * arma el body para solicita facturas emitidos 
-    */
-   this.armaBodySolEmi = function (estado) {
-          var solicitud = { 'EstadoComprobante' : 'Vigente','FechaInicial':estado.passdata.fechaini,'FechaFinal': estado.passdata.fechafin+'T23:59:59',
-               'RfcEmisor': estado.passdata.RFCEmisor, 'TipoSolicitud' : estado.passdata.TipoSolicitud,'RfcSolicitante':estado.passdata.RFCEmisor
-              };
-          var solicitudAttributesAsText='EstadoComprobante="Vigente"'+' FechaInicial="'+solicitud.FechaInicial+'" FechaFinal="'+solicitud.FechaFinal+'"'+' RfcEmisor="'+solicitud.RfcEmisor+'" TipoSolicitud="'+solicitud.TipoSolicitud+'"'+' RfcSolicitante="'+estado.passdata.RFCEmisor+'"';
-          var xmlRfcReceived='<des:RfcReceptores><des:RfcReceptor>'+estado.passdata.RFCReceptor+'</des:RfcReceptor></des:RfcReceptores>';
-          this.vuuid=this.uuid();
-          this.toDigestXml =  '<des:SolicitaDescargaEmitidos xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">'+
-                '<des:solicitud '+solicitudAttributesAsText+'>'+
-                    xmlRfcReceived+
-                '</des:solicitud>'+
-            '</des:SolicitaDescargaEmitidos>';
-          this.datofirmado=this.creafirma(this.toDigestXml,"");
-          this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">'+
-        '<s:Header/>'+
-                '<s:Body>'+
-                    '<des:SolicitaDescargaEmitidos>'+
-                        '<des:solicitud '+solicitudAttributesAsText+'>'+
-                            xmlRfcReceived+
-                        '<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">'+
-                                this.datofirmado.signedinfo+
-                                '<SignatureValue>'+
-                                this.datofirmado.sello+
-                                '</SignatureValue>'+
-                                this.datofirmado.keyInfo+
-                        '</Signature>'+
-                        '</des:solicitud>'+
-                    '</des:SolicitaDescargaEmitidos>'+
-                '</s:Body>'+
-            '</s:Envelope>';
-           this.urlAutenticate=ENDPOINTSSAT.SOLICITUD;
-           this.xmltoken=this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+/*
+ * arma el body para solicita facturas emitidos
+ */
+this.armaBodySolEmi = function (estado) {
+    // 1. Normalizar RFCReceptor a un arreglo si no lo es
+    let receptoresArr = [];
+    if (Array.isArray(estado.passdata.RFCReceptor)) {
+        receptoresArr = estado.passdata.RFCReceptor;
+    } else {
+        receptoresArr = [estado.passdata.RFCReceptor];
+    }
 
-   }
+    // 2. Generar dinámicamente los nodos XML <des:RfcReceptor>
+    // Mapeamos cada elemento extrayendo el RFC (label) si es un objeto
+    var xmlRfcReceived = '<des:RfcReceptores>' + 
+        receptoresArr.map(function(item) {
+            return '<des:RfcReceptor>' + item + '</des:RfcReceptor>';
+        }).join('') + 
+    '</des:RfcReceptores>';
+
+    var solicitud = { 
+        'EstadoComprobante' : 'Vigente',
+        'FechaInicial': estado.passdata.fechaini,
+        'FechaFinal': estado.passdata.fechafin + 'T23:59:59',
+        'RfcEmisor': estado.passdata.RFCEmisor, 
+        'TipoSolicitud' : estado.passdata.TipoSolicitud,
+        'RfcSolicitante': estado.passdata.RFCEmisor
+    };
+
+    var solicitudAttributesAsText = 'EstadoComprobante="Vigente"' + 
+        ' FechaInicial="' + solicitud.FechaInicial + '"' + 
+        ' FechaFinal="' + solicitud.FechaFinal + '"' + 
+        ' RfcEmisor="' + solicitud.RfcEmisor + '"' + 
+        ' TipoSolicitud="' + solicitud.TipoSolicitud + '"' + 
+        ' RfcSolicitante="' + estado.passdata.RFCEmisor + '"';
+
+    this.vuuid = this.uuid();
+    
+    // Construcción del XML para Digesto
+    this.toDigestXml = '<des:SolicitaDescargaEmitidos xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx">' +
+        '<des:solicitud ' + solicitudAttributesAsText + '>' +
+            xmlRfcReceived +
+        '</des:solicitud>' +
+    '</des:SolicitaDescargaEmitidos>';
+
+    this.datofirmado = this.creafirma(this.toDigestXml, "");
+
+    // Construcción del Envelope SOAP
+    this.xmltoken = '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">' +
+        '<s:Header/>' +
+        '<s:Body>' +
+            '<des:SolicitaDescargaEmitidos>' +
+                '<des:solicitud ' + solicitudAttributesAsText + '>' +
+                    xmlRfcReceived +
+                    '<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">' +
+                        this.datofirmado.signedinfo +
+                        '<SignatureValue>' +
+                            this.datofirmado.sello +
+                        '</SignatureValue>' +
+                        this.datofirmado.keyInfo +
+                    '</Signature>' +
+                '</des:solicitud>' +
+            '</des:SolicitaDescargaEmitidos>' +
+        '</s:Body>' +
+    '</s:Envelope>';
+
+    this.urlAutenticate = ENDPOINTSSAT.SOLICITUD;
+    this.xmltoken = this.xmltoken.replace(/(\r\n|\n|\r)/gm, "");
+};
 
    /*
     * arma el body para solicita facturas por folio

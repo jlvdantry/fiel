@@ -125,8 +125,8 @@ class Menumi extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('online');
-    window.removeEventListener('offline');
+    window.removeEventListener('online',() => this.setOnlineStatus(true));
+    window.removeEventListener('offline',() => this.setOnlineStatus(false));
     window.removeEventListener('resize', this.updateWindowDimensions);
     clearInterval(this.timerc); // Tells the browser: "Stop running "
     clearInterval(this.timerR); // Tells the browser: "Stop running '"

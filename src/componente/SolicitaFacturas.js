@@ -33,7 +33,7 @@ class SolicitaFacturas extends Component {
     this.handleBlur = this.handleBlur.bind(this)
     this.handleChangefin = this.handleChangefin.bind(this)
     this.toggle =  this.toggle.bind(this)
-    this.changeValue = this.changeValue.bind(this);
+    this.changeValueTipoDescarga = this.changeValueTipoDescarga.bind(this);
     this.toggleC =  this.toggleC.bind(this)
     this.changeValueC = this.changeValueC.bind(this);
     this.cambioRFCEmisor = this.cambioRFCEmisor.bind(this);
@@ -56,9 +56,9 @@ class SolicitaFacturas extends Component {
         });
     }
 
-    changeValue(e) {
+    changeValueTipoDescarga(e) {
         if (e.currentTarget.textContent==='Emitidos') {
-           this.setState({TipoDescarga: e.currentTarget.textContent,RFCEmisor:this.state.RFC_FIEL,RFCReceptor:''});
+           this.setState({TipoDescarga: e.currentTarget.textContent,RFCEmisor:this.state.RFC_FIEL,RFCReceptor:[]});
 	}
         if (e.currentTarget.textContent==='Recibidos') {
            this.setState({TipoDescarga: e.currentTarget.textContent,RFCReceptor:this.state.RFC_FIEL,RFCEmisor:''});
@@ -103,8 +103,9 @@ class SolicitaFacturas extends Component {
 		
 		if (this.state.RFCReceptor.length < 5) {
 		    if (!this.state.RFCReceptor.includes(value)) {
+                        const rfcLimpio = typeof value === 'object' ? value.label : value;
 			this.setState({
-			    RFCReceptor: [...this.state.RFCReceptor, value],
+			    RFCReceptor:[...this.state.RFCReceptor, rfcLimpio] ,
 			    Receptores_Seleccionados: [...this.state.Receptores_Seleccionados, itemCompleto]
 			});
 		    }
@@ -285,17 +286,16 @@ class SolicitaFacturas extends Component {
 
 	       if (this.TipoDescarga==='Emitidos') {
 		       this.setState({RFCEmisor:document.querySelector('#RFCEmisor').value});
-		       if ((this.state.RFCEmisor===null || this.state.RFCEmisor==='') ) {
-			   this.setState({okRFCEmisor:false,msgRFCEmisor:'El RFC del emisor es obligatorio', isDisabled: false });
+		       if ((this.state.RFCEmisor.length===0) ) {
+			   this.setState({okRFCEmisor:false,msgRFCEmisor:'Al menos debe de seleccionar un  RFC receptor', isDisabled: false });
 			   return;
 		       } else {
 			   this.setState({okRFCEmisor:true,msgRFCEmisor:'' });
 		       }
                }
 
-	       this.setState({RFCReceptor:document.querySelector('#RFCReceptor').value});
-	       if (this.state.RFCReceptor===null || this.state.RFCReceptors==='') {
-		   this.setState({okRFCReceptor:false,msgRFCReceptor:'El RFC del receptor es obligatoria', isDisabled: false });
+	       if (this.state.RFCReceptor.length===0) {
+		   this.setState({okRFCReceptor:false,msgRFCReceptor:'Al menos debe de seleccionar un  RFC receptor', isDisabled: false });
 		   return;
 	       } else {
 		   this.setState({okRFCReceptor:true,msgRFCReceptor:'' });
@@ -316,8 +316,10 @@ class SolicitaFacturas extends Component {
   /* inserta una solicitud en request */
   inserta_solicitud() {
                       var passdata = { 'fechaini':this.state.start.substring(0,10),'fechafin':this.state.end.substring(0,10),
-                                                  'RFCEmisor':this.state.RFCEmisor,'RFCReceptor':this.state.RFCReceptor,'TipoSolicitud':this.state.TipoSolicitud 
-			                ,TipoDescarga:this.state.TipoDescarga
+                                                  'RFCEmisor':this.state.RFCEmisor
+			                         ,'RFCReceptor': this.state.RFCReceptor
+			                         ,'TipoSolicitud': this.state.TipoSolicitud 
+			                         ,'TipoDescarga':this.state.TipoDescarga
 		      };
 	              window.inserta_solicitud(passdata).then(idkey => {
                                window.leeSolicitudesCorrectas().then( a => { this.setState({ solicitudes: a, isDisabled:false }) });
@@ -412,8 +414,8 @@ class SolicitaFacturas extends Component {
 						   {this.state.TipoDescarga} 
 				      </DropdownToggle>
 				      <DropdownMenu>
-					<DropdownItem onClick={this.changeValue} >Emitidos</DropdownItem>
-					<DropdownItem onClick={this.changeValue} >Recibidos</DropdownItem>
+					<DropdownItem onClick={this.changeValueTipoDescarga} >Emitidos</DropdownItem>
+					<DropdownItem onClick={this.changeValueTipoDescarga} >Recibidos</DropdownItem>
 				      </DropdownMenu>
 				</Dropdown>
                           </div>
@@ -476,7 +478,6 @@ class SolicitaFacturas extends Component {
 							value={this.state.TipoDescarga === 'Emitidos' ? '' : this.state.RFCReceptor} 
 							onSelect={value => this.selectRFCReceptor(value)}
 							onChange={this.cambioRFCReceptor}
-							//onSelect={ value => this.setState({ RFCReceptor: value, okRFCReceptor:true, RFCReceptorIsValid:true }) }
 							wrapperStyle={{
 							      ...wrapperStyle1,
 							      pointerEvents: this.state.TipoDescarga === "Recibidos" ? 'none' : 'auto',
