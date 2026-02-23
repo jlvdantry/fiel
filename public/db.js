@@ -1,5 +1,5 @@
 var DBNAME='fiel_menus';
-var DBVERSION='17';
+var DBVERSION='18';
 var DBNAME=DBNAME;
 var DBNAMEM='fiel_firmayfacturacion';
 var PERFIL='inven_agn'
@@ -80,17 +80,11 @@ var creadb = function(db) {
                     };
 
                    if(!db.objectStoreNames.contains('catalogos')) { /* Catalogos propios del aplicativo */
-                        objectStore = db.createObjectStore('catalogos', { autoIncrement : true });
-                        objectStore.createIndex('hora', 'hora', { unique: false });
-                        objectStore.createIndex('minuto', 'minuto', { unique: false });
-                        objectStore.createIndex('dia', 'dia', { unique: false });
-                        objectStore.createIndex('mes', 'mes', { unique: false });
-                        objectStore.createIndex('ano', 'ano', { unique: false });
-                        objectStore.createIndex('usename', 'usename', { unique: false });
+                        objectStore = db.createObjectStore('catalogos', { keyPath : 'id' });
                         objectStore.createIndex('catalogo', 'catalogo', { unique: false });
                         objectStore.createIndex('label', 'label', { unique: false });
                         objectStore.createIndex('alias', 'alias', { unique: false });
-                        objectStore.createIndex('ID', 'ID', { unique: false });
+                        objectStore.createIndex('activo', 'alias', { unique: false });
                         objectStore.createIndex('catalogo_label', ['catalogo','label'], { unique: true });
                     };
                    if(!db.objectStoreNames.contains('log')) { /* tabla donde se registra los mensajes del log */
@@ -370,27 +364,17 @@ var wl_fecha = function () {
       return fecha;
 }
 
-function inserta_catalogo(catalogo,label,alias)
-{
-        return new Promise(function (resolve, reject) {
-                var json= { };
-                json.catalogo=catalogo;
-                json.label=label;
-                json.alias=alias;
-                json=datos_comunesCat(json);
-                openDatabasex(DBNAME, DBVERSION).then(function(db) {
-                        return openObjectStore(db, 'catalogos', "readwrite");
-                               }).then(function(objectStore) {
-					addObject(objectStore, json).then( (key) => {
-					    json.key=key;
-					    resolve(json) ; }).
-                                        catch( (err) => { resolve(); })
-                        }).catch(function(err) {
-                                console.log("[inserta_catalogos] Database error: "+err.message);
-                });
-        })
-}
-
+var inserta_catalogo = function(tabla, objeto) {
+    return new Promise((resolve, reject) => {
+        openDatabasex(DBNAME, DBVERSION).then(db => {
+            var transaction = db.transaction([tabla], "readwrite");
+            var objectStore = transaction.objectStore(tabla);
+            var request = objectStore.put(objeto); // Si el ID existe, actualiza. Si no, inserta.
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (err) => reject(err);
+        });
+    });
+};
 
 /* funcion que inserta los datos en la tabla de request esta funcion se ejecuta
    cuando se hacer un requermiento */
@@ -575,7 +559,7 @@ function leeRFCS()
                                 selObjects(objectStore,'catalogo','rfcs').then(function(requests) {
                                     var rfcs=[];
                                     requests.forEach(
-                                          e => { rfcs.push({label : e.value.label, alias:e.value.alias})  }
+                                          e => { rfcs.push(e.value)  }
                                     );
                                     resolve(rfcs);
                                 }).catch(function(err) {  reject(err) });
