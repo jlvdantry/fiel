@@ -16,6 +16,7 @@ import Config from './componente/Config';
 import PanelControlSync from './componente/HistorialSync';
 import './fontawesome';
 import MisLogWrapper from './componente/MiLog';
+import AdminCatalogos from './componente/AdminCatalogos';
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', event => {
@@ -49,6 +50,7 @@ class App extends Component {
 	  <Route path="/misfacturas" component={MisfacturasWrapper}/>
 	  <Route path="/SolicitaFacturas" component={SolicitaFacturas}/>
 	  <Route path="/Graficafael" component={Graficafael}/>
+	  <Route path="/AdminCatalogos" component={AdminCatalogos}/>
 	  <Route path="/misfirmas" component={MisFirmas}/>
 	  <Route path="/config" component={Config}/>
 	  <Route path="/about" component={About}/>
