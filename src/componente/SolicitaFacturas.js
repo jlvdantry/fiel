@@ -437,7 +437,8 @@ class SolicitaFacturas extends Component {
 							renderItem={(item, highlighted) =>
 							  <div key={item.id} style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}} > {item.label} </div>
 							}
-							inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control', onBlur:onBlurRFCEmisor, maxLength:13 }}
+							inputProps={{ id: 'RFCEmisor',  placeholder: 'Teclee y seleccione...', className:'form-control'
+									, onBlur:onBlurRFCEmisor, maxLength:13,disabled: this.state.TipoDescarga === 'Emitidos' }}
 							value={this.state.RFCEmisor}
 							onChange={this.cambioRFCEmisor}
 							onSelect={ value => this.selectRFCEmisor(value)}
@@ -474,7 +475,9 @@ class SolicitaFacturas extends Component {
 										<strong>{item.alias || 'Sin Alias'}</strong> - <small>{item.label}</small>
 									    </div>
 							}
-                                                        inputProps={{ id: 'RFCReceptor', placeholder: 'Seleccione receptores...', className:'form-control', onBlur:onBlurRFCReceptor }}
+                                                        inputProps={{ id: 'RFCReceptor', placeholder: 'Seleccione receptores...', className:'form-control', onBlur:onBlurRFCReceptor 
+								      ,disabled: this.state.TipoDescarga === 'Recibidos'
+							           }}
 							value={this.state.TipoDescarga === 'Emitidos' ? '' : this.state.RFCReceptor} 
 							onSelect={value => this.selectRFCReceptor(value)}
 							onChange={this.cambioRFCReceptor}
