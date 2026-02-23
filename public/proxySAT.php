@@ -54,6 +54,8 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $curlHeaders);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // For testing, avoid in production with real certificates
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // For testing, avoid in production
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
 // Optional: For debugging, enable verbose output to error stream
 curl_setopt($ch, CURLOPT_VERBOSE, true);
 $verboseLog = fopen('php://temp', 'rw+');
