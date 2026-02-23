@@ -311,9 +311,7 @@ this.armaBodySolEmi = function (estado) {
                 var hs1={ 'Content-Type': 'text/xml;charset=UTF-8','SOAPAction':SOAPACTION.AUTENTICA,'Cache-Control':'no-cache'};
                 inserta_request(url ,res.cer ,MENUS.DESCARGAMASIVA ,FORMA.DESCARGAMASIVA ,MOVIMIENTO.AUTENTICA ,hs1, res.soap ,res.urlSAT).then( key => {
                                 console.log("inserto el request para autenticarse");
-				if (typeof window.revisaSiEstaAutenticado === 'function') {
-					window.revisaSiEstaAutenticado();
-				}
+				revisaSiEstaAutenticado();
                 });
    }
 
