@@ -154,6 +154,8 @@ class Menumi extends Component {
 				   <FontAwesomeIcon icon={['fas' , 'cloud-download-alt']} /> SOLICITAR FACTURAS</Link>
 		      <Link to='/misfacturas' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'receipt']} /> MIS FACTURAS</Link>
+		      <Link to='/AdminCatalogos' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
+				   <FontAwesomeIcon icon={['fas' , 'address-book']} /> RFCS</Link>
 		      <Link to='/miLog' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
 				   <FontAwesomeIcon icon={['fas' , 'history']} /> VER LOG</Link>
 		      <Link to='/about' className='rounded  mr-1' onClick={this.closeNavbar}  activeClassName="active" onlyActiveOnIndex>
