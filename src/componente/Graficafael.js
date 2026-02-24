@@ -26,40 +26,36 @@ class Graficafael extends Component {
             dropdownValue: 'Barras Verticales',
             windowWidth: window.innerWidth,
             filtro: null,
-            rfc: window.localStorage.getItem('rfc') || '' 
+            rfc: '' 
         };
     }
 
+    // --- TU COMPONENTDIDMOUNT ASYNC RECUPERADO ---
     async componentDidMount() {
-        // Obtenemos el RFC de forma asíncrona dentro del ciclo de vida
         const rfcObtenido = await window.dameRfc();
         this.setState({ rfc: rfcObtenido }, () => {
             this.queYears();
         });
         this.handleResize();
         window.addEventListener("resize", this.handleResize);
-
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.updateDimensions);
+        window.removeEventListener('resize', this.handleResize);
     }
 
-    updateDimensions = () => {
+    handleResize = () => {
         this.setState({ windowWidth: window.innerWidth });
     }
-
-    // --- LÓGICA DE DATOS RECUPERADA ---
 
     queYears() {
         if (window.leefacturas) {
             window.leefacturas().then(cuantas => {
                 const uniqueYearsSet = new Set();
-                let year = 0;
                 cuantas.forEach((x) => {
                     if (x.value.passdata && x.value.passdata["cfdi:Comprobante"]) {
                         const fullDate = x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha;
-                        year = fullDate.substring(0, 4);
+                        const year = fullDate.substring(0, 4);
                         uniqueYearsSet.add(year);
                     }
                 });
@@ -77,7 +73,6 @@ class Graficafael extends Component {
 
     actuaFacturas() {
         if (!window.leefacturas) return;
-
         window.leefacturas(this.state.filtro).then(cuantas => {
             var datae = Array(12).fill(0); 
             var datai = Array(12).fill(0); 
@@ -86,7 +81,7 @@ class Graficafael extends Component {
             let totalI = 0;
             let totalE = 0;
 
-            cuantas.map((x) => {
+            cuantas.forEach((x) => {
                 var ingreso = 0, egreso = 0;
                 var tc = x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante;
                 var rfcEmisor = x.value.passdata["cfdi:Comprobante"]["cfdi:Emisor"]["@attributes"].Rfc;
@@ -103,24 +98,18 @@ class Graficafael extends Component {
                     if (tc === 'I') ingreso = total;
                     if (tc === 'N') egreso = total;
                 }
-                
-                totalI += ingreso;
-                totalE += egreso;
-
-                datai[mes] += ingreso;
-                datae[mes] += egreso;
+                totalI += ingreso; totalE += egreso;
+                datai[mes] += ingreso; datae[mes] += egreso;
                 datan[mes] += (ingreso - egreso);
-                return null;
             });
 
             this.props.setSharedFiltro(cuantas);
             if(this.props.setTotals) this.props.setTotals(totalI, totalE);
-
-            this.generaDataGrafica(datai, datae);
+            this.generaDataGrafica(datai, datae, datan);
         });
     }
 
-    generaDataGrafica = (ingresos, egresos) => {
+    generaDataGrafica = (ingresos, egresos, netos) => {
         const chartData = {
             labels: labelsShort,
             datasets: [
@@ -129,28 +118,77 @@ class Graficafael extends Component {
                     data: ingresos,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1,
+                    borderWidth: 1
                 },
                 {
                     label: 'Gastos',
                     data: egresos,
                     backgroundColor: 'rgba(255, 99, 132, 0.6)',
                     borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Neto',
+                    data: netos,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
                 }
             ]
         };
         this.setState({ data: chartData });
     }
 
-    // --- EXPORTACIÓN ---
-
     exportaExcel() {
         const datosFactura = ExtraeComprobantes(this.props.facturasProcesadas, this.state.rfc);
-        exportToExcel(datosFactura, 'MisFacturas');
-    }
 
-    // --- INTERFAZ ---
+        if (datosFactura && datosFactura.length > 0) {
+
+		const limpiarNumero = (valor) => {
+		    if (typeof valor === 'number') return valor;
+		    if (!valor || valor === "" || valor === 'desconocido') return 0;
+		    // Eliminamos $, comas y espacios para dejar solo números y puntos
+		    const limpio = valor.toString().replace(/[^0-9.-]+/g, "");
+		    const resultado = parseFloat(limpio);
+		    return isNaN(resultado) ? 0 : resultado;
+		};
+
+            const datosNumericos = datosFactura.map(fila => ({
+                ...fila,
+                Subtotal: limpiarNumero(fila.Subtotal),
+                "Iva Acreditado": limpiarNumero(fila['Iva Acreditado']),
+                "Iva Cobrado": limpiarNumero(fila['Iva Cobrado']),
+                Ingreso: limpiarNumero(fila.Ingreso),
+                Egreso: limpiarNumero(fila.Egreso),
+                Total: limpiarNumero(fila.Total)
+            }));
+
+            const totales = datosFactura.reduce((acc, curr) => {
+                acc.ingreso += limpiarNumero(curr.Ingreso);
+                acc.ivacobrado += limpiarNumero(curr['Iva Cobrado']);
+                acc.ivaacreditado += limpiarNumero(curr['Iva Acreditado']);
+                acc.egreso += limpiarNumero(curr.Egreso);
+                acc.subtotal += limpiarNumero(curr.Subtotal);
+                acc.total += limpiarNumero(curr.Total);
+                return acc;
+            }, { ingreso: 0, egreso: 0, subtotal: 0, ivaTrasladado: 0, ivaRetenido: 0, total: 0,ivacobrado:0,ivaacreditado:0 });
+
+            const filaTotal = {
+                [Object.keys(datosFactura[0])[0]]: "TOTALES:", 
+                Subtotal: totales.subtotal,
+                "Iva Cobrado": totales.ivacobrado,
+                "Iva Acreditado": totales.ivaacreditado,
+                Ingreso: totales.ingreso,
+                Egreso: totales.egreso,
+                Total: totales.total
+            };
+
+            const datosFinales = [...datosNumericos, {}, filaTotal];
+            exportToExcel(datosFinales, 'Reporte_Facturacion_Totales');
+        } else {
+            exportToExcel(datosFactura, 'Reporte_Vacio');
+        }
+    }
 
     toggleYear = () => this.setState({ dropdownOpenYear: !this.state.dropdownOpenYear });
     toggle = () => this.setState({ dropdownOpen: !this.state.dropdownOpen });
@@ -164,40 +202,48 @@ class Graficafael extends Component {
 
     render() {
         const isMobile = this.state.windowWidth < 768;
+        const { data, dropdownValue } = this.state;
+        const isCircular = dropdownValue === 'Dona' || dropdownValue === 'Pie';
 
-        const options = {
+        // Dataset dinámico para evitar el error de 'axis'
+        const finalData = {
+            ...data,
+            datasets: (data.datasets || []).map(ds => {
+                if (ds.label === 'Neto') {
+                    return {
+                        ...ds,
+                        type: isCircular ? undefined : 'line', 
+                        fill: !isCircular,
+                        tension: 0.4
+                    };
+                }
+                return ds;
+            })
+        };
+
+        const commonOptions = {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: true,
-                    position: isMobile ? 'bottom' : 'right',
-                    labels: {
-                        boxWidth: 12,
-                        font: { size: isMobile ? 10 : 12 }
-                    }
-                },
+                legend: { position: isMobile ? 'bottom' : 'right' },
                 tooltip: {
-                    enabled: true,
                     callbacks: {
-                        label: (context) => {
-                            let label = context.dataset.label || '';
-                            let val = context.parsed.y || 0;
-                            return `${label}: ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val)}`;
+                        label: (ctx) => {
+                            const label = ctx.dataset.label || ctx.label || '';
+                            const value = ctx.raw || 0;
+                            return `${label}: ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value)}`;
                         }
                     }
                 }
-            },
-            scales: this.state.dropdownValue.includes('Barras') ? {
+            }
+        };
+
+        const barOptions = {
+            ...commonOptions,
+            scales: !isCircular ? {
                 y: { beginAtZero: true },
-                x: {
-                    ticks: {
-                        maxRotation: 45,
-                        minRotation: 45,
-                        font: { size: isMobile ? 8 : 11 }
-                    }
-                }
-            } : {}
+                x: { ticks: { font: { size: isMobile ? 8 : 11 } } }
+            } : undefined
         };
 
         return (
@@ -219,8 +265,7 @@ class Graficafael extends Component {
                         <Col xs={6} md="auto">
                             <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} size="sm">
                                 <DropdownToggle caret color="white" className="w-100 border shadow-sm">
-                                    <FontAwesomeIcon icon={['fas', 'chart-bar']} className="mr-1" /> 
-                                    {isMobile ? "Tipo" : this.state.dropdownValue}
+                                    {dropdownValue}
                                 </DropdownToggle>
                                 <DropdownMenu>
                                     <DropdownItem onClick={() => this.setState({dropdownValue: 'Barras Verticales'})}>Barras Verticales</DropdownItem>
@@ -230,39 +275,26 @@ class Graficafael extends Component {
                                 </DropdownMenu>
                             </Dropdown>
                         </Col>
-                        <Col xs={12} md="auto" className="ml-md-auto d-flex justify-content-end">
-                            <Button color="success" size="sm" className="shadow-sm w-100 w-md-auto" onClick={() => this.exportaExcel()}>
-                                <FontAwesomeIcon icon={['fas', 'file-excel']} /> {isMobile ? " Exportar Excel" : " Excel"}
+                        {/* --- BOTÓN DE EXCEL AGREGADO --- */}
+                        <Col xs={12} md="auto" className="ms-md-auto">
+                            <Button color="success" size="sm" className="w-100" onClick={() => this.exportaExcel()}>
+                                <FontAwesomeIcon icon={['fas', 'file-excel']} className="me-2" /> Exportar Excel
                             </Button>
                         </Col>
                     </Row>
                 </div>
 
-                <CardBody style={{ 
-                    position: 'relative', 
-                    height: isMobile ? '450px' : '400px', 
-                    padding: isMobile ? '5px' : '20px' 
-                }}>
-                    {this.state.data.labels ? (
+                <CardBody style={{ position: 'relative', height: isMobile ? '450px' : '400px' }}>
+                    {data.labels ? (
                         <div style={{ width: '100%', height: '100%' }}>
-                            {(this.state.dropdownValue === 'Barras Verticales' || this.state.dropdownValue === 'Barras Horizontales') && (
-                                <Bar 
-                                    data={this.state.data} 
-                                    options={{
-                                        ...options,
-                                        indexAxis: this.state.dropdownValue === 'Barras Horizontales' ? 'y' : 'x'
-                                    }} 
-                                />
-                            )}
-                            {this.state.dropdownValue === 'Dona' && <Doughnut data={this.state.data} options={options} />}
-                            {this.state.dropdownValue === 'Pie' && <Pie data={this.state.data} options={options} />}
+                            {dropdownValue === 'Barras Verticales' && <Bar data={finalData} options={barOptions} />}
+                            {dropdownValue === 'Barras Horizontales' && <Bar data={finalData} options={{ ...barOptions, indexAxis: 'y' }} />}
+                            {dropdownValue === 'Dona' && <Doughnut data={finalData} options={commonOptions} />}
+                            {dropdownValue === 'Pie' && <Pie data={finalData} options={commonOptions} />}
                         </div>
                     ) : (
                         <div className="d-flex h-100 justify-content-center align-items-center text-muted">
-                            <div className="text-center">
-                                <FontAwesomeIcon icon={['fas', 'sync']} spin size="2x" className="mb-2" />
-                                <p>Procesando Facturas...</p>
-                            </div>
+                            <p>Procesando Facturas...</p>
                         </div>
                     )}
                 </CardBody>
@@ -275,15 +307,7 @@ const GraficafaelWrapper = (props) => {
     const setSharedFiltro = useFamilyFiltro((state) => state.setSharedFiltro);
     const setTotals = useFamilyFiltro((state) => state.setTotals);
     const facturasProcesadas = useFamilyFiltro((state) => state.facturasProcesadas);
-
-    return (
-        <Graficafael 
-            {...props} 
-            setSharedFiltro={setSharedFiltro} 
-            setTotals={setTotals} 
-            facturasProcesadas={facturasProcesadas} 
-        />
-    );
+    return <Graficafael {...props} setSharedFiltro={setSharedFiltro} setTotals={setTotals} facturasProcesadas={facturasProcesadas} />;
 };
 
 export default GraficafaelWrapper;

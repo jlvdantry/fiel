@@ -79,23 +79,22 @@ export function  ExtraeComprobantes(fact,RFC) {
 						    ,"Receptor": rfcReceptor
 						    ,"Fecha Emision" : x.value.passdata["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10)
 						    ,"Fecha Pago" : fechaPago
-						    //,"Descuento" : Number(x.value.passdata["cfdi:Comprobante"]["@attributes"].Descuento).toLocaleString('en-US')
 						    ,"Descripcion": descripcion
+						    ,"Moneda": comprobante["@attributes"].Moneda
+						    ,"MetodoPago": comprobante["@attributes"].MetodoPago
+						    ,"LugarExpedicion": comprobante["@attributes"].LugarExpedicion
+						    ,"SelloCFD": tfd.SelloCFD
+						    ,"NoCertificadoSAT": tfd.NoCertificadoSAT
+						    ,"UUID": tfd.UUID // El ID fiscal completo
+						    ,"Conceptos": conceptos // <--- LISTA DE PRODUCTOS
+						    ,"Impuestos": impuestosTrasladados // <--- IVA, IEPS, etc.
 						    ,"Tipo de Comprobante": x.value.passdata["cfdi:Comprobante"]["@attributes"].TipoDeComprobante
-						    ,"Ingreso": ingreso
-				                    ,"Iva Cobrado": ivaCobrado
-				                    ,"Iva Acreditado": ivaAcreditado
-						    ,"Egreso": egreso
-						    ,"Subtotal": comprobante["@attributes"].SubTotal
-						    ,"Moneda": comprobante["@attributes"].Moneda,
-						    "MetodoPago": comprobante["@attributes"].MetodoPago,
-						    "LugarExpedicion": comprobante["@attributes"].LugarExpedicion,
-						    "SelloCFD": tfd.SelloCFD,
-						    "NoCertificadoSAT": tfd.NoCertificadoSAT,
-						    "UUID": tfd.UUID, // El ID fiscal completo
-						    "Conceptos": conceptos, // <--- LISTA DE PRODUCTOS
-						    "Impuestos": impuestosTrasladados, // <--- IVA, IEPS, etc.
-						    "Total": total 
+                                                    ,"Ingreso": ingreso
+                                                    ,"Iva Cobrado": ivaCobrado
+                                                    ,"Iva Acreditado": ivaAcreditado
+                                                    ,"Egreso": egreso
+                                                    ,"Subtotal": comprobante["@attributes"].SubTotal
+						    ,"Total": total 
 
 						  };
 			      return datoFactura;
