@@ -26,7 +26,10 @@ class Graficafael extends Component {
             dropdownValue: 'Barras Verticales',
             windowWidth: window.innerWidth,
             filtro: null,
-            rfc: '' 
+            rfc: '' ,
+            archivoListo: null,
+            mostrandoConfirmacion: false,
+            nombreArchivo: ""
         };
     }
 
@@ -139,37 +142,122 @@ class Graficafael extends Component {
         this.setState({ data: chartData });
     }
 
+	limpiarNumero = (valor) => {
+	    if (typeof valor === 'number') return valor;
+	    if (!valor || valor === "" || valor === 'desconocido') return 0;
+	    // Eliminamos $, comas y espacios para dejar solo números y puntos
+	    const limpio = valor.toString().replace(/[^0-9.-]+/g, "");
+	    const resultado = parseFloat(limpio);
+	    return isNaN(resultado) ? 0 : resultado;
+	};
+
+
+
+	compartirReporte = async () => {
+	    try {
+		let datos = ExtraeComprobantes(this.props.facturasProcesadas, this.state.rfc);
+		if (!datos || datos.length === 0) return;
+
+		// 1. ORDENAR POR FECHA (De más antigua a más reciente)
+		// Asumiendo que el campo se llama "Fecha Emision" o "Fecha"
+		datos.sort((b, a) => new Date(a["Fecha Emision"]) - new Date(b["Fecha Emision"]));
+
+		// 2. CALCULAR TOTALES
+		let sumaSubtotal = 0;
+		let sumaTotal = 0;
+		let sumaIvaAcreditado = 0;
+		let sumaIvaCobrado = 0;
+		let sumaIngreso = 0;
+		let sumaEgreso = 0;
+
+		const headers = Object.keys(datos[0]);
+		const filas = datos.map(f => {
+		    // Sumamos los valores numéricos para el total final
+		    sumaSubtotal += this.limpiarNumero(f.Subtotal);
+		    sumaTotal += this.limpiarNumero(f.Total);
+		    sumaIvaAcreditado += this.limpiarNumero(f["Iva Acreditado"]);
+		    sumaIvaCobrado += this.limpiarNumero(f["Iva Cobrado"]);
+		    sumaIngreso += this.limpiarNumero(f["Ingreso"]);
+		    sumaEgreso += this.limpiarNumero(f["Egreso"]);
+
+		    return headers.map(h => {
+			let v = f[h];
+			if (typeof v === 'object' && v !== null) v = JSON.stringify(v);
+			let s = (v === null || v === undefined) ? "" : String(v);
+			if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+			    s = `"${s.replace(/"/g, '""')}"`;
+			}
+			return s;
+		    }).join(",");
+		});
+
+		// 3. CREAR FILA DE TOTALES
+		// Creamos una fila vacía con la misma cantidad de columnas que los headers
+		let filaTotales = headers.map(h => {
+		    if (h === headers[0]) return "TOTALES"; // Etiqueta en la primera columna
+		    if (h === "Subtotal") return sumaSubtotal.toFixed(2);
+		    if (h === "Total") return sumaTotal.toFixed(2);
+		    if (h === "Iva Acreditado") return sumaIvaAcreditado.toFixed(2);
+		    if (h === "Iva Cobrado") return sumaIvaCobrado.toFixed(2);
+		    if (h === "Ingreso") return sumaIngreso.toFixed(2);
+		    if (h === "Egreso") return sumaEgreso.toFixed(2);
+		    return ""; // Columnas vacías para el resto
+		}).join(",");
+
+		// 4. ENSAMBLAR CONTENIDO
+		const csvContent = "\uFEFF" + headers.join(",") + "\n" + filas.join("\n") + "\n" + filaTotales;
+		const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+		const nombre = `Reporte_${this.state.dropdownValueYear}.csv`;
+		const file = new File([blob], nombre, { type: 'text/csv' });
+
+		// 5. COMPARTIR
+		if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+		    await navigator.share({
+			files: [file],
+			title: 'Reporte Ordenado',
+			text: `Totales - Subtotal: ${sumaSubtotal.toFixed(2)}, Total: ${sumaTotal.toFixed(2)}`
+		    });
+		} else {
+		    this.descargarCSV(blob, nombre);
+		}
+	    } catch (err) {
+		console.error("Error:", err);
+		if (err.name !== 'AbortError') alert("Error al generar reporte");
+	    }
+	}
+
+	// Función auxiliar de descarga
+	descargarCSV = (blob, nombre) => {
+	    const url = URL.createObjectURL(blob);
+	    const a = document.createElement('a');
+	    a.href = url;
+	    a.download = nombre;
+	    a.click();
+	    URL.revokeObjectURL(url);
+	}
+
     exportaExcel() {
         const datosFactura = ExtraeComprobantes(this.props.facturasProcesadas, this.state.rfc);
 
         if (datosFactura && datosFactura.length > 0) {
 
-		const limpiarNumero = (valor) => {
-		    if (typeof valor === 'number') return valor;
-		    if (!valor || valor === "" || valor === 'desconocido') return 0;
-		    // Eliminamos $, comas y espacios para dejar solo números y puntos
-		    const limpio = valor.toString().replace(/[^0-9.-]+/g, "");
-		    const resultado = parseFloat(limpio);
-		    return isNaN(resultado) ? 0 : resultado;
-		};
-
             const datosNumericos = datosFactura.map(fila => ({
                 ...fila,
-                Subtotal: limpiarNumero(fila.Subtotal),
-                "Iva Acreditado": limpiarNumero(fila['Iva Acreditado']),
-                "Iva Cobrado": limpiarNumero(fila['Iva Cobrado']),
-                Ingreso: limpiarNumero(fila.Ingreso),
-                Egreso: limpiarNumero(fila.Egreso),
-                Total: limpiarNumero(fila.Total)
+                Subtotal: this.limpiarNumero(fila.Subtotal),
+                "Iva Acreditado": this.limpiarNumero(fila['Iva Acreditado']),
+                "Iva Cobrado": this.limpiarNumero(fila['Iva Cobrado']),
+                Ingreso: this.limpiarNumero(fila.Ingreso),
+                Egreso: this.limpiarNumero(fila.Egreso),
+                Total: this.limpiarNumero(fila.Total)
             }));
 
             const totales = datosFactura.reduce((acc, curr) => {
-                acc.ingreso += limpiarNumero(curr.Ingreso);
-                acc.ivacobrado += limpiarNumero(curr['Iva Cobrado']);
-                acc.ivaacreditado += limpiarNumero(curr['Iva Acreditado']);
-                acc.egreso += limpiarNumero(curr.Egreso);
-                acc.subtotal += limpiarNumero(curr.Subtotal);
-                acc.total += limpiarNumero(curr.Total);
+                acc.ingreso += this.limpiarNumero(curr.Ingreso);
+                acc.ivacobrado += this.limpiarNumero(curr['Iva Cobrado']);
+                acc.ivaacreditado += this.limpiarNumero(curr['Iva Acreditado']);
+                acc.egreso += this.limpiarNumero(curr.Egreso);
+                acc.subtotal += this.limpiarNumero(curr.Subtotal);
+                acc.total += this.limpiarNumero(curr.Total);
                 return acc;
             }, { ingreso: 0, egreso: 0, subtotal: 0, ivaTrasladado: 0, ivaRetenido: 0, total: 0,ivacobrado:0,ivaacreditado:0 });
 
@@ -275,12 +363,33 @@ class Graficafael extends Component {
                                 </DropdownMenu>
                             </Dropdown>
                         </Col>
-                        {/* --- BOTÓN DE EXCEL AGREGADO --- */}
-                        <Col xs={12} md="auto" className="ms-md-auto">
-                            <Button color="success" size="sm" className="w-100" onClick={() => this.exportaExcel()}>
-                                <FontAwesomeIcon icon={['fas', 'file-excel']} className="me-2" /> Exportar Excel
-                            </Button>
-                        </Col>
+
+			{/* Sección de Botones de Acción */}
+			<Col xs={12} className="mt-3">
+			    <div className="d-flex justify-content-center px-2">
+				<div className="btn-group w-100 shadow-sm" role="group" style={{ borderRadius: '8px', overflow: 'hidden' }}>
+				    <Button 
+					color="white" 
+					className="border-end text-success py-2" 
+					style={{ flex: 1, backgroundColor: '#f8f9fa', fontWeight: '500' }}
+					onClick={() => this.exportaExcel()}
+				    >
+					<FontAwesomeIcon icon={['fas', 'file-excel']} className="me-2" />
+					Excel
+				    </Button>
+				    <Button 
+					    color="white" 
+					    className="text-info py-2" 
+					    style={{ flex: 1, backgroundColor: '#f8f9fa', fontWeight: '500' }}
+					    onClick={this.compartirReporte}
+					>
+					    <FontAwesomeIcon icon={['fas', 'share-alt']} className="me-2" />
+					    Compartir
+				    </Button>
+				</div>
+			    </div>
+			</Col>
+
                     </Row>
                 </div>
 

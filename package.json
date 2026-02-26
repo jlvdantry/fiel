@@ -16,6 +16,7 @@
     "@zip.js/zip.js": "^2.7.28",
     "bootstrap": "^4.5.2",
     "chart.js": "^4.4.0",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "js-base64": "^3.5.2",
     "js-html2pdf": "^1.1.4",
