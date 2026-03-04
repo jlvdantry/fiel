@@ -95,6 +95,7 @@ export function  ExtraeComprobantes(fact,RFC) {
                                                     ,"Egreso": egreso
                                                     ,"Subtotal": comprobante["@attributes"].SubTotal
 						    ,"Total": total 
+						    ,"ID": x.key 
 
 						  };
 			      return datoFactura;

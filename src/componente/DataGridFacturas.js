@@ -72,7 +72,7 @@ export default function DataGridFacturas(props) {
   const [rfc, setRfc] = useState('');
   
   // Estado unificado: guarda qué columna se ordena y en qué dirección
-  const [sortConfig, setSortConfig] = useState({ key: 'Fecha Emision', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({ key: 'ID', direction: 'desc' });
 
   const facturasRaw = useFamilyFiltro((state) => state.facturasProcesadas);
 
@@ -86,6 +86,7 @@ export default function DataGridFacturas(props) {
 
   // Definición de columnas con renderHeaderCell dinámico
   const columns = useMemo(() => [
+    { key: 'ID', name: 'ID', minWidth: 20 },
     { key: 'Emisor', name: 'RFC Emisor', minWidth: 100 },
     { key: 'Nombre Emisor', name: 'Nombre Emisor', minWidth: 200 },
     { key: 'Receptor', name: 'RFC Receptor', minWidth: 100 },
@@ -197,12 +198,13 @@ export default function DataGridFacturas(props) {
       {/* Tarjetas */}
       {filasAMostrar.map((row, rowIndex) => (
         <div key={rowIndex} className="card mb-2 shadow-sm">
-          <div className="card-body">
+          <div className="card-body"> 
             {columns.map((col) => (
-              <div key={col.key} className="d-flex justify-content-between border-bottom py-1">
-                <small><b>{col.name}:</b></small> 
-                <small>{row[col.key]}</small>
-              </div>
+		    col.name!=='PDF' &&  col.name!=='ID' && ( <div key={col.key} className="d-flex justify-content-between border-bottom py-1"> 
+			<small><b>{col.name}:</b></small> 
+			<small>{row[col.key]}</small>
+		      </div>
+		    ) 
             ))}
           </div>
 	  {/* Dentro de renderMobileView, dentro del mapeo de tarjetas */}
