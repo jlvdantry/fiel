@@ -260,53 +260,63 @@ class SolicitaFacturas extends Component {
                             </Dropdown>
                         </div>
 
+
 			<div className="mb-4">
-			    {this.state.tokenEstatusSAT===window.TOKEN.ACTIVO ? (
-				/* DISEÑO CONECTADO */
+			    {this.state.tokenEstatusSAT === window.TOKEN.ACTIVO ? (
+				/* DISEÑO CONECTADO - Optimizado */
 				<div className="d-flex align-items-center p-3 shadow-sm border-0" 
-				     style={{ backgroundColor: '#f0fff4', borderRadius: '15px', borderLeft: '5px solid #48bb78' }}>
-				    <div className="position-relative me-3">
-					<div className="spinner-grow text-success" style={{ width: '2rem', height: '2rem' }} role="status"></div>
+				     style={{ backgroundColor: '#f0fff4', borderRadius: '12px', borderLeft: '5px solid #28a745', minHeight: '80px' }}>
+				    <div className="me-3 d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm" 
+					 style={{ width: '45px', height: '45px', flexShrink: 0 }}>
+					<div className="spinner-grow text-success" style={{ width: '1.5rem', height: '1.5rem' }} role="status">
+					    <span className="visually-hidden">.</span>
+					</div>
 					<FontAwesomeIcon 
 					    icon={['fas', 'shield-alt']} 
-					    className="position-absolute top-50 start-50 translate-middle text-success" 
-					    style={{ fontSize: '0.8rem' }}
+					    className="position-absolute text-success" 
+					    style={{ fontSize: '0.7rem' }}
 					/>
 				    </div>
 				    <div className="flex-grow-1">
-					<div className="d-flex justify-content-between align-items-center">
-					    <div>
-						<h6 className="mb-0 fw-bold text-success" style={{ fontSize: '0.9rem' }}>SESIÓN SAT VIGENTE</h6>
-						<small className="text-muted" style={{ fontSize: '0.75rem' }}>Autenticado con FIEL</small>
+					<div className="d-flex justify-content-between align-items-center flex-wrap">
+					    <div className="me-2">
+						<h6 className="mb-0 fw-bold text-success" style={{ fontSize: '0.85rem', letterSpacing: '0.5px' }}>SESIÓN SAT VIGENTE</h6>
+						<small className="text-muted d-block" style={{ fontSize: '0.7rem' }}>Autenticado con FIEL</small>
 					    </div>
-					    <div className="text-end">
-						<span className={`badge rounded-pill ${this.state.queda < 20 ? 'bg-danger' : 'bg-success'} px-3 py-2 shadow-sm`}>
-						    <FontAwesomeIcon icon={['fas', 'clock']} className="me-2" />
-						    {Math.floor((this.state.queda || 0) / 60)}:
-						    {((this.state.queda || 0) % 60).toString().padStart(2, '0')}
+					    <div className="mt-1 mt-sm-0">
+						<span className={`badge rounded-pill ${this.state.queda < 20 ? 'bg-danger' : 'bg-success'} px-3 py-2 shadow-sm d-flex align-items-center text-white`}>
+						    <FontAwesomeIcon icon={['fas', 'clock']} className="mr-2 " />
+						    {/* Corrección del NaN: usa queda || 0 */}
+						    <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>
+							{Math.floor((this.state.queda || 0) / 60)}:
+							{((this.state.queda || 0) % 60).toString().padStart(2, '0')}
+						    </span>
 						</span>
 					    </div>
 					</div>
-					{/* Barra de progreso sutil debajo */}
-					<div className="progress mt-2" style={{ height: '4px', backgroundColor: '#e2e8f0' }}>
+					{/* Barra de progreso sutil */}
+					<div className="progress mt-2" style={{ height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px' }}>
 					    <div 
 						className={`progress-bar progress-bar-striped progress-bar-animated ${this.state.queda < 20 ? 'bg-danger' : 'bg-success'}`} 
-						style={{ width: `${(this.state.queda / 300) * 100}%`, transition: 'width 1s linear' }}
+						style={{ 
+						    width: `${Math.min(((this.state.queda || 0) / 300) * 100, 100)}%`, 
+						    transition: 'width 1s linear' 
+						}}
 					    ></div>
 					</div>
 				    </div>
 				</div>
 			    ) : (
-				/* DISEÑO DESCONECTADO */
+				/* DISEÑO DESCONECTADO - Optimizado */
 				<div className="d-flex align-items-center p-3 shadow-sm border-0" 
-				     style={{ backgroundColor: '#fff5f5', borderRadius: '15px', borderLeft: '5px solid #f56565' }}>
+				     style={{ backgroundColor: '#fff5f5', borderRadius: '12px', borderLeft: '5px solid #dc3545', minHeight: '80px' }}>
 				    <div className="me-3 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
-					 style={{ width: '40px', height: '40px' }}>
-					<FontAwesomeIcon icon={['fas', 'unlink']} className="text-danger" />
+					 style={{ width: '45px', height: '45px', flexShrink: 0 }}>
+					<FontAwesomeIcon icon={['fas', 'unlink']} className="text-danger" size="lg" />
 				    </div>
 				    <div>
-					<h6 className="mb-0 fw-bold text-danger" style={{ fontSize: '0.9rem' }}>SIN CONEXIÓN AL SAT</h6>
-					<small className="text-muted" style={{ fontSize: '0.75rem' }}>Favor de reautenticarse para continuar</small>
+					<h6 className="mb-0 fw-bold text-danger" style={{ fontSize: '0.85rem' }}>SIN CONEXIÓN AL SAT</h6>
+					<small className="text-muted d-block" style={{ fontSize: '0.7rem' }}>La sesión ha expirado se reintenta reiniciar una nueva sesión</small>
 				    </div>
 				</div>
 			    )}
