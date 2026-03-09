@@ -260,13 +260,57 @@ class SolicitaFacturas extends Component {
                             </Dropdown>
                         </div>
 
-                        {/* Estado Conexión */}
-                        <div className="text-center mb-3">
-                            <span className={`badge p-2 ${this.state.tokenEstatusSAT === window.TOKEN.ACTIVO ? 'bg-success' : 'bg-danger'}`}>
-                                <FontAwesomeIcon icon={['fas', 'signal']} className="me-2" />
-                                {this.state.tokenEstatusSAT === window.TOKEN.ACTIVO ? `Conectado: ${this.state.queda}` : 'Desconectado'}
-                            </span>
-                        </div>
+			<div className="mb-4">
+			    {this.state.tokenEstatusSAT===window.TOKEN.ACTIVO ? (
+				/* DISEÑO CONECTADO */
+				<div className="d-flex align-items-center p-3 shadow-sm border-0" 
+				     style={{ backgroundColor: '#f0fff4', borderRadius: '15px', borderLeft: '5px solid #48bb78' }}>
+				    <div className="position-relative me-3">
+					<div className="spinner-grow text-success" style={{ width: '2rem', height: '2rem' }} role="status"></div>
+					<FontAwesomeIcon 
+					    icon={['fas', 'shield-alt']} 
+					    className="position-absolute top-50 start-50 translate-middle text-success" 
+					    style={{ fontSize: '0.8rem' }}
+					/>
+				    </div>
+				    <div className="flex-grow-1">
+					<div className="d-flex justify-content-between align-items-center">
+					    <div>
+						<h6 className="mb-0 fw-bold text-success" style={{ fontSize: '0.9rem' }}>SESIÓN SAT VIGENTE</h6>
+						<small className="text-muted" style={{ fontSize: '0.75rem' }}>Autenticado con FIEL</small>
+					    </div>
+					    <div className="text-end">
+						<span className={`badge rounded-pill ${this.state.queda < 20 ? 'bg-danger' : 'bg-success'} px-3 py-2 shadow-sm`}>
+						    <FontAwesomeIcon icon={['fas', 'clock']} className="me-2" />
+						    {Math.floor((this.state.queda || 0) / 60)}:
+						    {((this.state.queda || 0) % 60).toString().padStart(2, '0')}
+						</span>
+					    </div>
+					</div>
+					{/* Barra de progreso sutil debajo */}
+					<div className="progress mt-2" style={{ height: '4px', backgroundColor: '#e2e8f0' }}>
+					    <div 
+						className={`progress-bar progress-bar-striped progress-bar-animated ${this.state.queda < 20 ? 'bg-danger' : 'bg-success'}`} 
+						style={{ width: `${(this.state.queda / 300) * 100}%`, transition: 'width 1s linear' }}
+					    ></div>
+					</div>
+				    </div>
+				</div>
+			    ) : (
+				/* DISEÑO DESCONECTADO */
+				<div className="d-flex align-items-center p-3 shadow-sm border-0" 
+				     style={{ backgroundColor: '#fff5f5', borderRadius: '15px', borderLeft: '5px solid #f56565' }}>
+				    <div className="me-3 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+					 style={{ width: '40px', height: '40px' }}>
+					<FontAwesomeIcon icon={['fas', 'unlink']} className="text-danger" />
+				    </div>
+				    <div>
+					<h6 className="mb-0 fw-bold text-danger" style={{ fontSize: '0.9rem' }}>SIN CONEXIÓN AL SAT</h6>
+					<small className="text-muted" style={{ fontSize: '0.75rem' }}>Favor de reautenticarse para continuar</small>
+				    </div>
+				</div>
+			    )}
+			</div>
 
                         {/* RFCs - Grid Responsivo */}
                         <Row className="g-3">

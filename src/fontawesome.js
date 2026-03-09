@@ -1,7 +1,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 import { faInfo,faQuestion,faPenFancy,faReceipt,faSignature,faThumbsUp,faThumbsDown, 
-         faPlusCircle,faSearch,faKey,faCertificate,faEye,faEyeSlash,faTrashAlt,faFilePdf,faPlusSquare,faTimesCircle,faInfoCircle,faFileExcel,faCloudDownloadAlt,faCog,faRedoAlt,faCircle,faHistory,faSpinner,faTimes,faAddressBook,faPlus,faToggleOn,faToggleOff,faCheckCircle,faShareAlt } from '@fortawesome/free-solid-svg-icons';
+         faPlusCircle,faSearch,faKey,faCertificate,faEye,faEyeSlash,faTrashAlt,faFilePdf,faPlusSquare,faTimesCircle,faInfoCircle,faFileExcel,faCloudDownloadAlt,faCog,faRedoAlt,faCircle,faHistory,faSpinner,faTimes,faAddressBook,faPlus,faToggleOn,faToggleOff,faCheckCircle,faShareAlt,faClock,faLock,faShieldAlt,faUnlink } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
    faInfo,
@@ -36,4 +36,8 @@ library.add(
    ,faToggleOn
    ,faToggleOff
    ,faShareAlt
+   ,faClock
+   ,faLock
+   ,faShieldAlt
+   ,faUnlink
 )
