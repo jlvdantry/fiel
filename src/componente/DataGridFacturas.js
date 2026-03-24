@@ -72,7 +72,7 @@ export default function DataGridFacturas(props) {
   const [rfc, setRfc] = useState('');
   
   // Estado unificado: guarda qué columna se ordena y en qué dirección
-  const [sortConfig, setSortConfig] = useState({ key: 'ID', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({ key: 'Fecha Emision', direction: 'desc' });
 
   const facturasRaw = useFamilyFiltro((state) => state.facturasProcesadas);
 
