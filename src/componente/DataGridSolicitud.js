@@ -44,7 +44,7 @@ const columns = [
       );
     }
   },
-  { key: 'msg', name: 'Estado Solicitud', minWidth: 90, flex: 6, cellClass:'blink', formatter: ({row}) => <div>{formatearTextoSeguro(row.msg)}</div> },
+  { key: 'msg', name: 'Estatus', minWidth: 90, flex: 6, cellClass:'blink', formatter: ({row}) => <div>{formatearTextoSeguro(row.msg)}</div> },
 ];
 
 export function MiDataGrid(props) {

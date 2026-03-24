@@ -9,7 +9,7 @@ class About extends Component {
   }
 
    state={ collapseID: "toggler", windowWidth : window.innerWidth || document.documentElement.clientWidth , windowHeight : window.innerHeight || document.documentElement.clientHeight
-                       ,APPVERSION: null}
+                       ,APPVERSION: null,origen:null}
    toggle = collapseID => () => {
           console.log('si dio click');
 	  this.setState(prevState => ({
@@ -18,6 +18,7 @@ class About extends Component {
    }
 
    componentDidMount(){
+	        
                 window.addEventListener('resize', this.updateWindowDimensions)
 		ReactDOM.findDOMNode(this).addEventListener('touchstart', (e)=>{ 
 		    console.log("touchstart triggered");
@@ -38,6 +39,7 @@ class About extends Component {
 		    }
 		  });
 		}
+                this.setState({origen:window.location.origin});
 
    }
 
@@ -66,6 +68,7 @@ class About extends Component {
 				  <p className="text-justify">Versión de la base de datos <b>{window.DBVERSION}</b></p>
 				  <p className="text-justify">Alto de la pantalla <b>{this.state.windowHeight}px</b></p>
 				  <p className="text-justify">Ancho de la pantalla <b>{this.state.windowWidth}px</b></p>
+				  <p className="text-justify">Origen <b>{this.state.origen}</b></p>
 				  <p className="text-justify">Versión del aplicativo <b>{this.state.APPVERSION}</b></p>
 			  </CardBody>
 			</Card>

@@ -21,7 +21,7 @@ var updSolicitud = (respuesta,verificacionValue) => {
 				}
 			        if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.ENPROCESO) { 
 					    obj.passdata.intentos=("intentos" in obj.passdata ?  obj.passdata.intentos+1 : 1);
-					    obj.passdata.msg_v="EN proceso, Verificacione(s): "+obj.passdata.intentos;
+					    obj.passdata.msg_v="Verificacione(s): "+obj.passdata.intentos;
 				}
 
                                 if (respuesta.EstadoSolicitud==ESTADOSOLICITUD.VENCIDA) {
