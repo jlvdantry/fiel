@@ -464,7 +464,8 @@ function inserta_factura(faeljson)
                 json.sello=faeljson["cfdi:Comprobante"]["@attributes"].Sello;
                 json.fechaEmision=faeljson["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,10);
                 json.yearEmision=faeljson["cfdi:Comprobante"]["@attributes"].Fecha.substring(0,4);
-                if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"].hasOwnProperty("nomina12:Nomina")) {
+
+                if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]) {
 			if (faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"]["FechaPago"].length>0 ) {
 			   fechaPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago
 			   yearPago=faeljson["cfdi:Comprobante"]["cfdi:Complemento"]["nomina12:Nomina"]["@attributes"].FechaPago.substring(0,4);
@@ -477,9 +478,9 @@ function inserta_factura(faeljson)
                         }).then(function(objectStore) {
                                 selObjects(objectStore,'sello',json.sello).then( x => {
                                        if (x.length===0)   { /* no esta registrado el sello y lo da de alta */
-                                          addObject(objectStore, json).then(key => { resolve('Guardo factura con id='+key) ; }).catch(function(err)
+                                          addObject(objectStore, json).then(key => { resolve(true) ; }).catch(function(err)
                                                {  console.log('[inserta_factura] error al insertar la factura '+err); reject(err) });
-                                       } else { resolve('factura duplicada');
+                                       } else { resolve(false);
                                        }
                                 })
                         }).catch(function(err) {

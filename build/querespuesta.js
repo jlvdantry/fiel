@@ -43,18 +43,30 @@ var querespuesta = (request,respuesta) => {
                }
 
                if (request.value.url=='/download.php')  {
+			           if (DMS===null) { DMS= new DescargaMasivaSat(); }
+				   DMS.leezip(respuesta.Paquete).then(totalNuevas => {
+				       const customMsg = totalNuevas > 0 
+					    ? `Se descargaron ${totalNuevas} facturas nuevas` 
+					    : "No se encontraron facturas nuevas (ya existen en el sistema)";
+
+					// Update the request object with the descriptive message
+				        request.value.passdata.msg_d = customMsg;
+					
+				       var respuestax = respuesta;
+				       delete respuesta.Paquete; // Clean up large data
 				       request.value.passdata.msg_d=respuesta.Mensaje;
 				       var respuestax=respuesta;
 				       delete respuesta.paquete;
 				       updestado(request,ESTADOREQ.DESCARGADO,respuestax).then( () => {  // actualiza el resultado de la descarga en el request de la descarga
 					       updObjectByKey("request",request.value,request.key); // actualiza el resultado de la descarga en el request de la descarga
-					       updSolicitudDownload('Se descargo',request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
+					       updSolicitudDownload(customMsg,request.value.passdata.keySolicitud)  // actualiza el resulta de la descarga en el request de la solicitud
 					       .then( () => {
-						    postRequestUpd(request,"se descargo",respuesta);
+						    postRequestUpd(request,customMsg,respuesta);
                                                     notifica();
 					       });
 				       });
-				       return;
+				   });
+				   return;
 
 	       }
          }

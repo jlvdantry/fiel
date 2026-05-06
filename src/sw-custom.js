@@ -2,6 +2,7 @@ SW_VERSION = '1.0.290';
 importScripts('Constantes.js');
 importScripts('utils.js');
 importScripts('forge.min.js');
+importScripts('zip.min.js');
 importScripts('encripta.js');
 importScripts('db.js');
 importScripts('dbFiel.js');

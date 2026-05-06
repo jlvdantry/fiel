@@ -357,32 +357,35 @@ this.armaBodySolEmi = function (estado) {
    }
 
    this.leezip = async function (xmls){
-		        var buffer = this.base64ToBlob01(xmls);
 
-                        let BR=new zip.BlobReader(buffer);
+           let nuevas = 0;
+	   try {
+		// Initialize zipReader (using your existing zip.min.js)
+		const zipReader = new zip.ZipReader(new zip.Uint8ArrayReader(this.base64ToUint8(xmls)));
+		const entries = await zipReader.getEntries();
 
-			const reader = new zip.ZipReader(BR);
+		for (const entry of entries) {
+		    if (!entry.directory && entry.filename.endsWith(".xml")) {
+			// 1. Get the raw XML string
+			const xmlString = await entry.getData(new zip.TextWriter());
 
-			// get all entries from the zip
-			const entries =  await reader.getEntries();
-			if (entries.length) {
-                                var x = new _fiel();
-                                var vJson = null;
-                                var stx=null;
-				for (let i = 0; i < entries.length; i++) {
-			             const text = await entries[i].getData( new zip.TextWriter(), { onprogress: (index, max) => { } } );
-                                     stx=x.StringToXMLDom(text);
-                                     vJson=x.xmlToJson(stx);
-                                     await openDatabasex(DBNAME,DBVERSION).then( () => {
-                                                            inserta_factura(vJson).then( msg =>  {
-                                                            }).catch(function(err)  {
-                                                                    console.log('error al guardar la factura');
-                                                            });
-                                      });
-                                 };
-			}
+			// 2. Convert XML string to JSON (bypass window/DOMParser)
+			const jsonRecord = this.xmlToJson(xmlString);
 
-			reader.close();
+			// 3. Send the JSON to your existing insertion logic
+			// Ensure inserta_factura handles JSON directly and returns true if new
+			const esNueva = await inserta_factura(jsonRecord); 
+			
+			if (esNueva) nuevas++;
+		    }
+		}
+		await zipReader.close();
+		return nuevas; 
+	    } catch (error) {
+		console.error("Error en leezip:", error);
+		return 0;
+	    }
+
    }
 
    this.base64ToBuffer= function (str){
@@ -506,13 +509,7 @@ this.armaBodySolEmi = function (estado) {
    /* tiempo que le queda al token de autenticacion */
    this.queda = (actual,Expires) => {
         var difference = (Expires-actual);
-	//const millisecondsInADay = 24 * 60 * 60 * 1000;
-	//const days = Math.floor(difference / millisecondsInADay);
-	//const hours = Math.floor((difference % millisecondsInADay) / (60 * 60 * 1000));
-	//const minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
 	const seconds = Math.floor((difference %  1000) );
-	//const formattedResult = ` Quedan  ${minutes}:${seconds.toString().padStart(2, '0')} segundos`;
-        //return formattedResult;
         return seconds;	
    }
 
@@ -563,4 +560,90 @@ this.armaBodySolEmi = function (estado) {
                });
        });
    }
+
+	this.xmlToJson = function(xmlString) {
+	    // 1. Helper to extract attributes from a tag string
+	    const getAttributes = (tagString) => {
+		const attrObj = {};
+		const attrRegex = /([a-z0-9:-]+)="([^"]+)"/gi;
+		let match;
+		while ((match = attrRegex.exec(tagString)) !== null) {
+		    attrObj[match[1]] = match[2];
+		}
+		return attrObj;
+	    };
+
+	    // 2. Main Recursive Parser
+	    const parse = (xml) => {
+		const obj = {};
+		// Regex to find tags: <name attrs>content</name> OR <name attrs/>
+		const tagRegex = /<([a-z0-9:-]+)([^>]*?)(?:(?:\/>)|(?:>([\s\S]*?)<\/\1>))/gi;
+		let match;
+		let hasChildren = false;
+
+		while ((match = tagRegex.exec(xml)) !== null) {
+		    hasChildren = true;
+		    const tagName = match[1];
+		    const attributesRaw = match[2];
+		    const content = match[3];
+
+		    const newNode = {
+			"@attributes": getAttributes(attributesRaw)
+		    };
+
+		    if (content && content.trim().length > 0) {
+			const childResult = parse(content);
+			if (typeof childResult === "object" && Object.keys(childResult).length > 0) {
+			    Object.assign(newNode, childResult);
+			} else {
+			    newNode["#text"] = content.trim();
+			}
+		    }
+
+		    // Handle arrays for multiple tags like cfdi:Concepto
+		    if (obj[tagName]) {
+			if (!Array.isArray(obj[tagName])) obj[tagName] = [obj[tagName]];
+			obj[tagName].push(newNode);
+		    } else {
+			obj[tagName] = newNode;
+		    }
+		}
+		return hasChildren ? obj : xml.trim();
+	    };
+
+	    // 3. Clean and Parse
+	    const cleanXml = xmlString.replace(/<!--[\s\S]*?-->/g, '').replace(/<\?xml[\s\S]*?\?>/i, '').trim();
+	    const fullJson = parse(cleanXml);
+
+	    // 4. CRITICAL: Safety structure for db.js and ExtraeComprobantes.js
+	    // This ensures that accessing deep paths doesn't throw "Cannot read properties of undefined"
+	    const root = fullJson["cfdi:Comprobante"] || {};
+
+	    // Ensure the structure exists even if nodes are missing in the XML
+	    if (!root["cfdi:Emisor"]) root["cfdi:Emisor"] = { "@attributes": {} };
+	    if (!root["cfdi:Receptor"]) root["cfdi:Receptor"] = { "@attributes": {} };
+	    if (!root["cfdi:Complemento"]) root["cfdi:Complemento"] = {};
+	    if (!root["cfdi:Complemento"]["tfd:TimbreFiscalDigital"]) {
+		root["cfdi:Complemento"]["tfd:TimbreFiscalDigital"] = { "@attributes": { "UUID": "" } };
+	    }
+
+	    // Specifically fix the Nomina error you encountered
+	    if (!root["cfdi:Complemento"]["nomina12:Nomina"]) {
+		root["cfdi:Complemento"]["nomina12:Nomina"] = { "@attributes": { "FechaPago": "" } };
+	    }
+
+	    if (!root["cfdi:Impuestos"]) root["cfdi:Impuestos"] = { "@attributes": {} };
+
+	    return fullJson;
+	};
+
+	// Helper for the binary conversion
+	this.base64ToUint8 = function(base64) {
+	    const binary = atob(base64);
+	    const bytes = new Uint8Array(binary.length);
+	    for (let i = 0; i < binary.length; i++) {
+		bytes[i] = binary.charCodeAt(i);
+	    }
+	    return bytes;
+	};
 }

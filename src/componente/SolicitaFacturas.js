@@ -170,7 +170,7 @@ class SolicitaFacturas extends Component {
                     this.setState({ token: event.data.respuesta, pwdfiel: window.PWDFIEL });
                 }
                 if (event.data.action === 'token-invalido') this.haysolicitudesVerificando();
-                if (event.data.request.value.url === "/download.php") DMS.leezip(event.data.respuesta.Paquete);
+                if (event.data.request.value.url === "/download.php") console.log('descargo facturas');
             }
         };
 
