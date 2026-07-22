@@ -54,7 +54,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $curlHeaders);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // For testing, avoid in production with real certificates
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // For testing, avoid in production
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
 // Optional: For debugging, enable verbose output to error stream
 curl_setopt($ch, CURLOPT_VERBOSE, true);
@@ -67,7 +67,8 @@ $response = curl_exec($ch);
 
 // 7. Check for cURL errors
 if (curl_errno($ch)) {
-    echo 'cURL Error: ' . curl_error($ch);
+    error_log(logData().' CURL Error: '. curl_error($ch).' '.PHP_EOL,3,$path);
+    echo 'CURL Error: ' . curl_error($ch);
 } else {
     try {
 
@@ -142,6 +143,7 @@ if (curl_errno($ch)) {
 
     } catch (Exception $e) {
         echo "Error parsing XML response: " . $e->getMessage() . "\n";
+        error_log(logData().' Error parsing XML response: '.print_r($e->getMessage()).' '.PHP_EOL,3,$path);
     }
 }
 
