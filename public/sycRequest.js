@@ -55,13 +55,14 @@ var syncRequest = async (estado,endpoint=ENDPOINTFIEL.PROXYSAT) => {
             await updestado(request, ESTADOREQ.REQUIRIENDO, null);
             let body; 
             let headerf; 
-            if (request.value.urlSAT===ENDPOINTFIEL.LOGIN || request.value.urlSAT===ENDPOINTFIEL.NONCE || request.value.urlSAT===ENDPOINTFIEL.SUBSCRIPCION) {
+            if (request.value.urlSAT===ENDPOINTFIEL.LOGIN || request.value.urlSAT===ENDPOINTFIEL.NONCE || request.value.urlSAT===ENDPOINTFIEL.SUBSCRIPCION
+	         || request.value.urlSAT===ENDPOINTFIEL.CHECK_SUBSCRIPCION) {
                 body =  request.value.body;
 	    } else {
                 body = { envelope: request.value.body, urlSAT: request.value.urlSAT, headers: JSON.stringify(jsonHeaders) };
 	    }
 
-            if (request.value.urlSAT===ENDPOINTFIEL.SUBSCRIPCION) {
+            if (request.value.urlSAT===ENDPOINTFIEL.SUBSCRIPCION || request.value.urlSAT===ENDPOINTFIEL.CHECK_SUBSCRIPCION) {
                const token_de_fiel= await obtieneelUltimoTokenActivoLoginFiel();
                headerf = { 'content-type': 'application/json', 'Accept': 'application/json','Authorization': `Bearer ${token_de_fiel}` };
 	    } else {

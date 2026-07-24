@@ -94,6 +94,27 @@ var querespuesta = (request,respuesta) => {
 	    });
 	}
 
+	if ("exists" in respuesta) {
+	    if (respuesta.exists) {
+		// La suscripción está confirmada en el servidor
+		updestado(request, ESTADOREQ.SUBSCRIPCION_CONFIRMADA, respuesta).then((r) => {
+		    postRequestUpd(r, "PUSH_STATUS_UPDATED", { active: true });
+		});
+	    } else {
+		// Existe local pero el servidor no la reconoce -> Se pasa a error y se encola re-suscripción
+		updestado(request, ESTADOREQ.SUBSCRIPCION_NOCONFIRMADA, respuesta).then((r) => {
+		    postRequestUpd(r, "PUSH_STATUS_UPDATED", { active: false });
+		    // Forzamos el mensaje para que la vista ejecute solicitarYGuardarSuscripcion()
+		    self.clients.matchAll().then(clients => {
+			clients.forEach(client => {
+			    client.postMessage({ action: 'LOGIN_EXITOSO_SUSCRIBIR_PUSH' });
+			});
+		    });
+		});
+	    }
+	    return;
+	}
+
          if("errors" in respuesta ) { //errores que vienen de laravel para el login fiel
 
 		    const mensajes = Object.values(respuesta.errors);

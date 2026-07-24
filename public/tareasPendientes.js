@@ -35,8 +35,9 @@ async function procesarTareasPendientes(quemetodo) {
         }
 
         await syncRequest(ESTADOREQ.LOGINFIEL.NONCEINICIAL,ENDPOINTFIEL.NONCE);
-
         await syncRequest(ESTADOREQ.LOGINFIEL.LOGININICIAL,ENDPOINTFIEL.LOGIN);
+
+        await syncRequest(ESTADOREQ.CHECK_PUSH_SUBSCRIPCION, ENDPOINTFIEL.CHECK_SUBSCRIPCION);
         await syncRequest(ESTADOREQ.PUSH_SUSCRIBE,ENDPOINTFIEL.SUBSCRIPCION);
 
         await revisaSiEstaAutenticado();

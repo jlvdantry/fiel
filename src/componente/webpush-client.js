@@ -11,6 +11,48 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
+// 1. Encola la VERIFICACIÓN en IndexedDB para que el SW la procese en segundo plano
+export async function verificarSuscripcionCompleta() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        return false;
+    }
+
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+
+        if (!subscription) {
+            console.log('[Push] No existe suscripción local. Encolando alta...');
+            await solicitarYGuardarSuscripcion();
+            return false;
+        }
+
+        // Si existe local, guardamos en 'request' la tarea de validación contra Laravel
+        const dataCheck = {
+            url: 'check-subscription',
+            body: { endpoint: subscription.endpoint },
+            estado: window.ESTADOREQ.CHECK_PUSH_SUBSCRIPCION, // Constante que agregaremos
+            urlSAT: window.ENDPOINTFIEL.CHECK_SUBSCRIPCION,   // Endpoint en Laravel
+            passdata: { fecha: new Date().toISOString() }
+        };
+
+        const nextId = await window.getNextRequestId();
+        await window.updObjectByKey('request', dataCheck, nextId);
+        console.log('[Push] Tarea de verificación encolada en IndexedDB con ID:', nextId);
+
+        // Notificamos al SW para que procese tareas pendientes
+        if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ action: "REVISA_REQUERIMIENTOS" });
+        }
+
+        return true;
+
+    } catch (error) {
+        console.error('[Push] Error en la verificación:', error);
+        return false;
+    }
+}
+
 export default async function solicitarYGuardarSuscripcion() {
     try {
         // 1. Esperar a que el SW esté listo

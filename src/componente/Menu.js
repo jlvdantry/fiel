@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import {  Link } from 'react-router';
-import { Collapse, Navbar, NavbarToggler, Nav, Alert } from 'reactstrap';
+import { Collapse, Navbar, NavbarToggler, Nav, Alert,UncontrolledTooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { browserHistory  } from 'react-router';
-import solicitarYGuardarSuscripcion from './webpush-client'; // Importar la lógica de push
+import solicitarYGuardarSuscripcion, { verificarSuscripcionCompleta } from './webpush-client'; 
 
 class Menumi extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { isOpen: false, online: true , showInstallMessage:false, windowWidth: window.innerWidth, windowHeigth : window.innerHeight, nombre:null,isConected:false };
+    this.state = { 
+	    isOpen: false, online: true , showInstallMessage:false, windowWidth: window.innerWidth, windowHeigth : window.innerHeight, nombre:null,isConected:false ,
+	    pushActive: false // Estado visual para las notificaciones Push
+                 };
     this.toggle = this.toggle.bind(this);
     this.closeNavbar = this.closeNavbar.bind(this);
     this.quitainstala = this.quitainstala.bind(this);
@@ -19,9 +22,9 @@ class Menumi extends Component {
     this.cambio = this.cambio.bind(this);
     this.estaAutenticado =this.estaAutenticado.bind(this);
     this.revisaRequest = this.revisaRequest.bind(this);
-    this.timer   = null;
-    this.timerc	 = null;
-    this.timerR	 = null;
+    this.timer   = null; /* timer para poner el nombre de la fiel */
+    this.timerc	 = null; /* timer para revisar si esta autenticado */
+    this.timerR	 = null; /* timer para revisar los requerimiento pendiente de procesar en el sw */
   }
 
  
@@ -45,12 +48,36 @@ class Menumi extends Component {
        window.close();
   }
 
+
+  // Comprueba la suscripción completa
+  async comprobarPushStatus() {
+    if (navigator.onLine) {
+      const estaActiva = await verificarSuscripcionCompleta();
+      this.setState({ pushActive: estaActiva });
+    } else {
+      this.setState({ pushActive: false });
+    }
+  }
+
   componentDidMount() {
     if (!navigator.onLine)
        {  this.setOnlineStatus(false)  }
-    else { this.setOnlineStatus(true) }
-    window.addEventListener('online', () => this.setOnlineStatus(true));
-    window.addEventListener('offline', () => this.setOnlineStatus(false));
+    else 
+       { 
+	  this.setOnlineStatus(true) ;
+	  this.comprobarPushStatus();
+       }
+
+    window.addEventListener('online', () => {
+	  this.setOnlineStatus(true);
+	  this.comprobarPushStatus();
+    });
+
+    window.addEventListener('offline', () => {
+	  this.setOnlineStatus(false);
+	  this.setState({ pushActive: false });
+    });
+
     window.addEventListener('resize', this.updateWindowDimensions)
 	// Detects if device is on iOS
 	const isIos = () => {
@@ -81,6 +108,12 @@ class Menumi extends Component {
                 this.setState({ isConected: event.data.value });
                 return;
             }
+
+	    if (event.data && event.data.action === 'PUSH_STATUS_UPDATED') {
+	        this.setState({ pushActive: event.data.respuesta.active });
+	        return;
+	    }
+
 	    if (event.data && event.data.action === 'LOGIN_EXITOSO_SUSCRIBIR_PUSH') {
 		console.log('[Push] El servidor confirmó el login. Suscribiendo...');
 		solicitarYGuardarSuscripcion(); 
@@ -138,11 +171,26 @@ class Menumi extends Component {
     return (
       <div id='menu'>
         <Navbar color="blue" light expand="md">
-          <h5>FIEL-{this.state.nombre!==null ? this.state.nombre.split(' ')[0]+' '+this.state.nombre.split(' ')[1] : null}
-			<span style={{ color: this.state.isConected ? 'green' : 'red' }}>
-			    <FontAwesomeIcon icon={['fas', 'circle']} className="ml-1" />
-			</span>
-	  </h5>
+		<h5>
+			    FIEL-{this.state.nombre !== null ? this.state.nombre.split(' ')[0] + ' ' + this.state.nombre.split(' ')[1] : null}
+			    
+			    {/* Estado 1: Conexión FIEL */}
+			    <span id="fielStatus" style={{ color: this.state.isConected ? 'green' : 'red', cursor: 'pointer' }}>
+				<FontAwesomeIcon icon={['fas', 'circle']} className="ml-1" />
+			    </span>
+			    <UncontrolledTooltip placement="bottom" target="fielStatus">
+				{this.state.isConected ? 'FIEL Conectada' : 'FIEL Desconectada'}
+			    </UncontrolledTooltip>
+
+			    {/* Estado 2: Suscripción Push */}
+			    <span id="pushStatus" className="ml-2" style={{ color: this.state.pushActive ? 'green' : 'red', cursor: 'pointer' }}>
+				<FontAwesomeIcon icon={['fas', this.state.pushActive ? 'bell' : 'bell-slash']} />
+			    </span>
+			    <UncontrolledTooltip placement="bottom" target="pushStatus">
+				{this.state.pushActive ? 'Notificaciones Push Activas' : 'Sin Notificaciones Push'}
+			    </UncontrolledTooltip>
+		</h5>
+
           <NavbarToggler onClick={this.toggle} />
 		  <Collapse isOpen={this.state.isOpen} navbar>
 		    <Nav className="ml-auto " navbar>

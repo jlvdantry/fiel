@@ -38,6 +38,9 @@ var  ESTADOREQ = {
 	, ERRORFETCH:'5003'
 	, LOGINFIEL:ESTADOLOGINFIEL
 	, PUSH_SUSCRIBE: '126'
+	, CHECK_PUSH_SUBSCRIPCION: '127'
+	, SUBSCRIPCION_CONFIRMADA: '128'
+	, SUBSCRIPCION_NOCONFIRMADA: '129'
 	}; /* Estado del requerimiento */
 
 var  TOKEN = { TIMELIVE : 5, ACTIVO:1, CADUCADO:301, NOGENERADO:2, NOSOLICITADO:3 }   // tiempo en que vigente el token proporcionado por el SAT, para controlar si esta aun viente el token
@@ -50,7 +53,7 @@ var  REVISA = {
               }; // segundos
 var PWDFIEL = null;   /* password de la llave privada */
 var REQUIRIENDOMINUTOS = 1 ; /* si el tiempo de duracion del requerimiento es mayor a este se borra */
-var VERSION='1.0.559.99';
+var VERSION='1.0.560.01';
 var ENDPOINTSSAT = { AUTENTICA:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
 	            ,SOLICITUD:'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc'
 	            ,VERIFICA: 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc'
@@ -60,6 +63,7 @@ var ENDPOINTFIEL = { LOGIN:'https://fiel-sat.so-lu-int.com/api/loginfiel'
 	             ,PROXYSAT:'proxySAT.php'
 	             ,SUBSCRIPCION: 'https://fiel-sat.so-lu-int.com/api/subscribe'
 	             ,NONCE:'https://fiel-sat.so-lu-int.com/api/auth/nonce'
+	             ,CHECK_SUBSCRIPCION:'https://fiel-sat.so-lu-int.com/api/check-subscription'
 	           };
 
 var VAPID_PUBLIC_KEY = "BCXdWLV6pJURV_3y1lHxSxyzX0EFpmC5G3ZcNxwzb-Os3Hkc63TN82vLy7brLCa43SXjU0-Z4IiqwfCyKTtagYs";
